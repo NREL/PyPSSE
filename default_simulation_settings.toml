@@ -1,0 +1,36 @@
+
+
+"Simulation time (sec)" = 30
+"Step resolution (sec)" = 0.004166667
+
+"Simulation Type" = "Dynamic"
+
+"PSSE_path" = "C:\\Program Files (x86)\\PTI\\PSSE34\\PSSPY27"
+"Project Path" = "C:\\Users\\alatif\\Desktop\\pyPSSE\\Models\\IEEE_test_case"
+"Case study" = "ieee9bus.raw"
+"Snp file" = "ieee9bus.snp"
+"Outx file" = "ieee9bus.outx"
+"Out file" = "ieee9bus.out"
+"Log file" = "ieee9bus_flat.log"
+"Dyr file" = "ieee9bus.dyr"
+"bus file" = "ieee9bus.csv"
+
+"Channels" = [2, 14, 16, 25, 26]
+
+
+"Fault duration (cycles)" = 6
+"Fault start time (sec)" = 1.0
+"Fault bus" = 1
+
+"Federate name" = "psse"
+"Time delta" = 0.004166667
+"Core type" = "zmq"
+"Uninterruptible" = true
+"Helics logging level" = 5
+
+"Logging Level" = "DEBUG"
+"Log to external file" = true
+"Display on screen" = true
+"Clear old log file" = true
+
+
