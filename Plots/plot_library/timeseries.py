@@ -1,5 +1,5 @@
 from bokeh.models import ColumnDataSource
-from pyPSSE.Plots.abs_plot import abs_Plots
+from PyPSSE.Plots.abs_plot import abs_Plots
 from bokeh.plotting import figure
 from bokeh.layouts import layout
 from bokeh.palettes import Plasma

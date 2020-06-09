@@ -1,6 +1,6 @@
 from bokeh.models import ColumnDataSource, ColorBar, FixedTicker, FuncTickFormatter, BasicTicker
 from bokeh.transform import LinearColorMapper
-from pyPSSE.Plots.abs_plot import abs_Plots
+from PyPSSE.Plots.abs_plot import abs_Plots
 from bokeh.models import Range1d, HoverTool
 from bokeh.models import GeoJSONDataSource
 from bokeh.plotting import figure, curdoc

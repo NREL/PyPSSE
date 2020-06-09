@@ -1,5 +1,5 @@
-from pyPSSE.Modes.Dynamic import Dynamic
-from pyPSSE.Modes.Static import Static
+from PyPSSE.Modes.Dynamic import Dynamic
+from PyPSSE.Modes.Static import Static
 import numpy as np
 import os
 
