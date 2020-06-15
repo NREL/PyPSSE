@@ -1,4 +1,4 @@
-from pyPSSE.Plots import plot_library
+from PyPSSE.Plots import plot_library
 import importlib
 
 from os.path import basename, isfile

@@ -39,7 +39,7 @@ def add_contingency(cont_name, cont_type, cont_dict, dt, system_contingencies):
     if cont_type in contingencies:
         system_contingencies[cont_name] = contingencies[cont_type](**cont_dict)
     else:
-        raise Exception, ('Invalid contingency type. Valid values are: {}'.format(
+        raise Exception('Invalid contingency type. Valid values are: {}'.format(
             ','.join(contingencies.keys())
         ))
     return system_contingencies, dt

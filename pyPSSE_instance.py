@@ -18,8 +18,8 @@ from bokeh.client import push_session
 from helics_interface import helics_interface
 import simulation_controller as sc
 import pyPSSE_logger as Logger
-from pyPSSE.Parsers import gic_parser as gp
-from pyPSSE.Parsers import raw_parser as rp
+from PyPSSE.Parsers import gic_parser as gp
+from PyPSSE.Parsers import reader as rd
 import contingencies as c
 import subprocess
 import pandas as pd
@@ -27,8 +27,8 @@ import numpy as np
 import os, sys
 import toml
 
-from pyPSSE.result_container import container
-from pyPSSE.Plots.Plots import create_plot
+from PyPSSE.result_container import container
+from PyPSSE.Plots.Plots import create_plot
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path):
@@ -45,8 +45,6 @@ class pyPSSE_instance:
         sys.path.append(self.settings["PSSE_path"])
         os.environ['PATH'] += ';' + self.settings["PSSE_path"]
 
-        self.raw_data = rp.raw_parser(self.settings, self.logger)
-
         #** Initialize PSSE modules
         import psse34
         import psspy
@@ -56,8 +54,12 @@ class pyPSSE_instance:
         self.PSSE = psspy
         self.PSSE.psseinit(nBus)
 
+        self.PSSE.case(os.path.join(self.settings["Project Path"], "Case_study", self.settings["Case study"]))
+        self.raw_data = rd.Reader(self.PSSE, self.settings, self.logger)
+
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
+
         self.contingencies = self.build_contingencies()
 
         bokeh_server_proc = None
@@ -77,20 +79,11 @@ class pyPSSE_instance:
             self.network_graph = None
         if self.settings['Plotting']["Enable dynamic plots"]:
             self.plots = self.build_plots()
+
         self.results = container(self.settings, self.export_settings)
 
         return
 
-    def test_function(self):
-        # buses = [" 34017", " 34020"]
-        # self.PSSE.bsysinit(0)
-        # ierr = self.PSSE.bsys(sid=i, numbus=len(buses), buses=buses)
-
-        ierr, rarray = self.PSSE.abusint(0, 1, 'NUMBER')
-        bus_numbers = rarray[0]
-        ierr, bus_data = self.PSSE.abusreal(0, 1, ['PU', 'ANGLED', 'MISMATCH'])
-
-        return
 
     def initialize_loads(self):
         data = pd.read_csv(r'C:\NAERM-global\init_Conditions_3_new.csv', header=0, index_col=None)
@@ -167,7 +160,7 @@ class pyPSSE_instance:
         f = open(settinigs_toml_path, "r")
         text = settings_text.join(f.readlines())
         toml_data = toml.loads(text)
-        toml_data = {str(k): (str(v) if isinstance(v, unicode) else v) for k, v in toml_data.items()}
+        toml_data = {str(k): (str(v) if isinstance(v, str) else v) for k, v in toml_data.items()}
         f.close()
         return toml_data
 
@@ -205,7 +198,7 @@ class pyPSSE_instance:
         return
 
     def run(self):
-        self.test_function()
+
         exp_vars = self.results.get_export_variables()
         if self.sim.initialization_complete:
             if self.settings['Plotting']["Enable dynamic plots"]:
@@ -266,7 +259,6 @@ class pyPSSE_instance:
         return iarray
 
     def step(self, t):
-        self.test_function()
         self.sim.step(t)
         if self.settings["Cosimulation mode"]:
             self.publish_bus_voltages(t, bus_subsystem_id = 0)
