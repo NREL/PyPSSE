@@ -1,0 +1,2 @@
+
+SIMULATION_SETTINGS_FILENAME = "pyPSSE_settings.toml"
