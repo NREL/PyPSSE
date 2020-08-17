@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Standard libraries
-import os
-
-# Third party libraries
 import pandas as pd
 import h5py
+import os
 
 class hdf5Writer:
     """ Class that handles writing simulation results to arrow
@@ -14,14 +12,23 @@ class hdf5Writer:
     def __init__(self, log_dir, columnLength):
         """ Constructor """
         self.log_dir = log_dir
-        self.store = h5py.File(os.path.join(log_dir, 'groups_dict.hdf5'), 'w')
+        self.store = h5py.File(os.path.join(log_dir, 'Simulation_results.hdf5'), 'w')
         self.store_groups = {}
         self.store_datasets = {}
         self.row = {}
         self.columnLength = columnLength
-        self.chunkRows = 24
+        self.chunkRows = 10
         self.step = 0
         self.dfs = {}
+        self.Timestamp = self.store.create_dataset(
+            "Time stamp",
+            shape=(self.columnLength,),
+            maxshape=(None,),
+            chunks=True,
+            compression="gzip",
+            compression_opts=4,
+            shuffle=True
+        )
         # Create arrow writer for each object type
 
     def write(self, fed_name, currenttime, powerflow_output, index):
@@ -34,8 +41,6 @@ class hdf5Writer:
         :param currenttime: simulation timestep
         :param powerflow_output: Powerflow solver timestep output as a dict
         """
-
-        print("Writing to arrow file")
         # Iterate through each object type
 
         for obj_type in powerflow_output:
@@ -46,12 +51,13 @@ class hdf5Writer:
                 self.store_datasets[obj_type] = {}
                 for colName in powerflow_output[obj_type].keys():
                     self.store_datasets[obj_type][colName] = self.store_groups[obj_type].create_dataset(
-                        colName,
+                        str(colName),
                         shape=(self.columnLength, ),
                         maxshape=(None, ),
                         chunks=True,
                         compression="gzip",
-                        compression_opts=4
+                        compression_opts=4,
+                        shuffle=True
                     )
             if obj_type not in self.dfs:
                 self.dfs[obj_type] = Data
@@ -67,6 +73,7 @@ class hdf5Writer:
                 for colName in powerflow_output[obj_type].keys():
                     self.store_datasets[obj_type][colName][si:ei] = self.dfs[obj_type][colName]
                 self.dfs[obj_type] = None
+            self.Timestamp[self.step-1] = currenttime.timestamp()
             # Add object status data to a DataFrame
         self.step += 1
 

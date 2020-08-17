@@ -15,3 +15,4 @@ def sim_controller(psse, dyntools, settings, export_settings, logger):
     sim = sim_modes[settings["Simulation mode"]](psse, dyntools, settings, export_settings, logger)
     return sim
 
+

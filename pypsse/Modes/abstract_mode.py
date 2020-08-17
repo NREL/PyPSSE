@@ -64,6 +64,11 @@ class AbstractMode:
         if self.settings["Disable PSSE logging"]:
             self.disable_logging()
 
+    def step(self, dt):
+        return
+
+
+
     def export(self):
         self.logger.debug('Starting export process. Can take a few minutes for large files')
         excelpath = os.path.join(self.export_path, self.settings["Excel file"])
@@ -77,7 +82,7 @@ class AbstractMode:
         self.PSSE.report_output(islct=6, filarg='', options=[0, 0])
 
     def setup_channels(self):
-        import PyPSSE.Channel_map as Channel_map
+        import pypsse.Channel_map as Channel_map
         for channel, add in self.export_settings["Channels"].items():
             if add:
                 channelID = Channel_map.channel_map[channel]

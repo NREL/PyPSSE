@@ -22,7 +22,7 @@ class PyDSS:
 
         ''' TODO: work on logging.yaml file'''
         
-        logging.info("{} - initiallized ".format({self.uuid}))
+        logging.info("{} - initialized ".format({self.uuid}))
 
         self.shutdownevent = event
         self.queue = queue
@@ -30,16 +30,16 @@ class PyDSS:
         try:
             self.pydss_obj = OpenDSS()
         except:
-            result = {"Status": 500, "Message": f"Failed to create a PyDSS instance"}
+            result = {"Status": 500, "Message": f"Failed to create a pyPSSE instance"}
             self.queue.put(result)
             return
 
         #self.RunSimulation()
-        logger.info("{} - pydss dispatched".format(self.uuid))
+        logger.info("{} - pyPSSE dispatched".format(self.uuid))
 
         result = {
             "Status": 200,
-            "Message": "PyDSS {} successfully initialized.".format(self.uuid),
+            "Message": "pyPSSE {} successfully initialized.".format(self.uuid),
             "UUID":self.uuid
         }
 
@@ -48,7 +48,7 @@ class PyDSS:
         self.run_process()
     
     def run_process(self):
-        logger.info("PyDSS simulation starting")
+        logger.info("pyPSSE simulation starting")
         while not self.shutdownevent.is_set():
             try:
                 task = self.queue.get()
@@ -76,15 +76,15 @@ class PyDSS:
 
             except (KeyboardInterrupt, SystemExit):
                 break
-        logger.info(f"PyDSS subprocess {self.uuid} has ended")
+        logger.info(f"pyPSSE subprocess {self.uuid} has ended")
 
 
     def close_instance(self):
         del self.pydss_obj
-        logger.info(f'PyDSS case {self.uuid} closed.')
+        logger.info(f'pyPSSE case {self.uuid} closed.')
 
     def init(self, params):
-        logger.info(f'Reading pydss project')
+        logger.info(f'Reading pyPSSE project')
 
         args = restructure_dictionary(params)
 

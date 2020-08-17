@@ -1,13 +1,16 @@
-from PyDSS.api.src.app.arrow_writer import ArrowWriter
-from PyDSS.api.src.app.HDF5 import hdf5Writer
+from pypsse.DataWriters.HDF5 import hdf5Writer
+
+class dummyWriter:
+    def __init__(self, log_dir, columnLength):
+        return
+
+    def write(self, fed_name, currenttime, powerflow_output, index):
+        return
 
 class DataWriter:
     modes = {
-        'arrow': ArrowWriter,
         'h5': hdf5Writer,
-        # 'feather': featherWriter,
-        # 'parquet': parquetWriter,
-        # "pickle": pickleWriter,
+        'none': dummyWriter,
     }
 
     def __init__(self, log_dir, format, columnLength):

@@ -4,13 +4,15 @@ import os
 # Third-party library imports
 import pandas as pd
 import numpy as np
-
+import datetime
 # Internal imports
 from pypsse.Modes.abstract_mode import AbstractMode
 
 class Static(AbstractMode):
     def __init__(self,psse, dyntools, settings, export_settings, logger):
         super().__init__(psse, dyntools, settings, export_settings, logger)
+        self.time = datetime.datetime.strptime(settings["Start time"], "%m/%d/%Y %H:%M:%S")
+        self.incTime = settings["Step resolution (sec)"]
         return
 
     def init(self, bussubsystems):
@@ -37,12 +39,15 @@ class Static(AbstractMode):
         # check if powerflow completed successfully
         if ierr == 0:
             pass
+            self.time = self.time + datetime.timedelta(seconds=self.incTime)
         else:
             raise Exception(f'Error code {ierr} returned from PSSE while running powerflow, please follow \
                             PSSE doumentation to know more about error')
 
         self.counter += 1
 
+    def getTime(self):
+        return self.time
 
     def read_input_data(self):
 
@@ -96,7 +101,6 @@ class Static(AbstractMode):
 
         self.baseload = self.baseload.set_index(['BusNumbers', 'LoadIDs'])
 
-
     def export(self):
 
 
@@ -105,8 +109,6 @@ class Static(AbstractMode):
         achnf = self.dyntools.CHNF(self.outx_path)
         achnf.xlsout(channels='', show=False, xlsfile=excelpath, outfile='', sheet='Sheet1', overwritesheet=True)
         self.logger.debug('{} export to {}'.format(self.settings["Excel file"], self.export_path))
-
-
 
     def convert_load(self, counter):
 

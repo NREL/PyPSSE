@@ -26,6 +26,7 @@ from pypsse.result_container import container
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path, options=None):
+        self.initComplete = False
         self.hi = None
 
         nBus = 200000
@@ -44,9 +45,13 @@ class pyPSSE_instance:
         import psspy
         import dyntools
 
+
+
         self.dyntools = dyntools
         self.PSSE = psspy
         self.PSSE.psseinit(nBus)
+
+        self.initComplete = True
 
         self.PSSE.case(os.path.join(self.settings["Project Path"], "Case_study", self.settings["Case study"]))
         self.raw_data = rd.Reader(self.PSSE, self.settings, self.logger)
@@ -72,8 +77,11 @@ class pyPSSE_instance:
         else:
             self.network_graph = None
 
-        self.results = container(self.settings, self.export_settings)
 
+        self.results = container(self.settings, self.export_settings)
+        self.exp_vars = self.results.get_export_variables()
+
+        self.initComplete = True
         return
 
 
@@ -157,18 +165,9 @@ class pyPSSE_instance:
         f.close()
         return toml_data
 
-    def configure_layouts(self, layouts):
-        c = self.settings['Plotting']['columns']
-        cols = []
-        for i in range(0,len(layouts), c):
-            col_layouts = layouts[i:i+c]
-            cols.append(row(*col_layouts))
-        final_layout = column(*cols)
-        return final_layout
-
     def run(self):
 
-        exp_vars = self.results.get_export_variables()
+
         if self.sim.initialization_complete:
             if self.settings['Plotting']["Enable dynamic plots"]:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
@@ -184,17 +183,9 @@ class pyPSSE_instance:
                 dT = self.check_contingency_updates(t)
                 if dT:
                     T += dT
-                self.update_contingencies(t)
-                self.logger.debug('Simulation time: {} seconds'.format(t))
 
                 self.step(t)
 
-                if self.export_settings['Defined bus subsystems only']:
-                    curr_results = self.sim.read_subsystems(exp_vars, self.all_subsysten_buses)
-                else:
-                    curr_results = self.sim.read(exp_vars, self.raw_data)
-                if not self.export_settings["Export results using channels"]:
-                    self.results.Update(curr_results, None)
 
                 t += self.settings["Step resolution (sec)"]
                 if t >= T:
@@ -225,6 +216,8 @@ class pyPSSE_instance:
         return iarray
 
     def step(self, t):
+        self.update_contingencies(t)
+        self.logger.debug('Simulation time: {} seconds'.format(t))
         self.sim.step(t)
         if self.settings["Cosimulation mode"]:
             self.publish_bus_voltages(t, bus_subsystem_id = 0)
@@ -233,7 +226,13 @@ class pyPSSE_instance:
             self.logger.debug('Time granted: {}'.format(helics_time))
             if self.settings["Create subscriptions"]:
                 self.update_subscriptions(t)
-        return
+        if self.export_settings['Defined bus subsystems only']:
+            curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+        else:
+            curr_results = self.sim.read(self.exp_vars, self.raw_data)
+        if not self.export_settings["Export results using channels"]:
+            self.results.Update(curr_results, None, t, self.sim.getTime())
+        return curr_results
 
     def update_subscriptions(self, t):
         data = self.hi.subscribe()
@@ -275,7 +274,7 @@ class pyPSSE_instance:
         self.hi.publish(bus_data)
         return
 
-    def get_bus_data(self,t , bus_subsystem_id):
+    def get_bus_data(self, t, bus_subsystem_id):
         bus_data_formated = []
         ierr, rarray = self.PSSE.abusint(bus_subsystem_id, 1, 'NUMBER')
 
@@ -298,6 +297,9 @@ class pyPSSE_instance:
         for c_name, c in self.contingencies.items():
             c.update(t)
 
+    def __del__(self):
+        if not self.initComplete:
+            self.logger.error("A valid PSS/E license not found. License may currently be in use.")
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')

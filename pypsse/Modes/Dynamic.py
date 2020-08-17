@@ -1,11 +1,13 @@
 import numpy as np
 import os
 from pypsse.Modes.abstract_mode import AbstractMode
-
+import datetime
 class Dynamic(AbstractMode):
 
     def __init__(self,psse, dyntools, settings, export_settings, logger):
         super().__init__(psse, dyntools, settings, export_settings, logger)
+        self.time = datetime.datetime.strptime(settings["Start time"], "%m/%d/%Y %H:%M:%S")
+        self.incTime = settings["Step resolution (sec)"]
         return
 
     def init(self, bus_subsystems):
@@ -64,6 +66,7 @@ class Dynamic(AbstractMode):
         return self.initialization_complete
 
     def step(self, t):
+        self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def get_load_indices(self, bus_subsystems):
