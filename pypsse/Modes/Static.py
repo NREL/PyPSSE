@@ -49,9 +49,12 @@ class Static(AbstractMode):
     def getTime(self):
         return self.time
 
+    def GetStepSizeSec(self):
+        return self.settings["Step resolution (sec)"]
+
     def read_input_data(self):
 
-        self.input_data_path = os.path.join(self.settings['Project Path'],'Load_profile_data')
+        self.input_data_path = os.path.join(self.settings['Project Path'],'Profiles')
         self.profile_data = {}
 
         if os.path.exists(self.input_data_path):

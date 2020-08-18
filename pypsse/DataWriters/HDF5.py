@@ -27,7 +27,8 @@ class hdf5Writer:
             chunks=True,
             compression="gzip",
             compression_opts=4,
-            shuffle=True
+            shuffle=True,
+            dtype="S10",
         )
         # Create arrow writer for each object type
 
@@ -73,7 +74,7 @@ class hdf5Writer:
                 for colName in powerflow_output[obj_type].keys():
                     self.store_datasets[obj_type][colName][si:ei] = self.dfs[obj_type][colName]
                 self.dfs[obj_type] = None
-            self.Timestamp[self.step-1] = currenttime.timestamp()
+            self.Timestamp[self.step-1] = str(currenttime)
             # Add object status data to a DataFrame
         self.step += 1
 

@@ -1,5 +1,9 @@
 from enum import IntEnum
 
+PROFILE_VALIDATION = {
+    "Load": ['CPAL', 'CPRL', 'CCAL', 'CCRL', 'CAAL', 'CARL'],
+}
+
 class PROFILE_TYPES(IntEnum):
     Load = 0
     Generation = 1
@@ -18,5 +22,3 @@ class PROFILE_TYPES(IntEnum):
     @staticmethod
     def values():
         return list(map(lambda c: c.value, PROFILE_TYPES))
-
-print(PROFILE_TYPES.values())

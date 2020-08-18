@@ -1,9 +1,8 @@
-from PyDSS.ProfileManager.Profile import Profile as TSP
-from PyDSS.ProfileManager.common import PROFILE_TYPES
-from PyDSS.exceptions import InvalidParameter
-from PyDSS.pyLogger import getLoggerTag
-from PyDSS.utils.utils import load_data
-from datetime import datetime
+from pypsse.ProfileManager.common import PROFILE_TYPES, PROFILE_VALIDATION
+from pypsse.ProfileManager.Profile import Profile as TSP
+from pypsse.exceptions import InvalidParameter
+from pypsse.pyLogger import getLoggerTag
+from datetime import datetime as dt
 import pandas as pd
 import numpy as np
 import datetime
@@ -12,22 +11,19 @@ import toml
 import h5py
 import os
 
-
-
 class ProfileManager:
 
-    def __init__(self,  dssObjects, dssSolver, options, mode="r+"):
-        if options["Logging"]["Pre-configured logging"]:
+    def __init__(self,  pypsseObjects, Solver, settings, mode="r+"):
+        if settings["Pre-configured logging"]:
             logger_tag = __name__
         else:
-            logger_tag = getLoggerTag(options)
+            logger_tag = getLoggerTag(settings)
         self._logger = logging.getLogger(logger_tag)
-        self.dssSolver = dssSolver
-        self.Objects = dssObjects
+        self.Solver = Solver
+        self.Objects = pypsseObjects
+        self.profileMapping = self.load_data(os.path.join(settings["Project Path"], "Profiles", "Profile_mapping.toml"))
+        filePath = os.path.join(settings["Project Path"], "Profiles", "Profiles.hdf5")
 
-        self.profileMapping = load_data(options['Profiles']["Profile mapping"])
-
-        filePath = options['Profiles']["Profile store path"]
         if os.path.exists(filePath):
             self._logger.info("Loading existing h5 store")
             self.store = h5py.File(filePath, mode)
@@ -38,6 +34,13 @@ class ProfileManager:
                 self.store.create_group(profileGroup)
         return
 
+    def load_data(self, filePath):
+        if os.path.exists(filePath):
+            tomlDict = toml.load(filePath)
+        else:
+            raise Exception(f'{filePath}: the path does not exist')
+        return tomlDict
+
     def setup_profiles(self):
         self.Profiles = {}
         for group, profileMap in self.profileMapping.items():
@@ -45,9 +48,7 @@ class ProfileManager:
                 grp = self.store[group]
                 for profileName, mappingDict in profileMap.items():
                     if profileName in grp:
-                        objects = {x['object'] : self.Objects[x['object']] for x in mappingDict}
-                        self.Profiles[f"{group}/{profileName}"] = TSP(grp[profileName], objects, self.dssSolver,
-                                                                      mappingDict)
+                        self.Profiles[f"{group}/{profileName}"] = TSP(grp[profileName], self.Solver, mappingDict)
                     else:
                         self._logger.warning("Group {} \ data set {} not found in the h5 store".format(
                             group, profileName
@@ -59,66 +60,89 @@ class ProfileManager:
     def create_dataset(self, dname, pType, data ,startTime, resolution, units, info):
         grp = self.store[pType]
         if dname not in grp:
+            sa, saType = self.df_to_sarray(data)
             dset = grp.create_dataset(
                 dname,
-                data=data,
-                shape=(len(data),),
-                maxshape=(None,),
+                data=sa,
                 chunks=True,
                 compression="gzip",
                 compression_opts=4,
-                shuffle=True
+                shuffle=True,
+                dtype=saType
             )
             self.createMetadata(
-                dset, startTime, resolution, data, units, info
+                dset, startTime, resolution, data, list(data.columns), info, pType
             )
         else:
-            self._logger.error('Dataset "{}" already exists in group "{}".'.format(dname, pType))
-            raise Exception('Dataset "{}" already exists in group "{}".'.format(dname, pType))
+            self._logger.error('Data set "{}" already exists in group "{}".'.format(dname, pType))
+            raise Exception('Data set "{}" already exists in group "{}".'.format(dname, pType))
 
-    def add_from_arrays(self, data, name, pType, startTime, resolution, units="", info=""):
-        data = np.array(data)
-        r, c = data.shape
-        if r > c:
-            for i in range(c):
-                d = data[:, i]
-                dname = name if i==0 else "{}_{}".format(name, i)
-                self.create_dataset(dname=dname, pType=pType, data=d, startTime=startTime, resolution=resolution,
-                                    units=units, info=info)
-        else:
-            for i in range(r):
-                d = data[i, :]
-                dname = name if i==0 else "{}_{}".format(name, i)
-                self.create_dataset(dname=dname, pType=pType, data=d, startTime=startTime, resolution=resolution,
-                                    units=units, info=info)
-        return
+    def df_to_sarray(self, df):
+
+        def make_col_type(col_type, col):
+            try:
+                if 'numpy.object_' in str(col_type.type):
+                    maxlens = col.dropna().str.len()
+                    if maxlens.any():
+                        maxlen = maxlens.max().astype(int)
+                        col_type = ('S%s' % maxlen, 1)
+                    else:
+                        col_type = 'f2'
+                return col.name, col_type
+            except:
+                print(col.name, col_type, col_type.type, type(col))
+                raise
+
+        v = df.values
+        types = df.dtypes
+        numpy_struct_types = [make_col_type(types[col], df.loc[:, col]) for col in df.columns]
+        dtype = np.dtype(numpy_struct_types)
+        z = np.zeros(v.shape[0], dtype)
+        for (i, k) in enumerate(z.dtype.names):
+            # This is in case you have problems with the encoding, remove the if branch if not
+            try:
+                if dtype[i].str.startswith('|S'):
+                    z[k] = df[k].str.encode('latin').astype('S')
+                else:
+                    z[k] = v[:, i]
+            except:
+                print(k, v[:, i])
+                raise
+
+        return z, dtype
 
     def add_profiles_from_csv(self, csv_file, name, pType, startTime, resolution_sec=900, units="",
                               info=""):
-        data = pd.read_csv(csv_file).values
-        self.add_profiles(data, name, pType, startTime, resolution_sec=resolution_sec, units=units, info=info)
+        if pType not in PROFILE_VALIDATION:
+            raise Exception(f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}")
+        data = pd.read_csv(csv_file, index_col=0)
+        print(data)
+        for c in data.columns:
+            if c not in PROFILE_VALIDATION[pType]:
+                raise Exception(f"{c} is not valid, Valid subtypes for '{pType}' are: {PROFILE_VALIDATION[pType]}")
+        self.add_profiles(name, pType, data, startTime, resolution_sec=resolution_sec, units=units, info=info)
 
-
-    def add_profiles(self, data, name, pType, startTime, resolution_sec=900, units="", info=""):
+    def add_profiles(self, name, pType, data, startTime, resolution_sec=900, units="", info=""):
         if type(startTime) is not datetime.datetime:
             raise InvalidParameter("startTime should be a python datetime object")
         if pType not in PROFILE_TYPES.names():
+            print(pType)
             raise InvalidParameter("Valid values for pType are {}".format(PROFILE_TYPES.names()))
-        if data:
-            self.add_from_arrays(data, name, pType, startTime, resolution_sec, units=units, info=info)
+        self.create_dataset(name, pType, data, startTime, resolution_sec, units=units, info=info)
         return
 
-    def createMetadata(self, dSet, startTime, resolution, data, units, info):
+    def createMetadata(self, dSet, startTime, resolution, data, units, info, pType):
         metadata = {
             "sTime": str(startTime),
             "eTime": str(startTime + datetime.timedelta(seconds=resolution*len(data))),
             "resTime": resolution,
             "npts": len(data),
-            "min": min(data),
-            "max": max(data),
+            "min": data.min(),
+            "max": data.max(),
             "mean": np.mean(data),
             "units": units,
             "info": info,
+            "type": pType
         }
         for key, value in metadata.items():
             if isinstance(value, str):
@@ -138,3 +162,42 @@ class ProfileManager:
 
     def __del__(self):
         self.store.flush()
+
+if __name__ == '__main__':
+    class Solver:
+
+        def __init__(self):
+            self.Time = dt.strptime("09/19/2018 13:55:26", "%m/%d/%Y %H:%M:%S")
+            return
+
+        def getTime(self):
+            return self.Time
+
+        def GetStepSizeSec(self):
+            return 1.0
+
+        def updateTime(self):
+            self.Time = self.Time + datetime.timedelta(seconds=1)
+            print(self.Time)
+            return
+
+        def update_object(self, dType, bus, id, value):
+            print( dType, bus, id, value)
+
+    settings = toml.load(r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Settings\pyPSSE_settings.toml")
+    print(settings)
+    solver = Solver()
+    a = ProfileManager(None, solver, settings)
+    a.setup_profiles()
+    for i in range(30):
+        a.update()
+        solver.updateTime()
+
+    # a.add_profiles_from_csv(
+    #     csv_file=r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Profiles\daily.csv",
+    #     name="test",
+    #     pType="Load",
+    #     startTime=dt.strptime("2018-09-19 13:55:26.001", "%Y-%m-%d %H:%M:%S.%f"),
+    #     resolution_sec=1,
+    #     units="MW",
+    # )

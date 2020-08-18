@@ -10,7 +10,7 @@
 # import win32api
 #
 # import time
-
+from pypsse.ProfileManager.ProfileStore import ProfileManager
 from pypsse.helics_interface import helics_interface
 import pypsse.simulation_controller as sc
 import pypsse.pyPSSE_logger as Logger
@@ -26,7 +26,6 @@ from pypsse.result_container import container
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path, options=None):
-        self.initComplete = False
         self.hi = None
 
         nBus = 200000
@@ -42,10 +41,14 @@ class pyPSSE_instance:
 
         #** Initialize PSSE modules
         import psse34
-        import psspy
-        import dyntools
-
-
+        try:
+            import psspy
+            import dyntools
+        except:
+            self.logger.error("A valid PSS/E license not found. License may currently be in use.")
+            self.logger.flush()
+            self.logger.close()
+            raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
         self.dyntools = dyntools
         self.PSSE = psspy
@@ -70,18 +73,14 @@ class pyPSSE_instance:
             if self.settings["Create subscriptions"]:
                 self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
 
-
         if len(self.settings["GIC file"]):
             self.network_graph = self.parse_GIC_file()
             self.bus_ids = self.network_graph.nodes.keys()
         else:
             self.network_graph = None
 
-
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
-
-        self.initComplete = True
         return
 
 
@@ -107,8 +106,12 @@ class pyPSSE_instance:
         else:
             self.load_info = None
 
+        if self.settings["Use profile manager"]:
+            self.pm = ProfileManager(None, self.sim, self.settings)
+            self.pm.setup_profiles()
         if self.settings["Cosimulation mode"]:
             self.hi.enter_execution_mode()
+
         return
 
     def parse_GIC_file(self):
@@ -297,14 +300,9 @@ class pyPSSE_instance:
         for c_name, c in self.contingencies.items():
             c.update(t)
 
-    def __del__(self):
-        if not self.initComplete:
-            self.logger.error("A valid PSS/E license not found. License may currently be in use.")
-
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
     x = pyPSSE_instance(
         r'C:\NAERM-global\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
     x.init()
     x.run()
-    #
