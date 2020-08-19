@@ -31,8 +31,8 @@ class Profile:
     def update(self, updateObjectProperties=True):
         self.Time = copy.deepcopy(self.Solver.getTime())
         if self.Time < self.sTime or self.Time > self.eTime:
-            value = np.array([0] * len(PROFILE_VALIDATION[self.dType]))
-            value1 = np.array([0] * len(PROFILE_VALIDATION[self.dType]))
+            value = np.array([0] * len(self.profile[0]))
+            value1 = np.array([0] * len(self.profile[0]))
         else:
             dT = (self.Time - self.sTime).total_seconds()
             n = int(dT / self.attrs["resTime"])
@@ -58,6 +58,6 @@ class Profile:
         return value
 
     def fill_missing_values(self, value):
-        x = dict(zip(list(self.Columns), list(value)))
-        v = [x[c] if c in x else 0 for c in PROFILE_VALIDATION[self.dType]]
-        return v
+        idx = [f'realar{PROFILE_VALIDATION[self.dType].index(c) + 1}' for c in self.Columns]
+        x = dict(zip(idx, list(value)))
+        return x

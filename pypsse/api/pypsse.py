@@ -1,5 +1,4 @@
 import os
-import logging
 from multiprocessing import current_process
 import inspect
 from queue import Empty
@@ -7,7 +6,6 @@ from PyDSS.dssInstance import OpenDSS
 from PyDSS.valiate_settings import validate_settings
 from PyDSS.api.src.web.parser import restructure_dictionary
 from PyDSS.api.src.app.arrow_writer import ArrowWriter
-logger = logging.getLogger(__name__)
 
 class PyDSS:
 

@@ -1,24 +1,18 @@
 from pypsse.ProfileManager.common import PROFILE_TYPES, PROFILE_VALIDATION
 from pypsse.ProfileManager.Profile import Profile as TSP
 from pypsse.exceptions import InvalidParameter
-from pypsse.pyLogger import getLoggerTag
 from datetime import datetime as dt
 import pandas as pd
 import numpy as np
 import datetime
-import logging
 import toml
 import h5py
 import os
 
 class ProfileManager:
 
-    def __init__(self,  pypsseObjects, Solver, settings, mode="r+"):
-        if settings["Pre-configured logging"]:
-            logger_tag = __name__
-        else:
-            logger_tag = getLoggerTag(settings)
-        self._logger = logging.getLogger(logger_tag)
+    def __init__(self,  pypsseObjects, Solver, settings, logger, mode="r+"):
+        self._logger = logger
         self.Solver = Solver
         self.Objects = pypsseObjects
         self.profileMapping = self.load_data(os.path.join(settings["Project Path"], "Profiles", "Profile_mapping.toml"))
@@ -90,7 +84,6 @@ class ProfileManager:
                         col_type = 'f2'
                 return col.name, col_type
             except:
-                print(col.name, col_type, col_type.type, type(col))
                 raise
 
         v = df.values
@@ -106,7 +99,6 @@ class ProfileManager:
                 else:
                     z[k] = v[:, i]
             except:
-                print(k, v[:, i])
                 raise
 
         return z, dtype
@@ -115,8 +107,7 @@ class ProfileManager:
                               info=""):
         if pType not in PROFILE_VALIDATION:
             raise Exception(f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}")
-        data = pd.read_csv(csv_file, index_col=0)
-        print(data)
+        data = pd.read_csv(csv_file)
         for c in data.columns:
             if c not in PROFILE_VALIDATION[pType]:
                 raise Exception(f"{c} is not valid, Valid subtypes for '{pType}' are: {PROFILE_VALIDATION[pType]}")
@@ -126,7 +117,6 @@ class ProfileManager:
         if type(startTime) is not datetime.datetime:
             raise InvalidParameter("startTime should be a python datetime object")
         if pType not in PROFILE_TYPES.names():
-            print(pType)
             raise InvalidParameter("Valid values for pType are {}".format(PROFILE_TYPES.names()))
         self.create_dataset(name, pType, data, startTime, resolution_sec, units=units, info=info)
         return
@@ -178,26 +168,24 @@ if __name__ == '__main__':
 
         def updateTime(self):
             self.Time = self.Time + datetime.timedelta(seconds=1)
-            print(self.Time)
             return
 
         def update_object(self, dType, bus, id, value):
-            print( dType, bus, id, value)
+            pass
 
     settings = toml.load(r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Settings\pyPSSE_settings.toml")
-    print(settings)
     solver = Solver()
     a = ProfileManager(None, solver, settings)
-    a.setup_profiles()
-    for i in range(30):
-        a.update()
-        solver.updateTime()
+    # a.setup_profiles()
+    # for i in range(30):
+    #     a.update()
+    #     solver.updateTime()
 
-    # a.add_profiles_from_csv(
-    #     csv_file=r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Profiles\daily.csv",
-    #     name="test",
-    #     pType="Load",
-    #     startTime=dt.strptime("2018-09-19 13:55:26.001", "%Y-%m-%d %H:%M:%S.%f"),
-    #     resolution_sec=1,
-    #     units="MW",
-    # )
+    a.add_profiles_from_csv(
+        csv_file=r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Profiles\machine.csv",
+        name="test",
+        pType="Machine",
+        startTime=dt.strptime("2018-09-19 13:55:26.001", "%Y-%m-%d %H:%M:%S.%f"),
+        resolution_sec=1,
+        units="MW",
+    )

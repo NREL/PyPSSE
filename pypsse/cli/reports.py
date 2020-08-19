@@ -2,16 +2,9 @@
 CLI to run a PyDSS project
 """
 
-import ast
-import logging
-import os
-import sys
-import json
 import click
 
 from terminaltables import SingleTable
-
-logger = logging.getLogger(__name__)
 
 @click.argument(
     "project-path",

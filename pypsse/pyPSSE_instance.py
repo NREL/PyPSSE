@@ -22,12 +22,13 @@ import pandas as pd
 import numpy as np
 import os, sys
 import toml
+import time
 from pypsse.result_container import container
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path, options=None):
         self.hi = None
-
+        self.simStartTime = time.time()
         nBus = 200000
         self.settings = self.read_settings(settinigs_toml_path)
         export_settings_path = os.path.join(self.settings["Project Path"], 'Settings', 'export_settings.toml')
@@ -107,7 +108,7 @@ class pyPSSE_instance:
             self.load_info = None
 
         if self.settings["Use profile manager"]:
-            self.pm = ProfileManager(None, self.sim, self.settings)
+            self.pm = ProfileManager(None, self.sim, self.settings, self.logger)
             self.pm.setup_profiles()
         if self.settings["Cosimulation mode"]:
             self.hi.enter_execution_mode()
@@ -175,8 +176,8 @@ class pyPSSE_instance:
             else:
                 bokeh_server_proc = None
             self.initialize_loads()
-            self.logger.debug('Running dynamic simulation for time (sec), {}'.format(self.settings["Simulation time (sec)"]))
-            self.logger.debug('Simulation time step (sec), {}'.format(self.settings["Step resolution (sec)"]))
+            self.logger.debug('Running dynamic simulation for time {} sec'.format(self.settings["Simulation time (sec)"]))
+            self.logger.debug('Simulation time step {} sec'.format(self.settings["Step resolution (sec)"]))
             T = self.settings["Simulation time (sec)"]
             t = 0
             self.test = False
@@ -216,7 +217,8 @@ class pyPSSE_instance:
 
     def step(self, t):
         self.update_contingencies(t)
-        self.logger.debug('Simulation time: {} seconds'.format(t))
+        ctime = time.time() - self.simStartTime
+        self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
         self.sim.step(t)
         if self.settings["Cosimulation mode"]:
             self.publish_bus_voltages(t, bus_subsystem_id=0)

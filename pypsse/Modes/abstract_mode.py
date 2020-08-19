@@ -4,7 +4,6 @@ import os
 class AbstractMode:
 
     def __init__(self, psse, dyntools, settings, export_settings, logger):
-
         self.PSSE = psse
         self.logger = logger
         self.dyntools = dyntools
@@ -215,8 +214,17 @@ class AbstractMode:
 
     def update_object(self, dType, bus, id, values):
         if dType == "Load":
-            self.PSSE.load_data_5(int(bus), id, realar1=values[0], realar2=values[1], realar3=values[2],realar4=values[3],
-                                  realar5=values[4], realar6=values[5])
-            self.logger.debug(f"Profile Manager: Load '{id}' on bus '{bus}' has been updated")
+            ierr = self.PSSE.load_data_5(ibus=int(bus), id=id, **values)
+        elif dType == "Induction_machine":
+            ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
+        elif dType == "Machine":
+            ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
+        elif dType == "Plant":
+            ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
+        else:
+            ierr = 0
 
-
+        if ierr == 0:
+            self.logger.debug(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated.")
+        else:
+            self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")

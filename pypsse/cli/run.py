@@ -2,18 +2,11 @@
 CLI to run a PyDSS project
 """
 
-import ast
-import logging
-import os
-import sys
 
+import os
 import click
 from pypsse.pyPSSE_instance import pyPSSE_instance
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
-
-
-logger = logging.getLogger(__name__)
-
 
 @click.argument(
     "project-path",

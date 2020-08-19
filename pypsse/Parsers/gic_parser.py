@@ -1,27 +1,13 @@
 import networkx as nx
 import pandas as pd
-import logging
 import os
 
 class gic_parser:
     valid_verions = ['3']
     def __init__(self, settings , logger=None):
 
-        if logger == None:
-            self.logger = logging.getLogger("pyPSSE")
-        else:
-            formatter = logging.Formatter('%(message)s')
-            logging.getLogger('').setLevel(logging.DEBUG)
-            fh = logging.FileHandler('a.log')
-            fh.setLevel(logging.DEBUG)
-            fh.setFormatter(formatter)
-            logging.getLogger('').addHandler(fh)
-            ch = logging.StreamHandler()
-            ch.setLevel(logging.DEBUG)
-            ch.setFormatter(formatter)
-            logging.getLogger('').addHandler(ch)
-            self.logger = logging
-            self.logger.debug('Starting RAW parser')
+        self.logger = logger
+        self.logger.debug('Starting RAW parser')
 
         self.settings = settings
         self.filepath = os.path.join(settings["Project Path"], "Case_study", settings["GIC file"])

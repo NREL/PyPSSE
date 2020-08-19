@@ -1,19 +1,18 @@
 from enum import IntEnum
 
 PROFILE_VALIDATION = {
-    "Load": ['CPAL', 'CPRL', 'CCAL', 'CCRL', 'CAAL', 'CARL'],
+    "Load": ['PL', 'QL', 'IP', 'IQ', 'YP', 'YQ', 'PG', 'QG'],
+    "Induction_machine": ['MBASE', 'RATEKV' 'PSET', 'H', 'A', 'B', 'D', 'E', 'RA', 'XA', 'XM', 'R1', 'X1', 'R2', 'X2',
+                          'X3', 'E1', 'SE1', 'E2', 'SE2', 'IA1', 'IA2', 'XAMULT'],
+    "Machine": ['PG', 'QG', 'QT', 'QB', 'PT', 'PB', 'MBASE', 'ZR', 'ZX', 'RT', 'XT', 'GTAP', 'F1', 'F2', 'F3', 'F4', 'WPF'],
+    "Plant" : ['VS', 'RMPCT']
 }
 
 class PROFILE_TYPES(IntEnum):
     Load = 0
-    Generation = 1
-    Irradiance = 2
-    Temperature = 3
-    Voltage = 4
-    Current = 5
-    EM_Price = 6
-    AS_Price = 7
-    WindProfile = 8
+    Induction_machine = 1
+    Machine = 2
+    Plant = 3
 
     @staticmethod
     def names():

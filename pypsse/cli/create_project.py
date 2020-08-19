@@ -1,9 +1,7 @@
 """CLI to create a new PyPSSE project"""
 
-import ast
-import sys
+
 import click
-import logging
 
 @click.option(
     "-P", "--path",
