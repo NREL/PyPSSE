@@ -8,6 +8,11 @@ PROFILE_VALIDATION = {
     "Plant" : ['VS', 'RMPCT']
 }
 
+DEFAULT_PROFILE_NAME = "Default"
+DEFAULT_START_TIME = "2020-01-01 00:00:00.00"
+DEFAULT_PROFILE_TYPE = "Load"
+DEFAULT_PROFILE_RESOLUTION = 1.0
+
 class PROFILE_TYPES(IntEnum):
     Load = 0
     Induction_machine = 1
