@@ -169,8 +169,6 @@ class pyPSSE_instance:
         return toml_data
 
     def run(self):
-
-
         if self.sim.initialization_complete:
             if self.settings['Plotting']["Enable dynamic plots"]:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
@@ -186,10 +184,8 @@ class pyPSSE_instance:
                 dT = self.check_contingency_updates(t)
                 if dT:
                     T += dT
-
+                self.pm.update()
                 self.step(t)
-
-
                 t += self.settings["Step resolution (sec)"]
                 if t >= T:
                     break
@@ -223,7 +219,7 @@ class pyPSSE_instance:
         self.logger.debug('Simulation time: {} seconds'.format(t))
         self.sim.step(t)
         if self.settings["Cosimulation mode"]:
-            self.publish_bus_voltages(t, bus_subsystem_id = 0)
+            self.publish_bus_voltages(t, bus_subsystem_id=0)
             self.logger.debug('Time requested: {}'.format(t))
             helics_time = self.update_federate_time(t)
             self.logger.debug('Time granted: {}'.format(helics_time))

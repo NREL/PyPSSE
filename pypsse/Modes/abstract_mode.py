@@ -213,4 +213,10 @@ class AbstractMode:
             results_dict[class_name][label] = value
         return results_dict
 
+    def update_object(self, dType, bus, id, values):
+        if dType == "Load":
+            self.PSSE.load_data_5(int(bus), id, realar1=values[0], realar2=values[1], realar3=values[2],realar4=values[3],
+                                  realar5=values[4], realar6=values[5])
+            self.logger.debug(f"Profile Manager: Load '{id}' on bus '{bus}' has been updated")
+
 

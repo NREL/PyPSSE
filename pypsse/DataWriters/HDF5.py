@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Standard libraries
 import pandas as pd
+import numpy as np
 import h5py
 import os
 
@@ -28,7 +29,7 @@ class hdf5Writer:
             compression="gzip",
             compression_opts=4,
             shuffle=True,
-            dtype="S10",
+            dtype="S30",
         )
         # Create arrow writer for each object type
 
@@ -74,7 +75,9 @@ class hdf5Writer:
                 for colName in powerflow_output[obj_type].keys():
                     self.store_datasets[obj_type][colName][si:ei] = self.dfs[obj_type][colName]
                 self.dfs[obj_type] = None
-            self.Timestamp[self.step-1] = str(currenttime)
+            print(str(currenttime), type(str(currenttime)))
+
+            self.Timestamp[self.step-1] = np.string_(str(currenttime))
             # Add object status data to a DataFrame
         self.step += 1
 
