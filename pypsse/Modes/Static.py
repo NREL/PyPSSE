@@ -20,7 +20,7 @@ class Static(AbstractMode):
         self.initialization_complete = True
         return
 
-    def step(self,dt):
+    def step(self, dt):
         ierr = self.PSSE.fnsl()
         # check if powerflow completed successfully
         if ierr == 0:
@@ -29,6 +29,11 @@ class Static(AbstractMode):
             raise Exception(f'Error code {ierr} returned from PSSE while running powerflow, please follow \
                             PSSE doumentation to know more about error')
 
+    def resolveStep(self):
+        ierr = self.PSSE.fnsl()
+        if ierr > 0:
+            raise Exception(f'Error code {ierr} returned from PSSE while running powerflow, please follow \
+                                        PSSE doumentation to know more about error')
     def getTime(self):
         return self.time
 

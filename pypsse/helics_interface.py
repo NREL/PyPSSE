@@ -2,11 +2,24 @@ import pandas as pd
 import helics as h
 import os
 class helics_interface:
-    def __init__(self, PSSE, settings, logger):
+
+    n_states = 5
+    init_state = 1
+
+    def __init__(self, PSSE, sim, settings, logger):
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
         self.settings = settings
+        self.sim = sim
+        self.itr = 0
+        self.c_seconds = 0
+        self.c_seconds_old = -1
+
+        self._co_convergance_error_tolerance = settings['HELICS']['Error tolerance']
+        self._co_convergance_max_iterations = settings['HELICS']['Max co-iterations']
+        self.create_federate()
+
         return
 
     def enter_execution_mode(self):
@@ -14,19 +27,19 @@ class helics_interface:
         return
 
     def create_federate(self):
-        fedinfo = h.helicsCreateFederateInfo()
-        h.helicsFederateInfoSetCoreName(fedinfo, self.settings["HELICS"]['Federate name'])
-        h.helicsFederateInfoSetCoreTypeFromString(fedinfo, self.settings["HELICS"]['Core type'])
-        h.helicsFederateInfoSetCoreInitString(fedinfo, "--federates=1")
+        self.fedinfo = h.helicsCreateFederateInfo()
+        h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings["HELICS"]['Federate name'])
+        h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings["HELICS"]['Core type'])
+        h.helicsFederateInfoSetCoreInitString(self.fedinfo, "--federates=1")
         h.helicsFederateInfoSetTimeProperty(
-            fedinfo,
+            self.fedinfo,
             h.helics_property_time_delta,
             self.settings["Simulation"]["Step resolution (sec)"]
         )
-        h.helicsFederateInfoSetIntegerProperty(fedinfo, h.helics_property_int_log_level,
+        h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
                                                self.settings["HELICS"]['Helics logging level'])
-        h.helicsFederateInfoSetFlagOption(fedinfo, h.helics_flag_uninterruptible, True)
-        self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], fedinfo)
+        h.helicsFederateInfoSetFlagOption(self.fedinfo, h.helics_flag_uninterruptible, True)
+        self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
         return
 
 
@@ -56,7 +69,7 @@ class helics_interface:
         r,c = sub_data.shape
 
         for row in range(r):
-            bus_subsystem_id =  sub_data[row,0]
+            bus_subsystem_id = sub_data[row,0]
             bus_id = sub_data[row, 1]
             load_id = sub_data[row, 2]
             load_type = sub_data[row, 3]
@@ -72,18 +85,36 @@ class helics_interface:
                                 'load_id': load_id,
                                 'load_type': load_type,
                                 'scaler' : scaler,
+                                'dStates': [self.init_state] * self.n_states,
                                 'subscription':  h.helicsFederateRegisterSubscription(self.PSSEfederate, sub_tag, ""),
                             }
                             self.logger.debug("Bus subsystems {}'s bus {}'s load {} has subscribed to {}".format(
                                 bus_subsystem_id,  bus_id, load_id, sub_tag
                             ))
-
         return
 
     def request_time(self, t):
-        currenttime = h.helicsFederateRequestTime(self.PSSEfederate, t)
-        self.logger.debug('pyPSSE: helics time requested (sec): {}'.format(t))
-        self.logger.debug('pyPSSE: helics time granted (sec): {}'.format(currenttime))
+        error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])
+        r_seconds = self.sim.GetTotalSeconds()  # - self._dss_solver.GetStepResolutionSeconds()
+        if not self.settings['HELICS']['Iterative Mode']:
+            while self.c_seconds < r_seconds:
+                self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
+            self.logger.info('Time requested: {} - time granted: {} '.format(r_seconds, self.c_seconds))
+            return True, self.c_seconds
+        else:
+            self.c_seconds, iteration_state = h.helicsFederateRequestTimeIterative(
+                self.PSSEfederate,
+                r_seconds,
+                h.helics_iteration_request_iterate_if_needed
+            )
+            self.logger.info('Time requested: {} - time granted: {} error: {} it: {}'.format(
+                r_seconds, self.c_seconds, error, self.itr))
+            if error > -1 and self.itr < self._co_convergance_max_iterations:
+                self.itr += 1
+                return False, self.c_seconds
+            else:
+                self.itr = 0
+                return True, self.c_seconds
         return currenttime
 
     def publish(self, all_bus_data):
@@ -103,7 +134,20 @@ class helics_interface:
         return
 
     def subscribe(self):
-        for sub_tag, sub_data in self.subscriptions.iteritems():
+        for sub_tag, sub_data in self.subscriptions.items():
             sub_data['value'] = h.helicsInputGetDouble(sub_data['subscription'])
-            self.logger.debug('pyPSSE: Data recieved {} for tag {}'.format(sub_data['value'], sub_tag))
+            self.logger.debug('pyPSSE: Data received {} for tag {}'.format(sub_data['value'], sub_tag))
+            if self.settings['HELICS']['Iterative Mode']:
+                if self.c_seconds != self.c_seconds_old:
+                    sub_data['dStates'] = [self.init_state] * self.n_states
+                else:
+                    sub_data['dStates'].insert(0, sub_data['dStates'].pop())
+        self.c_seconds_old = self.c_seconds
         return self.subscriptions
+
+    def __del__(self):
+        h.helicsFederateFinalize(self.PSSEfederate)
+        state = h.helicsFederateGetState(self.PSSEfederate)
+        h.helicsFederateInfoFree(self.fedinfo)
+        h.helicsFederateFree(self.PSSEfederate)
+        self.logger.info('HELICS federate for PyDSS destroyed')

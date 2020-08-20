@@ -24,6 +24,9 @@
 "Uninterruptible" = true
 "Helics logging level" = 5
 "Create subscriptions" = true
+"Iterative Mode" = false
+"Error tolerance" = 0.00001
+"Max co-iterations" = 15
 
 [Export_settings]
 "Outx file" = "Results.outx"

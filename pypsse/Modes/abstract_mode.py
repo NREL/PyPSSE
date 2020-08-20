@@ -76,7 +76,8 @@ class AbstractMode:
     def step(self, dt):
         return
 
-
+    def resolveStep(self):
+        return
 
     def export(self):
         self.logger.debug('Starting export process. Can take a few minutes for large files')

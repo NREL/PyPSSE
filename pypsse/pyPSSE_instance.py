@@ -72,8 +72,7 @@ class pyPSSE_instance:
         self.contingencies = self.build_contingencies()
 
         if self.settings["HELICS"]["Cosimulation mode"]:
-            self.hi = helics_interface(self.PSSE, self.settings, self.logger)
-            self.hi.create_federate()
+            self.hi = helics_interface(self.PSSE, self.sim, self.settings, self.logger)
             self.publications = self.hi.register_publications(self.bus_subsystems)
             if self.settings["HELICS"]["Create subscriptions"]:
                 self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
