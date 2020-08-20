@@ -1,24 +1,18 @@
 """CLI to create a new PyPSSE project"""
 
-
+from pypsse.pyPSSE_project import pyPSSE_project
 import click
+import toml
+import os
 
-@click.option(
-    "-P", "--path",
-    required=True,
-    help="path in which to create project",
+@click.argument(
+    "path",
 )
+
 @click.option(
     "-p", "--project",
     required=True,
     help="project name",
-)
-@click.option(
-    "-f", "--simulation-file",
-    required=False,
-    show_default=True,
-    default="pyPSSE_settings.toml",
-    help="simulation file name",
 )
 @click.option(
     "-F", "--psse-project-folder",
@@ -28,28 +22,59 @@ import click
     help="PSS/E project folder path",
 )
 @click.option(
-    "-r", "--raw-file",
+    "-f", "--simulation-file",
     required=False,
     show_default=True,
-    default=None,
-    help="simulation file name",
+    default="",
+    help="Simulation settings toml file path",
 )
-@click.option(
-    "-d", "--dyr-file",
-    required=False,
-    show_default=True,
-    default=None,
-    help="simulation file name",
-)
-
 @click.option(
     "-e", "--export-settings-file",
-    default=None,
-    help="comma-delimited list of dynamic visualization types",
+    default="",
+    help="Export settings toml file path",
 )
-
+@click.option(
+    "-s", "--profile-store",
+    default="",
+    help="Path to a valid Profiles.hdf5 file (Contains profiles for time series simulations)",
+)
+@click.option(
+    "-m", "--profile-mapping",
+    default="",
+    help="Path to a valid Profile_mapping.toml file (used to map profile to PSSE elements)",
+)
+@click.option(
+    "-a", "--autofill",
+    help="Attempt to auto fill settings. (Verify manually settings file is correct)",
+    is_flag=True,
+    default=True,
+    show_default=True,
+)
+@click.option(
+    "-o", "--overwrite",
+    help="Overwrite project is it already exists",
+    is_flag=True,
+    default=True,
+    show_default=True,
+)
 @click.command()
-def create_project(path=None, project=None, simulation_file=None, psse_project_folder=None,
-                   raw_file=None, dyr_file=None, export_settings_file=None):
+def create_project(path=None, project=None, psse_project_folder=None, simulation_file=None, export_settings_file=None,
+                   profile_store=None, profile_mapping=None, overwrite=None, autofill=None):
     """Create PyPSSE project."""
+    if os.path.exists(path):
+        sSettings = toml.load(simulation_file) if simulation_file else {}
+        eSettings = toml.load(export_settings_file) if export_settings_file else {}
+        #TODO: Validate settings
+        a = pyPSSE_project()
+        a.create(
+            path,
+            project,
+            psse_project_folder,
+            sSettings,
+            eSettings,
+            profile_store,
+            profile_mapping,
+            overwrite,
+            autofill
+        )
     return

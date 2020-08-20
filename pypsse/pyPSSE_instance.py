@@ -64,7 +64,7 @@ class pyPSSE_instance:
                          "Case_study",
                          self.settings["Simulation"]["Case study"])
         )
-        self.raw_data = rd.Reader(self.PSSE, self.settings, self.logger)
+        self.raw_data = rd.Reader(self.PSSE, self.logger)
 
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()

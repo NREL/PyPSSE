@@ -2,6 +2,7 @@ from pypsse.ProfileManager.common import PROFILE_TYPES, PROFILE_VALIDATION
 from pypsse.ProfileManager.Profile import Profile as TSP
 from pypsse.exceptions import InvalidParameter
 from datetime import datetime as dt
+from pypsse.common import *
 import pandas as pd
 import numpy as np
 import datetime
@@ -15,9 +16,7 @@ class ProfileManager:
         self._logger = logger
         self.Solver = Solver
         self.Objects = pypsseObjects
-        self.profileMapping = self.load_data(
-            os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profile_mapping.toml")
-        )
+
         filePath = os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profiles.hdf5")
 
         if os.path.exists(filePath):
@@ -38,19 +37,24 @@ class ProfileManager:
         return tomlDict
 
     def setup_profiles(self):
-        self.Profiles = {}
-        for group, profileMap in self.profileMapping.items():
-            if group in self.store:
-                grp = self.store[group]
-                for profileName, mappingDict in profileMap.items():
-                    if profileName in grp:
-                        self.Profiles[f"{group}/{profileName}"] = TSP(grp[profileName], self.Solver, mappingDict)
-                    else:
-                        self._logger.warning("Group {} \ data set {} not found in the h5 store".format(
-                            group, profileName
-                        ))
-            else:
-                self._logger.warning("Group {} not found in the h5 store".format(group))
+        mappingPath = os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profile_mapping.toml")
+        if os.path.exists(mappingPath):
+            self.profileMapping = self.load_data(mappingPath)
+            self.Profiles = {}
+            for group, profileMap in self.profileMapping.items():
+                if group in self.store:
+                    grp = self.store[group]
+                    for profileName, mappingDict in profileMap.items():
+                        if profileName in grp:
+                            self.Profiles[f"{group}/{profileName}"] = TSP(grp[profileName], self.Solver, mappingDict)
+                        else:
+                            self._logger.warning("Group {} \ data set {} not found in the h5 store".format(
+                                group, profileName
+                            ))
+                else:
+                    self._logger.warning("Group {} not found in the h5 store".format(group))
+        else:
+            raise Exception(f"Profile_mapping.toml file does not exist in path {mappingPath}")
         return
 
     def create_dataset(self, dname, pType, data ,startTime, resolution, units, info):

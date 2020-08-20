@@ -12,7 +12,7 @@ import os
 
 class Reader:
 
-    def __init__(self, psse_instance, settings, logger):
+    def __init__(self, psse_instance, logger):
 
         self.psse = psse_instance
         self.logger = logger

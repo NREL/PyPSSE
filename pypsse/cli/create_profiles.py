@@ -8,6 +8,7 @@ import toml
 import click
 import logging
 import datetime as dt
+from pypsse.common import *
 from pypsse.ProfileManager.ProfileStore import ProfileManager
 from pypsse.ProfileManager.common import DEFAULT_PROFILE_NAME, DEFAULT_START_TIME, PROFILE_VALIDATION, \
     DEFAULT_PROFILE_TYPE, DEFAULT_PROFILE_RESOLUTION
@@ -74,7 +75,7 @@ from pypsse.ProfileManager.common import DEFAULT_PROFILE_NAME, DEFAULT_START_TIM
 def create_profiles(project_path, csv_file_path, profile_folder, profile_name, profile_type, start_time, profile_res, profile_info):
     """Run a PyPSSE simulation."""
     logging.root.setLevel("DEBUG")
-    settingsFile = os.path.join(project_path, 'Settings', 'pyPSSE_settings.toml')
+    settingsFile = os.path.join(project_path, 'Settings', DEFAULT_PROFILE_STORE_FILENAME)
     if os.path.exists(settingsFile):
         if csv_file_path and os.path.exists(csv_file_path):
             settings = toml.load(settingsFile)
