@@ -10,7 +10,9 @@ class gic_parser:
         self.logger.debug('Starting RAW parser')
 
         self.settings = settings
-        self.filepath = os.path.join(settings["Project Path"], "Case_study", settings["GIC file"])
+        self.filepath = os.path.join(
+            settings["Simulation"]["Project Path"], "Case_study", settings["Simulation"]["GIC file"]
+        )
 
         self.filehandle = open(self.filepath, 'r')
         verion = self.filehandle.readline()
@@ -33,7 +35,11 @@ class gic_parser:
                 float(self.psse_graph.nodes[node]['latitude']),
                 float(self.psse_graph.nodes[node]['longitude'])
             ]
-        export_path = os.path.join(self.settings["Project Path"], 'Exports', self.settings["NetworkX graph file"])
+        export_path = os.path.join(
+            self.settings["Simulation"]["Project Path"],
+            'Exports',
+            self.settings["Export_settings"]["NetworkX graph file"]
+        )
         nx.write_gpickle(self.psse_graph, export_path)
         #nx.draw(self.psse_graph ,pos)
         #plt.show()
@@ -136,7 +142,9 @@ class gic_parser:
                 self.bus_data[bus_id][label] = val
 
         bus_data = pd.DataFrame(self.bus_data).T
-        export_path = os.path.join(self.settings["Project Path"], 'Exports', self.settings["Coordinate file"])
+        export_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Exports', self.settings["Export_settings"]["Coordinate file"]
+        )
         bus_data.to_csv(export_path)
         self.logger.debug('Bus coordinate file exported to: {}'.format(export_path))
         return

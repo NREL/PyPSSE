@@ -20,8 +20,12 @@ class Profile:
         self.neglectYear = neglectYear
         self.Solver = Solver
         self.attrs = self.profile.attrs
-        self.sTime = datetime.datetime.strptime(self.attrs["sTime"].decode(), '%Y-%m-%d %H:%M:%S.%f')
-        self.eTime = datetime.datetime.strptime(self.attrs["eTime"].decode(), '%Y-%m-%d %H:%M:%S.%f')
+        S = self.attrs["sTime"].decode()
+        stime = S if "." in S else S + ".00"
+        E = self.attrs["eTime"].decode()
+        etime = E if "." in E else E + ".00"
+        self.sTime = datetime.datetime.strptime(stime, '%Y-%m-%d %H:%M:%S.%f')
+        self.eTime = datetime.datetime.strptime(etime, '%Y-%m-%d %H:%M:%S.%f')
         self.simRes = self.Solver.GetStepSizeSec()
         self.Time = copy.deepcopy(self.Solver.getTime())
         self.Columns = self.attrs["units"]

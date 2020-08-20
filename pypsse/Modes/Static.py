@@ -11,8 +11,8 @@ from pypsse.Modes.abstract_mode import AbstractMode
 class Static(AbstractMode):
     def __init__(self,psse, dyntools, settings, export_settings, logger):
         super().__init__(psse, dyntools, settings, export_settings, logger)
-        self.time = datetime.datetime.strptime(settings["Start time"], "%m/%d/%Y %H:%M:%S")
-        self.incTime = settings["Step resolution (sec)"]
+        self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
 
     def init(self, bussubsystems):
@@ -33,11 +33,11 @@ class Static(AbstractMode):
         return self.time
 
     def GetStepSizeSec(self):
-        return self.settings["Step resolution (sec)"]
+        return self.settings["Simulation"]["Step resolution (sec)"]
 
     def export(self):
         self.logger.debug('Starting export process. Can take a few minutes for large files')
         excelpath = os.path.join(self.export_path, self.settings["Excel file"])
         achnf = self.dyntools.CHNF(self.outx_path)
         achnf.xlsout(channels='', show=False, xlsfile=excelpath, outfile='', sheet='Sheet1', overwritesheet=True)
-        self.logger.debug('{} export to {}'.format(self.settings["Excel file"], self.export_path))
+        self.logger.debug('{} export to {}'.format(self.settings["Simulation"]["Excel file"], self.export_path))

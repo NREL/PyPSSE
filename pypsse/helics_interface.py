@@ -4,7 +4,6 @@ import os
 class helics_interface:
     def __init__(self, PSSE, settings, logger):
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
-
         self.PSSE = PSSE
         self.logger = logger
         self.settings = settings
@@ -16,18 +15,18 @@ class helics_interface:
 
     def create_federate(self):
         fedinfo = h.helicsCreateFederateInfo()
-        h.helicsFederateInfoSetCoreName(fedinfo, self.settings['Federate name'])
-        h.helicsFederateInfoSetCoreTypeFromString(fedinfo, self.settings['Core type'])
+        h.helicsFederateInfoSetCoreName(fedinfo, self.settings["HELICS"]['Federate name'])
+        h.helicsFederateInfoSetCoreTypeFromString(fedinfo, self.settings["HELICS"]['Core type'])
         h.helicsFederateInfoSetCoreInitString(fedinfo, "--federates=1")
         h.helicsFederateInfoSetTimeProperty(
             fedinfo,
             h.helics_property_time_delta,
-            self.settings["Step resolution (sec)"]
+            self.settings["Simulation"]["Step resolution (sec)"]
         )
         h.helicsFederateInfoSetIntegerProperty(fedinfo, h.helics_property_int_log_level,
-                                               self.settings['Helics logging level'])
+                                               self.settings["HELICS"]['Helics logging level'])
         h.helicsFederateInfoSetFlagOption(fedinfo, h.helics_flag_uninterruptible, True)
-        self.PSSEfederate = h.helicsCreateValueFederate(self.settings['Federate name'], fedinfo)
+        self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], fedinfo)
         return
 
 
@@ -39,7 +38,7 @@ class helics_interface:
                 for bus_id in buses:
                     self.publications[bus_id] = {}
                     for bus_p in self.bus_pubs:
-                        pub =  "{}.bus-{}.{}".format(self.settings['Federate name'], bus_id, bus_p)
+                        pub =  "{}.bus-{}.{}".format(self.settings["HELICS"]['Federate name'], bus_id, bus_p)
                         self.publications[bus_id][pub] = h.helicsFederateRegisterGlobalTypePublication(
                             self.PSSEfederate, pub, 'double', ''
                         )
@@ -49,7 +48,9 @@ class helics_interface:
     def register_subscriptions(self, bus_subsystem_dict):
         self.subscriptions = {}
         sub_data = pd.read_csv(
-            os.path.join(self.settings["Project Path"], 'Case_study', self.settings["Subscriptions file"])
+            os.path.join(
+                self.settings["HELICS"]["Project Path"], 'Case_study', self.settings["HELICS"]["Subscriptions file"]
+            )
         )
         sub_data = sub_data.values
         r,c = sub_data.shape

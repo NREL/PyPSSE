@@ -31,14 +31,16 @@ class pyPSSE_instance:
         self.simStartTime = time.time()
         nBus = 200000
         self.settings = self.read_settings(settinigs_toml_path)
-        export_settings_path = os.path.join(self.settings["Project Path"], 'Settings', 'export_settings.toml')
+        export_settings_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
+        )
         self.export_settings = self.read_settings(export_settings_path)
 
-        log_path = os.path.join(self.settings["Project Path"], 'Logs')
-        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings)
+        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
+        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
         self.logger.debug('Starting PSSE instance')
-        sys.path.append(self.settings["PSSE_path"])
-        os.environ['PATH'] += ';' + self.settings["PSSE_path"]
+        sys.path.append(self.settings["Simulation"]["PSSE_path"])
+        os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
         #** Initialize PSSE modules
         import psse34
@@ -57,7 +59,11 @@ class pyPSSE_instance:
 
         self.initComplete = True
 
-        self.PSSE.case(os.path.join(self.settings["Project Path"], "Case_study", self.settings["Case study"]))
+        self.PSSE.case(
+            os.path.join(self.settings["Simulation"]["Project Path"],
+                         "Case_study",
+                         self.settings["Simulation"]["Case study"])
+        )
         self.raw_data = rd.Reader(self.PSSE, self.settings, self.logger)
 
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
@@ -65,16 +71,14 @@ class pyPSSE_instance:
 
         self.contingencies = self.build_contingencies()
 
-        bokeh_server_proc = None
-
-        if self.settings["Cosimulation mode"]:
+        if self.settings["HELICS"]["Cosimulation mode"]:
             self.hi = helics_interface(self.PSSE, self.settings, self.logger)
             self.hi.create_federate()
             self.publications = self.hi.register_publications(self.bus_subsystems)
-            if self.settings["Create subscriptions"]:
+            if self.settings["HELICS"]["Create subscriptions"]:
                 self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
 
-        if len(self.settings["GIC file"]):
+        if self.settings["Simulation"]["GIC file"]:
             self.network_graph = self.parse_GIC_file()
             self.bus_ids = self.network_graph.nodes.keys()
         else:
@@ -107,10 +111,10 @@ class pyPSSE_instance:
         else:
             self.load_info = None
 
-        if self.settings["Use profile manager"]:
+        if self.settings["Simulation"]["Use profile manager"]:
             self.pm = ProfileManager(None, self.sim, self.settings, self.logger)
             self.pm.setup_profiles()
-        if self.settings["Cosimulation mode"]:
+        if self.settings["HELICS"]["Cosimulation mode"]:
             self.hi.enter_execution_mode()
 
         return
@@ -176,9 +180,12 @@ class pyPSSE_instance:
             else:
                 bokeh_server_proc = None
             self.initialize_loads()
-            self.logger.debug('Running dynamic simulation for time {} sec'.format(self.settings["Simulation time (sec)"]))
-            self.logger.debug('Simulation time step {} sec'.format(self.settings["Step resolution (sec)"]))
-            T = self.settings["Simulation time (sec)"]
+            self.logger.debug('Running dynamic simulation for time {} sec'.format(
+                self.settings["Simulation"]["Simulation time (sec)"])
+            )
+            self.logger.debug(
+                'Simulation time step {} sec'.format(self.settings["Simulation"]["Step resolution (sec)"]))
+            T = self.settings["Simulation"]["Simulation time (sec)"]
             t = 0
             self.test = False
             while True:
@@ -187,7 +194,7 @@ class pyPSSE_instance:
                     T += dT
                 self.pm.update()
                 self.step(t)
-                t += self.settings["Step resolution (sec)"]
+                t += self.settings["Simulation"]["Step resolution (sec)"]
                 if t >= T:
                     break
 
@@ -220,12 +227,12 @@ class pyPSSE_instance:
         ctime = time.time() - self.simStartTime
         self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
         self.sim.step(t)
-        if self.settings["Cosimulation mode"]:
+        if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_bus_voltages(t, bus_subsystem_id=0)
             self.logger.debug('Time requested: {}'.format(t))
             helics_time = self.update_federate_time(t)
             self.logger.debug('Time granted: {}'.format(helics_time))
-            if self.settings["Create subscriptions"]:
+            if self.settings["HELICS"]["Create subscriptions"]:
                 self.update_subscriptions(t)
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)

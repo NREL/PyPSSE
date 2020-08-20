@@ -52,15 +52,25 @@ class AbstractMode:
         self.initialization_complete = False
 
     def init(self, bus_subsystems):
-        self.export_path = os.path.join(self.settings["Project Path"], 'Exports')
-        self.study_case_path = os.path.join(self.settings["Project Path"], 'Case_study', self.settings["Case study"])
-        self.dyr_path = os.path.join(self.settings["Project Path"], 'Case_study', self.settings["Dyr file"])
-        self.outx_path = os.path.join(self.settings["Project Path"], 'Case_study', self.settings["Outx file"])
-        self.snp_file = os.path.join(self.settings["Project Path"], 'Case_study', self.settings["Snp file"])
-        self.rwn_file = os.path.join(self.settings["Project Path"], 'Case_study', self.settings["Rwm file"])
+        self.export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
+        self.study_case_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Case study"]
+        )
+        self.dyr_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Dyr file"]
+        )
+        self.outx_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Export_settings"]["Outx file"]
+        )
+        self.snp_file = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Snp file"]
+        )
+        self.rwn_file = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Rwm file"]
+        )
         self.ext = self.study_case_path.split('.')[1]
 
-        if self.settings["Disable PSSE logging"]:
+        if self.settings["Logging"]["Disable PSSE logging"]:
             self.disable_logging()
 
     def step(self, dt):
@@ -70,10 +80,10 @@ class AbstractMode:
 
     def export(self):
         self.logger.debug('Starting export process. Can take a few minutes for large files')
-        excelpath = os.path.join(self.export_path, self.settings["Excel file"])
+        excelpath = os.path.join(self.export_path, self.settings["Export_settings"]["Excel file"])
         achnf = self.dyntools.CHNF(self.outx_path)
         achnf.xlsout(channels='', show=False, xlsfile=excelpath, outfile='', sheet='Sheet1', overwritesheet=True)
-        self.logger.debug('{} export to {}'.format(self.settings["Excel file"], self.export_path))
+        self.logger.debug('{} export to {}'.format(self.settings["Export_settings"]["Excel file"], self.export_path))
 
     def disable_logging(self):
         self.PSSE.progress_output(islct=6,  filarg='', options=[0, 0])

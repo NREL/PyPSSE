@@ -15,8 +15,10 @@ class ProfileManager:
         self._logger = logger
         self.Solver = Solver
         self.Objects = pypsseObjects
-        self.profileMapping = self.load_data(os.path.join(settings["Project Path"], "Profiles", "Profile_mapping.toml"))
-        filePath = os.path.join(settings["Project Path"], "Profiles", "Profiles.hdf5")
+        self.profileMapping = self.load_data(
+            os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profile_mapping.toml")
+        )
+        filePath = os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profiles.hdf5")
 
         if os.path.exists(filePath):
             self._logger.info("Loading existing h5 store")
