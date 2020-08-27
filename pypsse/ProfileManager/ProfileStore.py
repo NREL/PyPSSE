@@ -16,7 +16,7 @@ class ProfileManager:
         self._logger = logger
         self.Solver = Solver
         self.Objects = pypsseObjects
-
+        self.settings = settings
         filePath = os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profiles.hdf5")
 
         if os.path.exists(filePath):
@@ -37,7 +37,7 @@ class ProfileManager:
         return tomlDict
 
     def setup_profiles(self):
-        mappingPath = os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profile_mapping.toml")
+        mappingPath = os.path.join(self.settings["Simulation"]["Project Path"], "Profiles", "Profile_mapping.toml")
         if os.path.exists(mappingPath):
             self.profileMapping = self.load_data(mappingPath)
             self.Profiles = {}

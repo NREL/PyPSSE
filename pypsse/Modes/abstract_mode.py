@@ -47,7 +47,6 @@ class AbstractMode:
                                 'XG2', 'R02', 'X02', 'RNUTRL', 'XNUTRL'],
                     'tr3dt2': ['RX1-2', 'RX2-3', 'RX3-1', 'YMAGNT', 'ZG1', 'Z01', 'ZG2', 'Z02', 'ZG3', 'Z03', 'ZNUTRL' ]
                 }
-
             }
         self.initialization_complete = False
 
@@ -99,8 +98,9 @@ class AbstractMode:
                 self.logger.debug('"{}" added to the channel file'.format(channel))
                 self.PSSE.chsb(0, 1, [-1, -1, -1, 1, channelID, 0])
 
-    def read_subsystems(self,quantities, subsystem_buses):
+    def read_subsystems(self, quantities, subsystem_buses):
         results = {}
+
         for class_name, vars in quantities.items():
             if class_name in self.func_options:
                 funcs = self.func_options[class_name]
@@ -163,7 +163,6 @@ class AbstractMode:
                                         results = self.add_result(results, q, val, b)
         return results
 
-
     def read(self, quantities, raw_data):
         results = {}
         for class_name, vars in quantities.items():
@@ -213,7 +212,6 @@ class AbstractMode:
                                     if int(b2.replace(' ', '')) != 0:
                                         irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), int(b2), '1 ', v)
                                         results = self.add_result(results, q, val, b)
-
         return results
 
     def add_result(self, results_dict, class_name, value, label):
@@ -225,7 +223,7 @@ class AbstractMode:
 
     def update_object(self, dType, bus, id, values):
         if dType == "Load":
-            ierr = self.PSSE.load_data_5(ibus=int(bus), id=id, **values)
+            ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
         elif dType == "Induction_machine":
             ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
         elif dType == "Machine":
@@ -233,9 +231,9 @@ class AbstractMode:
         elif dType == "Plant":
             ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
         else:
-            ierr = 0
+            ierr = 1
 
         if ierr == 0:
-            self.logger.debug(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated.")
+            self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
         else:
             self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")

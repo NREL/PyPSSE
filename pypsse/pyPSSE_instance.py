@@ -12,18 +12,19 @@
 # import time
 from pypsse.ProfileManager.ProfileStore import ProfileManager
 from pypsse.helics_interface import helics_interface
-import pypsse.simulation_controller as sc
-import pypsse.pyPSSE_logger as Logger
+from pypsse.result_container import container
 from pypsse.Parsers import gic_parser as gp
+import pypsse.simulation_controller as sc
 from pypsse.Parsers import reader as rd
+import pypsse.pyPSSE_logger as Logger
 import pypsse.contingencies as c
-import subprocess
 import pandas as pd
 import numpy as np
+import subprocess
 import os, sys
 import toml
 import time
-from pypsse.result_container import container
+
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path, options=None):
@@ -72,7 +73,9 @@ class pyPSSE_instance:
         self.contingencies = self.build_contingencies()
 
         if self.settings["HELICS"]["Cosimulation mode"]:
-            self.hi = helics_interface(self.PSSE, self.sim, self.settings, self.logger)
+            self.hi = helics_interface(
+                self.PSSE, self.sim, self.settings, self.export_settings, self.bus_subsystems, self.logger
+            )
             self.publications = self.hi.register_publications(self.bus_subsystems)
             if self.settings["HELICS"]["Create subscriptions"]:
                 self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
@@ -191,7 +194,7 @@ class pyPSSE_instance:
                 dT = self.check_contingency_updates(t)
                 if dT:
                     T += dT
-                self.pm.update()
+
                 self.step(t)
                 t += self.settings["Simulation"]["Step resolution (sec)"]
                 if t >= T:
@@ -223,16 +226,19 @@ class pyPSSE_instance:
 
     def step(self, t):
         self.update_contingencies(t)
+        if self.settings["Simulation"]["Use profile manager"]:
+            self.pm.update()
         ctime = time.time() - self.simStartTime
         self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
+        if self.settings["HELICS"]["Cosimulation mode"]:
+            if self.settings["HELICS"]["Create subscriptions"]:
+                self.update_subscriptions()
+                self.logger.debug('Time requested: {}'.format(t))
+                helics_time = self.update_federate_time(t)
+                self.logger.debug('Time granted: {}'.format(helics_time))
         self.sim.step(t)
         if self.settings["HELICS"]["Cosimulation mode"]:
-            self.publish_bus_voltages(t, bus_subsystem_id=0)
-            self.logger.debug('Time requested: {}'.format(t))
-            helics_time = self.update_federate_time(t)
-            self.logger.debug('Time granted: {}'.format(helics_time))
-            if self.settings["HELICS"]["Create subscriptions"]:
-                self.update_subscriptions(t)
+            self.publish_data()
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
@@ -241,44 +247,16 @@ class pyPSSE_instance:
             self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
 
-    def update_subscriptions(self, t):
+    def update_subscriptions(self):
         data = self.hi.subscribe()
-        values = {}
-        for sub_id, info in data.items():
-            bus_subsystem_id = int(info['bus_subsystem_id'])
-            if bus_subsystem_id in self.load_info:
-                bus_id = int(info['bus_id'])
-                if bus_id in self.load_info[bus_subsystem_id]:
-                    load_id = str(info['load_id'])
-                    new_load_id = self.load_info[bus_subsystem_id][bus_id]['Load ID']
-                    if load_id == new_load_id[:-1]:
-                        val_id = '{}.{}.{}'.format(bus_subsystem_id, bus_id, new_load_id)
-                        if val_id not in values:
-                            values[val_id] = {}
-                        values[val_id][info['load_type']] = info['value'] * info['scaler']
-                    else:
-                        self.logger.debug('Not valid load id.')
-                else:
-                    self.logger.debug('Not valid bus id.')
-            else:
-                self.logger.debug('Not valid bus sub system id.')
-
-        for key, info in values.items():
-            bus_sub, bus_id, load_id = [x for x in key.split('.')]
-            if info['P'] != 0:
-                ierr = self.PSSE.load_chng_5(ibus=int(bus_id), id=load_id,
-                                             realar=[abs(info['P']), abs(info['Q']), 0, 0, 0, 0, 0, 0])
-                if ierr:
-                    self.logger.debug('ERROR: Load not updated')
         return
 
     def update_federate_time(self, t):
         grantedtime = self.hi.request_time(t)
         return grantedtime
 
-    def publish_bus_voltages(self, t, bus_subsystem_id):
-        bus_data = self.get_bus_data(t, bus_subsystem_id)
-        self.hi.publish(bus_data)
+    def publish_data(self):
+        self.hi.publish()
         return
 
     def get_bus_data(self, t, bus_subsystem_id):

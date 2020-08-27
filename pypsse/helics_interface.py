@@ -1,3 +1,4 @@
+from pypsse.ProfileManager.common import PROFILE_VALIDATION
 import pandas as pd
 import helics as h
 import os
@@ -6,11 +7,13 @@ class helics_interface:
     n_states = 5
     init_state = 1
 
-    def __init__(self, PSSE, sim, settings, logger):
+    def __init__(self, PSSE, sim, settings, export_settings, bus_subsystems, logger):
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
         self.settings = settings
+        self.export_settings = export_settings
+        self.bus_subsystems = bus_subsystems
         self.sim = sim
         self.itr = 0
         self.c_seconds = 0
@@ -19,7 +22,9 @@ class helics_interface:
         self._co_convergance_error_tolerance = settings['HELICS']['Error tolerance']
         self._co_convergance_max_iterations = settings['HELICS']['Max co-iterations']
         self.create_federate()
-
+        self.subsystem_info = []
+        self.publications = {}
+        self.subscriptions = {}
         return
 
     def enter_execution_mode(self):
@@ -42,59 +47,112 @@ class helics_interface:
         self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
         return
 
-
     def register_publications(self, bus_subsystems):
         self.publications = {}
-        for bus_subsystem_id in self.settings['bus_subsystems']["publish_subsystems"]:
-            if bus_subsystem_id in bus_subsystems:
-                buses = bus_subsystems[bus_subsystem_id]
-                for bus_id in buses:
-                    self.publications[bus_id] = {}
-                    for bus_p in self.bus_pubs:
-                        pub =  "{}.bus-{}.{}".format(self.settings["HELICS"]['Federate name'], bus_id, bus_p)
-                        self.publications[bus_id][pub] = h.helicsFederateRegisterGlobalTypePublication(
-                            self.PSSEfederate, pub, 'double', ''
+        self.pub_struc = []
+        for publicationDict in self.settings['HELICS']["Publications"]:
+
+            bus_subsystem_ids = publicationDict["bus_subsystems"]
+            if not set(bus_subsystem_ids).issubset(self.bus_subsystems):
+                raise Exception(f"One or more invalid bus subsystem ID pass in {bus_subsystem_ids}."
+                                f"Valid subsystem IDs are  '{list(self.bus_subsystems.keys())}'.")
+
+            elmClass = publicationDict["class"]
+            if elmClass not in self.export_settings:
+                raise Exception(f"'{elmClass}' is not a valid class of elements. "
+                                f"Valid fields are: {list(self.export_settings.keys())}")
+
+            properties = publicationDict["properties"]
+            if not set(properties).issubset(self.export_settings[elmClass]):
+                raise Exception(
+                    f"One or more publication property defined for class '{elmClass}' is invalid. "
+                    f"Valid properties for class '{elmClass}' are '{list(self.export_settings[elmClass].keys())}'"
+                )
+
+            bus_cluster = []
+            for bus_subsystem_id in bus_subsystem_ids:
+                bus_cluster.extend([str(x) for x in bus_subsystems[bus_subsystem_id]])
+            self.pub_struc.append([{elmClass: properties}, bus_cluster])
+            temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
+            temp_res = self.get_restructured_results(temp_res)
+
+            for cName, elmInfo in temp_res.items():
+                for Name, vInfo in elmInfo.items():
+                    for pName, val in vInfo.items():
+                        pub_tag = "{}.{}.{}.{}".format(
+                            self.settings["HELICS"]['Federate name'],
+                            cName,
+                            Name,
+                            pName
                         )
-                        self.logger.debug("Publication registered: {}".format(pub))
+                        dtype_matched = True
+                        if isinstance(val, float):
+                            self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
+                                self.PSSEfederate, pub_tag, 'double', '')
+                        elif isinstance(val, complex):
+                            self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
+                                self.PSSEfederate, pub_tag, 'complex', '')
+                        elif isinstance(val, int):
+                            self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
+                                self.PSSEfederate, pub_tag, 'integer', '')
+                        elif isinstance(val, list):
+                            self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
+                                self.PSSEfederate, pub_tag, 'vector', '')
+                        elif isinstance(val, str):
+                            self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
+                                self.PSSEfederate, pub_tag, 'string', '')
+                        else:
+                            dtype_matched = False
+                            self.logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
+                        if dtype_matched:
+                            self.logger.debug("Publication registered: {}".format(pub_tag))
+
         return
 
     def register_subscriptions(self, bus_subsystem_dict):
         self.subscriptions = {}
         sub_data = pd.read_csv(
             os.path.join(
-                self.settings["HELICS"]["Project Path"], 'Case_study', self.settings["HELICS"]["Subscriptions file"]
+                self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
             )
         )
-        sub_data = sub_data.values
-        r,c = sub_data.shape
+        self.psse_dict = {}
+        for ix, row in sub_data.iterrows():
+            if row["element_type"] not in PROFILE_VALIDATION:
+                raise Exception(f"Subscription file error: {row['element_type']} not a valid element_type."
+                                f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}")
 
-        for row in range(r):
-            bus_subsystem_id = sub_data[row,0]
-            bus_id = sub_data[row, 1]
-            load_id = sub_data[row, 2]
-            load_type = sub_data[row, 3]
-            sub_tag = sub_data[row, 4]
-            scaler = sub_data[row, 5]
-            for subsystem_id, buses in bus_subsystem_dict.iteritems():
-                if subsystem_id == bus_subsystem_id:
-                    for bus in buses:
-                        if bus == bus_id:
-                            self.subscriptions[sub_tag] = {
-                                'bus_subsystem_id' : bus_subsystem_id,
-                                'bus_id': bus_id,
-                                'load_id': load_id,
-                                'load_type': load_type,
-                                'scaler' : scaler,
-                                'dStates': [self.init_state] * self.n_states,
-                                'subscription':  h.helicsFederateRegisterSubscription(self.PSSEfederate, sub_tag, ""),
-                            }
-                            self.logger.debug("Bus subsystems {}'s bus {}'s load {} has subscribed to {}".format(
-                                bus_subsystem_id,  bus_id, load_id, sub_tag
-                            ))
+            if row['property'] not in PROFILE_VALIDATION[row["element_type"]]:
+                raise Exception(
+                    f"Subscription file error: {row['property']} is not valid. "
+                    f"Valid subtypes for '{row['element_type']}' are: {PROFILE_VALIDATION[row['element_type']]}")
+
+            element_id = str(row['element_id'])
+            self.subscriptions[row['sub_tag']] = {
+                'bus': row['bus'],
+                'element_id': element_id,
+                'element_type': row['element_type'],
+                'property': row['property'],
+                'scaler' : row['scaler'],
+                'dStates': [self.init_state] * self.n_states,
+                'subscription': h.helicsFederateRegisterSubscription(self.PSSEfederate, row['sub_tag'], ""),
+            }
+
+            self.logger.debug("{} property of element {}.{} at bus {} has subscribed to {}".format(
+                row['property'], row['element_type'], row['element_id'], row['bus'], row['sub_tag']
+            ))
+
+            if row['bus'] not in self.psse_dict:
+                self.psse_dict[row['bus']] = {}
+            if row['element_type'] not in self.psse_dict[row['bus']]:
+                self.psse_dict[row['bus']][row['element_type']] = {}
+            if element_id not in self.psse_dict[row['bus']][row['element_type']]:
+                self.psse_dict[row['bus']][row['element_type']][element_id] = {}
+            if row['property'] not in self.psse_dict[row['bus']][row['element_type']][element_id]:
+                self.psse_dict[row['bus']][row['element_type']][element_id][row['property']] = 0
         return
 
     def request_time(self, t):
-        error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])
         r_seconds = self.sim.GetTotalSeconds()  # - self._dss_solver.GetStepResolutionSeconds()
         if not self.settings['HELICS']['Iterative Mode']:
             while self.c_seconds < r_seconds:
@@ -102,6 +160,7 @@ class helics_interface:
             self.logger.info('Time requested: {} - time granted: {} '.format(r_seconds, self.c_seconds))
             return True, self.c_seconds
         else:
+            error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])
             self.c_seconds, iteration_state = h.helicsFederateRequestTimeIterative(
                 self.PSSEfederate,
                 r_seconds,
@@ -117,33 +176,72 @@ class helics_interface:
                 return True, self.c_seconds
         return currenttime
 
-    def publish(self, all_bus_data):
-        all_bus_data = pd.DataFrame(all_bus_data, columns=self.bus_pubs)
-        for r in all_bus_data.index:
-            bus_data = all_bus_data.loc[r]
-            bus_id = bus_data['bus_id']
-            for c in bus_data.index:
-                data = bus_data[c]
-                bus_property_names = self.publications[bus_id].keys()
-                check = [True if c in x else False for x in bus_property_names]
-                pub_id = check.index(True)
-                pub_id = bus_property_names[pub_id]
-                pub = self.publications[bus_id][pub_id]
-                h.helicsPublicationPublishDouble(pub, data)
-                self.logger.debug('pyPSSE: published "{}" for tag: {}'.format(data, pub_id))
+    def get_restructured_results(self, results):
+        results_dict = {}
+        for k, d in results.items():
+            c, p = k.split("_")
+            if c not in results_dict:
+                results_dict[c] = {}
+            for n, v in d.items():
+                n = n.replace(" ", "")
+                if n not in results_dict[c]:
+                    results_dict[c][n] = {p:v}
+        return results_dict
+
+    def publish(self):
+        for quantities, subsystem_buses in self.pub_struc:
+            temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
+            temp_res = self.get_restructured_results(temp_res)
+            for cName, elmInfo in temp_res.items():
+                for Name, vInfo in elmInfo.items():
+                    for pName, val in vInfo.items():
+                        pub_tag = "{}.{}.{}.{}".format(self.settings["HELICS"]['Federate name'], cName, Name, pName)
+                        pub = self.publications[pub_tag]
+                        dtype_matched = True
+                        if isinstance(val, float):
+                            h.helicsPublicationPublishDouble(pub, val)
+                        elif isinstance(val, complex):
+                            h.helicsPublicationPublishComplex(pub, val.real, val.imag)
+                        elif isinstance(val, int):
+                            h.helicsPublicationPublishInteger(pub, val)
+                        elif isinstance(val, list):
+                            h.helicsPublicationPublishVector(pub, val)
+                        elif isinstance(val, str):
+                            h.helicsPublicationPublishString(pub, val)
+                        else:
+                            dtype_matched = False
+                            self.logger.warning(f"Publication {pub_tag} not updated")
+                        if dtype_matched:
+                            self.logger.debug(f"Publication {pub_tag} published: {val}")
         return
 
     def subscribe(self):
         for sub_tag, sub_data in self.subscriptions.items():
             sub_data['value'] = h.helicsInputGetDouble(sub_data['subscription'])
-            self.logger.debug('pyPSSE: Data received {} for tag {}'.format(sub_data['value'], sub_tag))
+            self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = sub_data['value']
+            self.logger.debug('Data received {} for tag {}'.format(sub_data['value'], sub_tag))
             if self.settings['HELICS']['Iterative Mode']:
                 if self.c_seconds != self.c_seconds_old:
                     sub_data['dStates'] = [self.init_state] * self.n_states
                 else:
                     sub_data['dStates'].insert(0, sub_data['dStates'].pop())
+
+        for b, bInfo in self.psse_dict.items():
+            for t , tInfo in bInfo.items():
+                for i , vDict in tInfo.items():
+                    values = {}
+                    for p, v in vDict.items():
+                        ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
+                        values[ppty] = v
+                    self.sim.update_object(t, b, i, values)
+
         self.c_seconds_old = self.c_seconds
         return self.subscriptions
+
+    def fill_missing_values(self, value):
+        idx = [f'realar{PROFILE_VALIDATION[self.dType].index(c) + 1}' for c in self.Columns]
+        x = dict(zip(idx, list(value)))
+        return x
 
     def __del__(self):
         h.helicsFederateFinalize(self.PSSEfederate)

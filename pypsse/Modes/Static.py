@@ -12,6 +12,7 @@ class Static(AbstractMode):
     def __init__(self,psse, dyntools, settings, export_settings, logger):
         super().__init__(psse, dyntools, settings, export_settings, logger)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
 
@@ -36,6 +37,9 @@ class Static(AbstractMode):
                                         PSSE doumentation to know more about error')
     def getTime(self):
         return self.time
+
+    def GetTotalSeconds(self):
+        return (self.time - self._StartTime).total_seconds()
 
     def GetStepSizeSec(self):
         return self.settings["Simulation"]["Step resolution (sec)"]
