@@ -27,10 +27,55 @@ import time
 
 class pyPSSE_instance:
 
-    def __init__(self, settinigs_toml_path, options=None):
+    def __init__(self, settinigs_toml_path='', psse_path=''):
+        
+        
+         #** Initialize PSSE modules
+        if psse_path != '':
+            sys.path.append(psse_path)
+            os.environ['PATH'] += ';' + psse_path
+        else:
+            self.settings = self.read_settings(settinigs_toml_path)
+            sys.path.append(self.settings["PSSE_path"])
+            os.environ['PATH'] += ';' + self.settings["PSSE_path"]
+
+        #** Initialize PSSE modules
+        
+        try:
+            nBus = 200000
+            import psse34
+            import psspy
+            import dyntools
+
+            self.dyntools = dyntools
+            self.PSSE = psspy
+            self.PSSE.psseinit(nBus)
+
+            self.initComplete = True
+        
+        
+            self.message = 'success'
+
+            if settinigs_toml_path != '':
+                self.start_simulation(settinigs_toml_path)
+        
+        
+        except Exception as e:
+            self.logger.error("A valid PSS/E license not found. License may currently be in use.")
+            self.logger.flush()
+            self.logger.close()
+
+            self.message = str(e)
+            raise Exception("A valid PSS/E license not found. License may currently be in use.")
+
+        
+        return
+
+    def start_simulation(self, settinigs_toml_path):
+
         self.hi = None
         self.simStartTime = time.time()
-        nBus = 200000
+        
         self.settings = self.read_settings(settinigs_toml_path)
         export_settings_path = os.path.join(
             self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
@@ -40,25 +85,9 @@ class pyPSSE_instance:
         log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
         self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
         self.logger.debug('Starting PSSE instance')
-        sys.path.append(self.settings["Simulation"]["PSSE_path"])
-        os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
+        
 
         #** Initialize PSSE modules
-        import psse34
-        try:
-            import psspy
-            import dyntools
-        except:
-            self.logger.error("A valid PSS/E license not found. License may currently be in use.")
-            self.logger.flush()
-            self.logger.close()
-            raise Exception("A valid PSS/E license not found. License may currently be in use.")
-
-        self.dyntools = dyntools
-        self.PSSE = psspy
-        self.PSSE.psseinit(nBus)
-
-        self.initComplete = True
 
         self.PSSE.case(
             os.path.join(self.settings["Simulation"]["Project Path"],
@@ -89,6 +118,7 @@ class pyPSSE_instance:
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
         return
+
 
 
     def initialize_loads(self):
@@ -285,6 +315,6 @@ class pyPSSE_instance:
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
     x = pyPSSE_instance(
-        r'C:\NAERM-global\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
+        r'C:\Users\KDUWADI\Box\NAERM_project\New_project\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
     x.init()
     x.run()
