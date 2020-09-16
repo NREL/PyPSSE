@@ -1,0 +1,18 @@
+[[Load.test]]
+"bus" = "152"
+"id" = "1" 
+"interpolate" = true
+
+[[Load.test]]
+"bus" = "154"
+"id" = "2"
+"multiplier" = 2
+"normalize" = true
+ 
+[[Load.test]]
+"bus" = "215"
+"id" = "U1"
+
+[[Machine.test]]
+"bus" = "402"
+"id" = "1"

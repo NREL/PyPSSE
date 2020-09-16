@@ -88,6 +88,7 @@ class pyPSSE_instance:
 
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
+        self.inc_time = True
         return
 
 
@@ -194,9 +195,9 @@ class pyPSSE_instance:
                 dT = self.check_contingency_updates(t)
                 if dT:
                     T += dT
-
                 self.step(t)
-                t += self.settings["Simulation"]["Step resolution (sec)"]
+                if self.inc_time:
+                    t += self.settings["Simulation"]["Step resolution (sec)"]
                 if t >= T:
                     break
 
@@ -234,16 +235,21 @@ class pyPSSE_instance:
             if self.settings["HELICS"]["Create subscriptions"]:
                 self.update_subscriptions()
                 self.logger.debug('Time requested: {}'.format(t))
-                helics_time = self.update_federate_time(t)
+                self.inc_time, helics_time = self.update_federate_time(t)
                 self.logger.debug('Time granted: {}'.format(helics_time))
-        self.sim.step(t)
+
+        if self.inc_time:
+            self.sim.step(t)
+        else:
+            self.sim.resolveStep()
+
         if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_data()
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        if not self.export_settings["Export results using channels"]:
+        if self.inc_time and not self.export_settings["Export results using channels"]:
             self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
 
@@ -252,8 +258,8 @@ class pyPSSE_instance:
         return
 
     def update_federate_time(self, t):
-        grantedtime = self.hi.request_time(t)
-        return grantedtime
+        inc_time, curr_time = self.hi.request_time(t)
+        return inc_time, curr_time
 
     def publish_data(self):
         self.hi.publish()
