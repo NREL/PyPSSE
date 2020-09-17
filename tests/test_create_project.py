@@ -2,6 +2,7 @@ import os
 import toml
 import tempfile
 import pytest
+import check_license
 from pypsse.pypsse_project import pypsse_project
 from pypsse.pyPSSE_instance import pyPSSE_instance
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
@@ -11,7 +12,7 @@ PROJECT_CREATION_SETTINGS = {
         "export_settings_file": None,
         "psse_project_folder": "./tests/data/psse_project",
         "profile_store": "./tests/data/profiles/Profiles.hdf5",
-        "profile_mapping": "./tests/data/profiles/Profile_mapping",
+        "profile_mapping": "./tests/data/profiles/Profile_mapping.toml",
         "overwrite": True,
         "autofill": True,
     }
@@ -19,15 +20,16 @@ PROJECT_CREATION_SETTINGS = {
 TEMPPATH = tempfile.gettempdir()
 TMP_FOLDER = os.path.join(TEMPPATH, "temp")
 PROJECT_NAME = "psse_project"
+
 @pytest.fixture
 def cleanup():
     if os.path.exists(TMP_FOLDER):
         err = os.system('rmdir /S /Q "{}"'.format(TMP_FOLDER))
         assert err == 0, "Error removing temporary project folder"
     yield
-    # if os.path.exists(TMP_FOLDER):
-    #     err = os.system('rmdir /S /Q "{}"'.format(TMP_FOLDER))
-    #     assert err == 0, "Error removing temporary project folder"
+    if os.path.exists(TMP_FOLDER):
+        err = os.system('rmdir /S /Q "{}"'.format(TMP_FOLDER))
+        assert err == 0, "Error removing temporary project folder"
 
 def test_create_project(cleanup):
     os.mkdir(TMP_FOLDER)
@@ -58,4 +60,24 @@ def test_run_sim_static(cleanup):
         x.run()
     else:
         raise Exception(f"'{path}' is not a valid path.")
+    return
+
+def test_run_sim_dynamic(cleanup):
+    test_create_project(None)
+    path = os.path.join(TMP_FOLDER, PROJECT_NAME, "Settings", SIMULATION_SETTINGS_FILENAME)
+    sSettings = toml.load(path)
+    sSettings["Simulation"]["Simulation mode"] = "Dynamic"
+    sSettings["Simulation"]["Use profile manager"] = False
+    with open(path, 'w') as f:
+        toml.dump(sSettings, f)
+    if os.path.exists(path):
+        x = pyPSSE_instance(path)
+        x.init()
+        x.run()
+    else:
+        raise Exception(f"'{path}' is not a valid path.")
+    return
+
+def test_license_availability(cleanup):
+
     return

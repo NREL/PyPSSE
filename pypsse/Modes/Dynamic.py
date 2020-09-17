@@ -6,16 +6,16 @@ class Dynamic(AbstractMode):
 
     def __init__(self,psse, dyntools, settings, export_settings, logger):
         super().__init__(psse, dyntools, settings, export_settings, logger)
-        self.time = datetime.datetime.strptime(settings["Start time"], "%m/%d/%Y %H:%M:%S")
-        self.incTime = settings["Step resolution (sec)"]
+        self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
-        if len(self.settings["Setup files"]):
+        if len(self.settings["Simulation"]["Setup files"]):
             ierr = None
-            for f in self.settings["Setup files"]:
-                setup_path = os.path.join(self.settings["Project Path"], 'Case_study', f)
+            for f in self.settings["Simulation"]["Setup files"]:
+                setup_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', f)
                 ierr = self.PSSE.runrspnsfile(setup_path)
                 if ierr:
                     raise Exception('Error running setup file "{}"'.format(setup_path))
@@ -23,7 +23,7 @@ class Dynamic(AbstractMode):
                     self.logger.debug('Setup file {} sucessfully run'.format(setup_path))
 
         else:
-            if len(self.settings["Rwm file"]):
+            if len(self.settings["Simulation"]["Rwm file"]):
                 self.PSSE.mcre([1, 0], self.rwn_file)
 
             self.convert_load()
@@ -46,8 +46,8 @@ class Dynamic(AbstractMode):
 
             self.PSSE.snap(sfile=self.snp_file)
             # Load user defined models
-            for mdl in self.settings["User models"]:
-                dll_path = os.path.join(self.settings["Project Path"], 'Case_study', mdl)
+            for mdl in self.settings["Simulation"]["User models"]:
+                dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
                 self.PSSE.addmodellibrary(dll_path)
                 self.logger.debug('User defined library added: {}'.format(mdl))
             # Load flow settings
@@ -85,6 +85,15 @@ class Dynamic(AbstractMode):
                 }
             all_bus_ids[id] = load_info
         return all_bus_ids
+
+    def getTime(self):
+        return self.time
+
+    def GetTotalSeconds(self):
+        return (self.time - self._StartTime).total_seconds()
+
+    def GetStepSizeSec(self):
+        return self.settings["Simulation"]["Step resolution (sec)"]
 
     def convert_load(self, busSubsystem= None):
         if self.settings['Loads']['Convert']:

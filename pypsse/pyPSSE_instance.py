@@ -32,6 +32,10 @@ class pyPSSE_instance:
         self.simStartTime = time.time()
         nBus = 200000
         self.settings = self.read_settings(settinigs_toml_path)
+        if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
+            assert self.settings["Simulation"]["Use profile manager"] == False,\
+                "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
+
         export_settings_path = os.path.join(
             self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
         )
@@ -39,23 +43,25 @@ class pyPSSE_instance:
 
         log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
         self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
-        self.logger.debug('Starting PSSE instance')
+        self.logger.debug('Starting pypsse instance')
         sys.path.append(self.settings["Simulation"]["PSSE_path"])
         os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
-        #** Initialize PSSE modules
         import psse34
-        try:
-            import psspy
-            import dyntools
-        except:
-            self.logger.error("A valid PSS/E license not found. License may currently be in use.")
-            self.logger.flush()
-            self.logger.close()
-            raise Exception("A valid PSS/E license not found. License may currently be in use.")
+        import psspy
+        import dyntools
 
         self.dyntools = dyntools
         self.PSSE = psspy
+        try:
+            self.logger.debug('Initializing PSS/E. connecting to license server')
+            ierr = self.PSSE.psseinit(nBus)
+            print(ierr)
+        finally:
+            print("asd")
+            #raise Exception("A valid PSS/E license not found. License may currently be in use.")
+
+
         self.PSSE.psseinit(nBus)
 
         self.initComplete = True

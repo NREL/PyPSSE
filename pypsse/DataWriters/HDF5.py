@@ -80,5 +80,12 @@ class hdf5Writer:
         self.step += 1
 
     def __del__(self):
+        k = list(self.dfs.keys())[0]
+        length = len(self.dfs[k])
+        if self.dfs[k] is not None:
+            for obj_type in self.dfs.keys():
+                for colName in self.dfs[k].columns:
+                    self.store_datasets[obj_type][colName][self.columnLength-length:] = self.dfs[obj_type][colName]
+
         self.store.flush()
         self.store.close()

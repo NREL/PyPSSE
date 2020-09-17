@@ -1,0 +1,74 @@
+[Simulation]
+"Simulation time (sec)" = 25
+"Step resolution (sec)" = 1
+"Start time" = "01/01/2020 00:00:00"
+"Simulation mode" = "Steady-state"
+"Use profile manager" = true
+PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
+"Project Path" = "C:/Users/alatif/Desktop/pypsse-code/examples/static_example"
+"Case study" = "savnw.sav"
+"Raw file" = "savnw.raw"
+"Snp file" = ""
+"Dyr file" = "savnw.dyr"
+"GIC file" = ""
+"Rwm file" = ""
+"Subscriptions file" = "Subscriptions.csv"
+"User models" = [ "",]
+"Setup files" = []
+
+[HELICS]
+"Cosimulation mode" = false
+"Federate name" = "psse"
+"Time delta" = 0.004166667
+"Core type" = "zmq"
+Uninterruptible = true
+"Helics logging level" = 5
+"Create subscriptions" = true
+"Iterative Mode" = false
+"Error tolerance" = 1e-5
+"Max co-iterations" = 15
+
+[Export_settings]
+"Outx file" = "Results.outx"
+"Out file" = "Results.out"
+"Excel file" = "Results.xls"
+"Log file" = "Results.log"
+"Coordinate file" = "Coordinates.csv"
+"NetworkX graph file" = "Graph.gpickle"
+
+[Logging]
+"Disable PSSE logging" = true
+"Logging Level" = "DEBUG"
+"Log to external file" = false
+"Display on screen" = true
+"Clear old log file" = true
+"Pre-configured logging" = false
+
+[Plotting]
+"Enable dynamic plots" = false
+columns = 2
+
+[GIC_export_settings]
+"include substation connections" = false
+"include transfomer connections" = false
+"include branch connections" = true
+
+[bus_subsystems]
+from_file = false
+bus_file = ""
+bus_subsystem_list = []
+publish_subsystems = [ 0,]
+
+[Loads]
+Convert = false
+
+[Generators]
+"Missing machine model" = 1
+
+[Loads.active_load]
+"% constant current" = 50.0
+"% constant admittance" = 50.0
+
+[Loads.reactive_load]
+"% constant current" = 50.0
+"% constant admittance" = 50.0
