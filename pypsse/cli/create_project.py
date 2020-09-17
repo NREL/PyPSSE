@@ -1,6 +1,6 @@
 """CLI to create a new PyPSSE project"""
 
-from pypsse.pyPSSE_project import pyPSSE_project
+from pypsse.pypsse_project import pypsse_project
 import click
 import toml
 import os
@@ -65,7 +65,7 @@ def create_project(path=None, project=None, psse_project_folder=None, simulation
         sSettings = toml.load(simulation_file) if simulation_file else {}
         eSettings = toml.load(export_settings_file) if export_settings_file else {}
         #TODO: Validate settings
-        a = pyPSSE_project()
+        a = pypsse_project()
         a.create(
             path,
             project,

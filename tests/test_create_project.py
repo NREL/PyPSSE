@@ -1,14 +1,14 @@
 import os
 import toml
 import tempfile
-import shutil
 import pytest
-from pypsse.pyPSSE_project import pyPSSE_project
+from pypsse.pypsse_project import pypsse_project
+from pypsse.pyPSSE_instance import pyPSSE_instance
+from pypsse.common import SIMULATION_SETTINGS_FILENAME
 
 PROJECT_CREATION_SETTINGS = {
         "simulation_file": None,
         "export_settings_file": None,
-        "project": 'pypsse_test_project',
         "psse_project_folder": "./tests/data/psse_project",
         "profile_store": "./tests/data/profiles/Profiles.hdf5",
         "profile_mapping": "./tests/data/profiles/Profile_mapping",
@@ -17,25 +17,28 @@ PROJECT_CREATION_SETTINGS = {
     }
 
 TEMPPATH = tempfile.gettempdir()
-PATH = os.path.join(TEMPPATH, "test_project_psse")
+TMP_FOLDER = os.path.join(TEMPPATH, "temp")
+PROJECT_NAME = "psse_project"
 @pytest.fixture
-def pypsse_project():
-    if os.path.exists(PATH):
-        shutil.rmtree(PATH)
+def cleanup():
+    if os.path.exists(TMP_FOLDER):
+        err = os.system('rmdir /S /Q "{}"'.format(TMP_FOLDER))
+        assert err == 0, "Error removing temporary project folder"
     yield
-    if os.path.exists(PATH):
-        shutil.rmtree(PATH)
+    # if os.path.exists(TMP_FOLDER):
+    #     err = os.system('rmdir /S /Q "{}"'.format(TMP_FOLDER))
+    #     assert err == 0, "Error removing temporary project folder"
 
-
-def test_create_project():
+def test_create_project(cleanup):
+    os.mkdir(TMP_FOLDER)
     settings = PROJECT_CREATION_SETTINGS
     sSettings = toml.load(settings['simulation_file']) if settings['simulation_file'] else {}
     eSettings = toml.load(settings['export_settings_file']) if settings['export_settings_file'] else {}
     # TODO: Validate settings
-    a = pyPSSE_project()
+    a = pypsse_project()
     a.create(
-        PATH,
-        settings['project'],
+        TMP_FOLDER,
+        PROJECT_NAME,
         settings['psse_project_folder'],
         sSettings,
         eSettings,
@@ -44,4 +47,15 @@ def test_create_project():
         settings['overwrite'],
         settings['autofill']
     )
+    return
+
+def test_run_sim_static(cleanup):
+    test_create_project(None)
+    path = os.path.join(TMP_FOLDER, PROJECT_NAME, "Settings", SIMULATION_SETTINGS_FILENAME)
+    if os.path.exists(path):
+        x = pyPSSE_instance(path)
+        x.init()
+        x.run()
+    else:
+        raise Exception(f"'{path}' is not a valid path.")
     return

@@ -1,5 +1,5 @@
 Metadata-Version: 1.2
-Name: PyPSSE
+Name: pypsse
 Version: 0.0.1
 Summary: A high-level python interface for PSS/E
 Home-page: http://www.github.com/nrel/pypsse

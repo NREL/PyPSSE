@@ -1,15 +1,16 @@
 from pypsse.ProfileManager.ProfileStore import ProfileManager
 from distutils.dir_util import copy_tree
-from shutil import copyfile
+from shutil import copy
 from pypsse.common import *
 import pandas as pd
 import logging
 import pypsse
+import shutil
 import toml
 import os
 
 
-class pyPSSE_project:
+class pypsse_project:
 
     def __init__(self):
         logging.root.setLevel("DEBUG")
@@ -66,12 +67,15 @@ class pyPSSE_project:
 
         storePath = os.path.join(path, projectName, "Profiles")
         if ProfileStore and os.path.exists(ProfileStore):
-            copyfile(ProfileStore, storePath)
+            try:
+                copy(ProfileStore, storePath)
+            except:
+                raise Exception(os.getcwd(),ProfileStore, storePath)
         else:
             ProfileManager(None, None, uSettings, logging)
 
         if os.path.exists(profile_mapping):
-            copyfile(profile_mapping, storePath)
+            copy(profile_mapping, storePath)
         else:
             #TODO: auto generate mapping file from bus subsystem files
             with open(os.path.join(storePath, DEFAULT_PROFILE_MAPPING_FILENAME), "w") as f:
@@ -129,7 +133,8 @@ class pyPSSE_project:
             copy_tree(PSSEfolder, os.path.join(path, newPath))
             psseFiles = self._psse_project_file_dict(newPath)
         else:
-            raise Exception(f"PSSE project path does not exist. ({PSSEfolder})")
+            print(os.getcwd())
+            raise Exception(f"PSSE project path does not exist. ({PSSEfolder}) {os.getcwd()}")
         return psseFiles
 
     def _update_settings(self, settings, exportSettings):
@@ -150,7 +155,8 @@ class pyPSSE_project:
     def _create_folders(self, path, projectName, overwrite):
         projectPath = os.path.join(path, projectName)
         if os.path.exists(projectPath) and overwrite:
-            os.remove(projectPath)
+            os.system('rmdir /S /Q "{}"'.format(projectPath))
+            #os.remove(projectPath)
         elif os.path.exists(projectPath) and not overwrite:
             raise Exception(f"Project already exists. Set 'overwrite' to true to overwrite existing project.")
 
@@ -159,10 +165,10 @@ class pyPSSE_project:
             self.makeDIR(os.path.join(projectPath, f))
 
     def makeDIR(self, path):
-        try:
+        #try:
             os.mkdir(path)
-        except OSError:
-            raise Exception("Creation of the directory %s failed" % path)
+       # except OSError:
+       #     raise Exception(f"Creation of the directory {path} failed; {OSError}")
 
 # a = pyPSSE_project()
 # a.create(

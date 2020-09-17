@@ -17,6 +17,12 @@ pypsse/pyPSSE_logger.py
 pypsse/pyPSSE_project.py
 pypsse/result_container.py
 pypsse/simulation_controller.py
+pypsse.egg-info/PKG-INFO
+pypsse.egg-info/SOURCES.txt
+pypsse.egg-info/dependency_links.txt
+pypsse.egg-info/entry_points.txt
+pypsse.egg-info/requires.txt
+pypsse.egg-info/top_level.txt
 pypsse/Modes/Dynamic.py
 pypsse/Modes/Static.py
 pypsse/Modes/__init__.py
