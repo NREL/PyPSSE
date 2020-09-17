@@ -1,8 +1,8 @@
 import os
+import sys
 import toml
-import tempfile
 import pytest
-import check_license
+import tempfile
 from pypsse.pypsse_project import pypsse_project
 from pypsse.pyPSSE_instance import pyPSSE_instance
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
@@ -79,5 +79,10 @@ def test_run_sim_dynamic(cleanup):
     return
 
 def test_license_availability(cleanup):
-
+    example_path = "./examples/static_example"
+    export_path = os.path.join(example_path, "Exports")
+    python_path = sys.executable
+    cmd = f'{python_path} tests\check_license.py {example_path}'
+    reply = os.system(cmd)
+    assert len(os.listdir(export_path)) > 0, "Example failed to run license not available"
     return

@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4fd8646-4606-4f31-ae93-103092bf18e1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypsse/DataWriters/HDF5.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypsse/DataWriters/HDF5.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypsse/Modes/Dynamic.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypsse/Modes/Dynamic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypsse/pyPSSE_instance.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypsse/pyPSSE_instance.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/common.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/data/profiles/Profile_mapping.toml" beforeDir="false" afterPath="$PROJECT_DIR$/tests/data/profiles/Profile_mapping.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/static_example/Exports/Simulation_results.hdf5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/check_license.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/check_license.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_create_project.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_create_project.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_run_project.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/test_create_project.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="77" column="57" lean-forward="true" selection-start-line="72" selection-start-column="4" selection-end-line="77" selection-end-column="57" />
+            <state relative-caret-position="178">
+              <caret line="87" column="10" lean-forward="true" selection-start-line="87" selection-start-column="10" selection-end-line="87" selection-end-column="10" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -31,11 +26,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/check_license.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
+            <state relative-caret-position="206">
+              <caret line="15" column="3" selection-start-line="15" selection-start-column="3" selection-end-line="24" selection-end-column="11" />
+              <folding>
+                <element signature="e#0#50#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -43,8 +41,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pypsse/pyPSSE_instance.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="924">
-              <caret line="44" column="84" selection-start-line="44" selection-start-column="84" selection-end-line="44" selection-end-column="84" />
+            <state relative-caret-position="416">
+              <caret line="302" selection-start-line="296" selection-end-line="302" />
               <folding>
                 <element signature="e#132#193#0" expanded="true" />
               </folding>
@@ -184,14 +182,14 @@
         <option value="$PROJECT_DIR$/pypsse/DataWriters/HDF5.py" />
         <option value="$PROJECT_DIR$/pypsse/Modes/Dynamic.py" />
         <option value="$PROJECT_DIR$/pypsse/pyPSSE_instance.py" />
-        <option value="$PROJECT_DIR$/tests/test_create_project.py" />
         <option value="$PROJECT_DIR$/tests/check_license.py" />
+        <option value="$PROJECT_DIR$/tests/test_create_project.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-1569" />
-    <option name="y" value="-22" />
+    <option name="x" value="-1522" />
+    <option name="y" value="224" />
     <option name="width" value="1341" />
     <option name="height" value="832" />
   </component>
@@ -391,15 +389,15 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1928" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-1522" y="224" width="1341" height="832" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15700738" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info id="Structure" order="0" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="1" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="2" visible="true" weight="0.22870299" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.032822758" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49841937" visible="true" weight="0.5200433" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49841937" visible="true" weight="0.43776825" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -747,16 +745,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pypsse/pyPSSE_instance.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="924">
-          <caret line="44" column="84" selection-start-line="44" selection-start-column="84" selection-end-line="44" selection-end-column="84" />
-          <folding>
-            <element signature="e#132#193#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/common.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
@@ -767,20 +755,33 @@
     <entry file="file://$PROJECT_DIR$/tests/test_create_profile.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_create_project.py">
+    <entry file="file://$PROJECT_DIR$/pypsse/pyPSSE_instance.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="77" column="57" lean-forward="true" selection-start-line="72" selection-start-column="4" selection-end-line="77" selection-end-column="57" />
+        <state relative-caret-position="416">
+          <caret line="302" selection-start-line="296" selection-end-line="302" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#132#193#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/check_license.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
+        <state relative-caret-position="206">
+          <caret line="15" column="3" selection-start-line="15" selection-start-column="3" selection-end-line="24" selection-end-column="11" />
+          <folding>
+            <element signature="e#0#50#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_create_project.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="87" column="10" lean-forward="true" selection-start-line="87" selection-start-column="10" selection-end-line="87" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
