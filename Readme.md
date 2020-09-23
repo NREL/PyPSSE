@@ -1,10 +1,13 @@
-﻿# Welcome to the PyPSSE Repository!
+﻿## :blush: Welcome to the PyPSSE Repository
 
-# Contact Information
-* [Aadil Latif](mailto:aadil.latif@nrel.gov)
-* [Kapil Duwadi](mailto:kapil.duwadi@nrel.gov)
+> A python wrapper around psspy (python API for PSSE simulator) to perform
+> time series powerflow and dynamic simulation for power system fault
 
-## Setup 
+### :email: Contact Information
+* :snowman: [Aadil Latif](mailto:aadil.latif@nrel.gov)
+* :snowman: [Kapil Duwadi](mailto:kapil.duwadi@nrel.gov)
+
+### :computer: Setup 
 
 1. Clone this repository
 2. Open up a Anaconda command prompt and execute command `set CONDA_FORCE_32BIT=1`.
@@ -12,7 +15,7 @@
 4. Activate environmnet by executing `conda activate <name>`
 5. From the cloned PyPSSE directory execute command `python install -e.` to install PyPSSE in the same environment
 
-## Testing repository
+### :syringe: Testing repository
 1. Activate the environment
 2. Execute command `pytest` from the cloned repository
 
