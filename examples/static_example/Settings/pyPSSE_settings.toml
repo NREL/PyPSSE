@@ -5,7 +5,7 @@
 "Simulation mode" = "Steady-state"
 "Use profile manager" = true
 PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = "C:/Users/alatif/Desktop/pypsse-code/examples/static_example"
+"Project Path" = "C:/Users/KDUWADI/Desktop/NREL_Projects/NAERM-DOE/DEE_BES_cosim/NewPSSE/PyPSSE/examples/static_example"
 "Case study" = "savnw.sav"
 "Raw file" = "savnw.raw"
 "Snp file" = ""

@@ -27,50 +27,77 @@ import time
 
 class pyPSSE_instance:
 
-    def __init__(self, settinigs_toml_path, options=None):
-        self.hi = None
-        self.simStartTime = time.time()
-        nBus = 200000
-        self.settings = self.read_settings(settinigs_toml_path)
-        if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
-            assert self.settings["Simulation"]["Use profile manager"] == False,\
-                "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
+    def __init__(self, settinigs_toml_path='', psse_path=''):
+      
+        if psse_path != '':
+            sys.path.append(psse_path)
+            os.environ['PATH'] += ';' + psse_path
 
-        export_settings_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
-        )
-        self.export_settings = self.read_settings(export_settings_path)
+        else:
+        
+            self.settings = self.read_settings(settinigs_toml_path)
+            if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
+                assert self.settings["Simulation"]["Use profile manager"] == False,\
+                    "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
 
-        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
-        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
-        self.logger.debug('Starting pypsse instance')
-        sys.path.append(self.settings["Simulation"]["PSSE_path"])
-        os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
-        import psse34
-        import psspy
-        import dyntools
+            sys.path.append(self.settings["Simulation"]["PSSE_path"])
+            os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
-        self.dyntools = dyntools
-        self.PSSE = psspy
+        
         try:
-            self.logger.debug('Initializing PSS/E. connecting to license server')
+            nBus = 200000
+            import psse34
+            import psspy
+            import dyntools
+
+            self.dyntools = dyntools
+            self.PSSE = psspy
+            # self.logger.debug('Initializing PSS/E. connecting to license server')
             ierr = self.PSSE.psseinit(nBus)
+
+            self.PSSE.psseinit(nBus)
+            self.initComplete = True
+            self.message = 'success'
+
+            if settinigs_toml_path != '':
+                self.read_allsettings(settinigs_toml_path)
+                self.start_simulation()
+
             print(ierr)
         finally:
             print("asd")
             #raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
 
-        self.PSSE.psseinit(nBus)
+    def read_allsettings(self,settinigs_toml_path):
 
-        self.initComplete = True
+        self.settings = self.read_settings(settinigs_toml_path)
+        export_settings_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
+        )
+        self.export_settings = self.read_settings(export_settings_path)
+
+
+    def start_simulation(self):
+
+        self.hi = None
+        self.simStartTime = time.time()
+
+        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
+        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
+        self.logger.debug('Starting PSSE instance')
+        
+
+        #** Initialize PSSE modules
 
         self.PSSE.case(
             os.path.join(self.settings["Simulation"]["Project Path"],
                          "Case_study",
                          self.settings["Simulation"]["Case study"])
         )
+        self.logger.debug(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
+
         self.raw_data = rd.Reader(self.PSSE, self.logger)
 
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
@@ -293,6 +320,11 @@ class pyPSSE_instance:
     def update_contingencies(self, t):
         for c_name, c in self.contingencies.items():
             c.update(t)
+
+    def inject_contingencies_external(self,temp):
+        # print("external settings : ", temp , flush=True)
+        contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
+        self.contingencies.update(contingencies)
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
