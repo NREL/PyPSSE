@@ -4,7 +4,7 @@ import os
 import re
 
 try:
-    from setuptools import setup , find_packages
+    from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup
 
@@ -27,22 +27,22 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-setup(name='PyPSSE',
-      version=find_version("PyPSSE", "__init__.py"),
+setup(name='pypsse',
+      version=find_version("pypsse", "__init__.py"),
       description='A high-level python interface for PSS/E',
       author='Aadil Latif',
       author_email='Aadil.Latif@nrel.gov',
       url='http://www.github.com/nrel/pypsse',
       packages=find_packages(),
       install_requires=requirements,
-      package_data={'PyPSSE': ['*.toml']},
+      package_data={'pypsse': ['*.toml']},
         entry_points={
             "console_scripts": [
                 "pypsse=pypsse.cli.pypsse:cli",
             ],
         },
       license='BSD 3 clause',
-      python_requires='==3.7',
+      python_requires='>=3.7',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',

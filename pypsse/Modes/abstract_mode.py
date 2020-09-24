@@ -100,7 +100,6 @@ class AbstractMode:
 
     def read_subsystems(self, quantities, subsystem_buses):
         results = {}
-
         for class_name, vars in quantities.items():
             if class_name in self.func_options:
                 funcs = self.func_options[class_name]

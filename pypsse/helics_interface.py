@@ -174,7 +174,6 @@ class helics_interface:
             else:
                 self.itr = 0
                 return True, self.c_seconds
-        return currenttime
 
     def get_restructured_results(self, results):
         results_dict = {}

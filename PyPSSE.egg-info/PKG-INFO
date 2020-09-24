@@ -1,5 +1,5 @@
 Metadata-Version: 1.2
-Name: PyPSSE
+Name: pypsse
 Version: 0.0.1
 Summary: A high-level python interface for PSS/E
 Home-page: http://www.github.com/nrel/pypsse
@@ -16,4 +16,4 @@ Classifier: Intended Audience :: Science/Research
 Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: BSD License
-Requires-Python: ==3.7
+Requires-Python: >=3.7

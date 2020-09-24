@@ -4,7 +4,7 @@
 "Start time" = "01/01/2020 00:00:00"
 "Simulation mode" = "Steady-state"
 "Use profile manager" = true
-"PSSE_path" = ""
+"PSSE_path" = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
 "Project Path" = ""
 "Case study" = "" 
 "Raw file" =  ""
