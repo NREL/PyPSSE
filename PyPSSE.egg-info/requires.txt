@@ -6,3 +6,10 @@ h5py
 helics
 terminaltables
 networkx
+requests
+pytest
+aiohttp
+aiohttp_swagger
+aiohttp_swagger3
+PyYAML
+aiohttp_cors
