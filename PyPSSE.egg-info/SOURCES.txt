@@ -32,3 +32,4 @@ pypsse/Parsers/gic_parser.py
 pypsse/Parsers/reader.py
 pypsse/api/__init__.py
 pypsse/api/pypsse.py
+pypsse/api/server.py

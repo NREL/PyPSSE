@@ -27,77 +27,51 @@ import time
 
 class pyPSSE_instance:
 
-    def __init__(self, settinigs_toml_path='', psse_path=''):
-      
-        if psse_path != '':
-            sys.path.append(psse_path)
-            os.environ['PATH'] += ';' + psse_path
+    def __init__(self, settinigs_toml_path, options=None):
+        self.initSucess = False
+        self.hi = None
+        self.simStartTime = time.time()
+        nBus = 200000
+        self.settings = self.read_settings(settinigs_toml_path)
+        if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
+            assert self.settings["Simulation"]["Use profile manager"] == False,\
+                "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
 
-        else:
-        
-            self.settings = self.read_settings(settinigs_toml_path)
-            if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
-                assert self.settings["Simulation"]["Use profile manager"] == False,\
-                    "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
+        export_settings_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
+        )
+        self.export_settings = self.read_settings(export_settings_path)
 
+        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
+        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
+        self.logger.debug('Starting pypsse instance')
+        sys.path.append(self.settings["Simulation"]["PSSE_path"])
+        os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
-            sys.path.append(self.settings["Simulation"]["PSSE_path"])
-            os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
+        import psse34
+        import psspy
+        import dyntools
 
-        
+        self.dyntools = dyntools
+        self.PSSE = psspy
         try:
-            nBus = 200000
-            import psse34
-            import psspy
-            import dyntools
-
-            self.dyntools = dyntools
-            self.PSSE = psspy
-            # self.logger.debug('Initializing PSS/E. connecting to license server')
+            self.logger.debug('Initializing PSS/E. connecting to license server')
             ierr = self.PSSE.psseinit(nBus)
-
-            self.PSSE.psseinit(nBus)
-            self.initComplete = True
-            self.message = 'success'
-
-            if settinigs_toml_path != '':
-                self.read_allsettings(settinigs_toml_path)
-                self.start_simulation()
-
             print(ierr)
         finally:
             print("asd")
             #raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
 
-    def read_allsettings(self,settinigs_toml_path):
+        self.PSSE.psseinit(nBus)
 
-        self.settings = self.read_settings(settinigs_toml_path)
-        export_settings_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
-        )
-        self.export_settings = self.read_settings(export_settings_path)
-
-
-    def start_simulation(self):
-
-        self.hi = None
-        self.simStartTime = time.time()
-
-        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
-        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
-        self.logger.debug('Starting PSSE instance')
-        
-
-        #** Initialize PSSE modules
+        self.initComplete = True
 
         self.PSSE.case(
             os.path.join(self.settings["Simulation"]["Project Path"],
                          "Case_study",
                          self.settings["Simulation"]["Case study"])
         )
-        self.logger.debug(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
-
         self.raw_data = rd.Reader(self.PSSE, self.logger)
 
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
@@ -122,6 +96,7 @@ class pyPSSE_instance:
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
         self.inc_time = True
+        self.initSucess = True
         return
 
 
@@ -298,6 +273,41 @@ class pyPSSE_instance:
         self.hi.publish()
         return
 
+    def get_results(self, params):
+        self.exp_vars = self.results.update_export_variables(params)
+        if self.export_settings['Defined bus subsystems only']:
+            curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+        else:
+            curr_results = self.sim.read(self.exp_vars, self.raw_data)
+        print(curr_results)
+        for x in self.restructure_results(curr_results):
+            print(x)
+        return curr_results
+
+    def restructure_results(self, results):
+        cNames = []
+        pNames = []
+        Data = []
+        Bus_ID = []
+        Id = []
+        for class_ppty, vdict in results.items():
+            cName = class_ppty.split("_")[0]
+            pName = class_ppty.split("_")[1]
+            cNames.append(cName)
+            pNames.append(pName)
+            keys = list(vdict.keys())
+            Bus_ID = []
+            Id = []
+            for k in keys:
+                k = str(k)
+                if "_" in k:
+                    Bus_ID.append(k.split("_")[0])
+                    Id.append(k.split("_")[1])
+                else:
+                    Bus_ID.append(k)
+            Data.append(list(vdict.values()))
+        return cNames, pNames, Bus_ID, Id, Data
+
     def get_bus_data(self, t, bus_subsystem_id):
         bus_data_formated = []
         ierr, rarray = self.PSSE.abusint(bus_subsystem_id, 1, 'NUMBER')
@@ -320,11 +330,6 @@ class pyPSSE_instance:
     def update_contingencies(self, t):
         for c_name, c in self.contingencies.items():
             c.update(t)
-
-    def inject_contingencies_external(self,temp):
-        # print("external settings : ", temp , flush=True)
-        contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
-        self.contingencies.update(contingencies)
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')

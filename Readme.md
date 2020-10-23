@@ -18,4 +18,3 @@
 ### :syringe: Testing repository
 1. Activate the environment
 2. Execute command `pytest` from the cloned repository
-

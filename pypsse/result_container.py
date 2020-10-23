@@ -13,7 +13,6 @@ class container:
         self.export_settings = export_settings
         self.settings = settings
         self.results = {}
-
         self.export_vars = {}
         for class_name in export__list:
             variable_dict = export_settings[class_name]
@@ -30,6 +29,23 @@ class container:
         if self.export_settings["Write format"] not in self.BULK_WRITE_MODES:
             self.dataWriter = DataWriter(self.export_path, export_settings["Write format"], timeSteps)
         return
+
+    def update_export_variables(self, params):
+        export__list = ['Buses', 'Branches', 'Loads', 'Induction_generators', 'Machines', 'Fixed_shunts',
+                        'Switched_shunts', 'Transformers']
+        self.results = {}
+        self.export_vars = {}
+        for class_name in export__list:
+            if class_name in params:
+                variable_dict = params[class_name]
+                if isinstance(variable_dict, dict):
+                    for variable_name, is_exporting in variable_dict.items():
+                        if is_exporting:
+                            self.results['{}_{}'.format(class_name, variable_name)] = None
+                            if class_name not in self.export_vars:
+                                self.export_vars[class_name] = []
+                            self.export_vars[class_name].append(variable_name)
+        return self.export_vars
 
     def get_export_variables(self):
         return self.export_vars
