@@ -102,24 +102,27 @@ class PSSE:
                 logger.warning(f"{key} not present in settings.toml file")
 
     def get_results(self, params):
-        print("\n\nGetting results\n\n")
-        params = {
-            "Loads": {
-                "id_fields": ["MVA"]
-            },
-            "Buses": {
-                "id_fields": ["PU", "ANGLE"]
-            },
-        }
+        # print("\n\nGetting results\n\n")
+        # params = {
+        #     "Loads": {
+        #         "id_fields": ["MVA"]
+        #     },
+        #     "Buses": {
+        #         "id_fields": ["PU", "ANGLE"]
+        #     },
+        # }
         settings = {}
         for k, v in params.items():
             settings[k] = {}
             ppties = params[k]["id_fields"]
             for p in ppties:
                 settings[k][p] = True
-        print(settings)
         results = self.psse_obj.get_results(settings)
-        print(results)
+        # TODO: KAPIL you will return the results
+        return results
+
+
+
 
     def solve_step(self):
         self.current_result = self.psse_obj.step(self.time_counter)

@@ -213,26 +213,23 @@ class Handler:
                         Example 1:
                             value:
                                 UUID: 96c21e00-cd3c-4943-a914-14451f5f7ab6
-                                command: open_case
-                                parameters:
-                                    filename: C:/Users/alatif/Desktop/pypsse-code/examples/static_example/Settings/pyPSSE_settings.toml
-                        Example 2:
-                            value:
-                                UUID: 96c21e00-cd3c-4943-a914-14451f5f7ab6
                                 command: init
                                 parameters: {}
-                        Example 3:
+                        Example 2:
                             value:
                                 UUID: 96c21e00-cd3c-4943-a914-14451f5f7ab6
                                 command: solve_step
                                 parameters: {}
-                        Example 4:
+                        Example 3:
                             value:
                                 UUID: 96c21e00-cd3c-4943-a914-14451f5f7ab6
                                 command: get_results
                                 parameters:
-                                    params: none
-        
+                                    params:
+                                        Loads:
+                                            id_fields: ["MVA"]
+                                        Buses:
+                                            id_fields: ["PU", "ANGLE"]
         responses:
             "200":
                 description: Success on placing command.
