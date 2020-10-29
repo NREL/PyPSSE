@@ -36,7 +36,7 @@ class AbstractMode:
                     'macdt2': ["PQ", "O_PQ", "ZSORCE", "XTRAN", "ZPOS", "ZNEG", "ZZERO", "ZGRND"]
                 },
                 'Fixed_shunts': {
-                    'fxsdt2': ["PQ", "O_PQ", "ZSORCE", "XTRAN", "ZPOS", "ZNEG", "ZZERO", "ZGRND"]
+                    'fxsdt2': ["ACT", "O_ACT", "NOM", "O_NOM", "PQZERO", "PQZ", "O_PQZ"]
                 },
                 'Switched_shunts': {
                     'swsdt1': ["VSWHI", "VSWLO", "RMPCT", "BINIT", "O_BINIT"],
@@ -98,6 +98,13 @@ class AbstractMode:
                 self.logger.debug('"{}" added to the channel file'.format(channel))
                 self.PSSE.chsb(0, 1, [-1, -1, -1, 1, channelID, 0])
 
+    # def decode(self, character):
+        
+    #     try:
+    #         return str(character)
+    #     except Exception as e:
+    #         return character.decode('cp1252')
+
     def read_subsystems(self, quantities, subsystem_buses):
         results = {}
         for class_name, vars in quantities.items():
@@ -122,44 +129,48 @@ class AbstractMode:
                                     irr, val = getattr(self.PSSE, func_name)(int(b), id, v, 'ACT')
                                     results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                             elif func_name in ["macdat", 'macdt2']:
-                                id = ''
                                 ierr = self.PSSE.inimac(int(b))
+                                ierr, id = self.PSSE.nxtmac(int(b))
                                 while id != None:
+                                    irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
+                                    results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                                     ierr, id = self.PSSE.nxtmac(int(b))
-                                    irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
-                                    results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                             elif func_name == 'fxsdt2':
-                                id = ''
-                                ierr = self.PSSE.inimac(int(b))
+                                ierr = self.PSSE.inifxs(int(b))
+                                ierr, id = self.PSSE.nxtfxs(int(b))
                                 while id != None:
-                                    ierr, id = self.PSSE.nxtfxs(int(b))
                                     irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
                                     results = self.add_result(results, q, val, '{}_{}'.format(id, b))
+                                    ierr, id = self.PSSE.nxtfxs(int(b))
                             elif func_name == 'swsdt1':
                                 irr, val = getattr(self.PSSE, func_name)(int(b), v)
-                                results = self.add_result(results, q, val, b)
+                                if irr == 0: results = self.add_result(results, q, val, b)
                             elif func_name in ['brndat', 'brndt2', 'brnmsc']:
-                                b1 = ''
-                                ierr = self.PSSE.inibrx(int(b), 3)
+                                ierr = self.PSSE.inibrx(int(b), 1)
+                                ierr, b1, ickt = self.PSSE.nxtbrn(int(b))
                                 while b1 != None:
-                                    ierr, b1, ickt = self.PSSE.nxtbrn(int(b))
                                     irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), ickt, v)
-                                    results = self.add_result(results, q, val, b)
-                            elif func_name in ['xfrdat', 'tr3dt2']:
-                                b1 = ''
-                                ierr = self.PSSE.inibrx(int(b), 3)
-                                while b1 != None:
+                                    if irr == 0:
+                                        results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),str(ickt)))
                                     ierr, b1, ickt = self.PSSE.nxtbrn(int(b))
-                                    if func_name == 'xfrdat':
-                                        irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), '1 ', v)
-                                        results = self.add_result(results, q, val, b)
-                                b1 = ''
-                                ierr = self.PSSE.inibrx(int(b), 3)
+                            elif func_name in ['xfrdat', 'tr3dt2']:
+                                ierr = self.PSSE.inibrx(int(b), 1)
+                                ierr, b1, ickt = self.PSSE.nxtbrn(int(b))
                                 while b1 != None:
-                                    ierr, b1, b2, ickt = self.PSSE.nxtbrn3(int(b))
                                     if func_name == 'xfrdat':
+                                        irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), ickt, v)
+                                        if irr==0:
+                                            results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),str(ickt)))
+                                    ierr, b1, ickt = self.PSSE.nxtbrn(int(b))
+                                ierr = self.PSSE.inibrx(int(b), 1)
+                                ierr, b1, b2, ickt = self.PSSE.nxtbrn3(int(b))
+                                while b1 != None:
+                                    if func_name == 'tr3dt2':
                                         irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), int(b2), ickt, v)
-                                        results = self.add_result(results, q, val, b)
+                                        if irr == 0:
+                                            results = self.add_result(results, q, val, "{}_{}_{}_{}".format(str(b),str(b1), str(b2), str(ickt)))
+                                    ierr, b1, b2, ickt = self.PSSE.nxtbrn3(int(b))
+
         return results
 
     def read(self, quantities, raw_data):

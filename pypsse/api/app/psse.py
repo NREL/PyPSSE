@@ -122,8 +122,6 @@ class PSSE:
         return results
 
 
-
-
     def solve_step(self):
         self.current_result = self.psse_obj.step(self.time_counter)
         self.time_counter += self.psse_obj.settings['Simulation']["Step resolution (sec)"]

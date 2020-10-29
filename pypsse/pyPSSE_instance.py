@@ -27,51 +27,77 @@ import time
 
 class pyPSSE_instance:
 
-    def __init__(self, settinigs_toml_path, options=None):
-        self.initSucess = False
-        self.hi = None
-        self.simStartTime = time.time()
-        nBus = 200000
-        self.settings = self.read_settings(settinigs_toml_path)
-        if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
-            assert self.settings["Simulation"]["Use profile manager"] == False,\
-                "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
+    def __init__(self, settinigs_toml_path='', psse_path=''):
+      
+        if psse_path != '':
+            sys.path.append(psse_path)
+            os.environ['PATH'] += ';' + psse_path
 
-        export_settings_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
-        )
-        self.export_settings = self.read_settings(export_settings_path)
+        else:
+        
+            self.settings = self.read_settings(settinigs_toml_path)
+            if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
+                assert self.settings["Simulation"]["Use profile manager"] == False,\
+                    "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
 
-        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
-        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
-        self.logger.debug('Starting pypsse instance')
-        sys.path.append(self.settings["Simulation"]["PSSE_path"])
-        os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
-        import psse34
-        import psspy
-        import dyntools
+            sys.path.append(self.settings["Simulation"]["PSSE_path"])
+            os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
 
-        self.dyntools = dyntools
-        self.PSSE = psspy
+        
         try:
-            self.logger.debug('Initializing PSS/E. connecting to license server')
+            nBus = 200000
+            import psse34
+            import psspy
+            import dyntools
+
+            self.dyntools = dyntools
+            self.PSSE = psspy
+            # self.logger.debug('Initializing PSS/E. connecting to license server')
             ierr = self.PSSE.psseinit(nBus)
+
+            self.PSSE.psseinit(nBus)
+            self.initComplete = True
+            self.message = 'success'
+
+            if settinigs_toml_path != '':
+                self.read_allsettings(settinigs_toml_path)
+                self.start_simulation()
+
             print(ierr)
         finally:
             print("asd")
             #raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
 
-        self.PSSE.psseinit(nBus)
+    def read_allsettings(self,settinigs_toml_path):
 
-        self.initComplete = True
+        self.settings = self.read_settings(settinigs_toml_path)
+        export_settings_path = os.path.join(
+            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
+        )
+        self.export_settings = self.read_settings(export_settings_path)
+
+
+    def start_simulation(self):
+
+        self.hi = None
+        self.simStartTime = time.time()
+
+        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
+        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
+        self.logger.debug('Starting PSSE instance')
+        
+
+        #** Initialize PSSE modules
 
         self.PSSE.case(
             os.path.join(self.settings["Simulation"]["Project Path"],
                          "Case_study",
                          self.settings["Simulation"]["Case study"])
         )
+        self.logger.debug(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
+
         self.raw_data = rd.Reader(self.PSSE, self.logger)
 
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
@@ -96,7 +122,6 @@ class pyPSSE_instance:
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
         self.inc_time = True
-        self.initSucess = True
         return
 
 
@@ -257,8 +282,8 @@ class pyPSSE_instance:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        if self.inc_time and not self.export_settings["Export results using channels"]:
-            self.results.Update(curr_results, None, t, self.sim.getTime())
+        # if self.inc_time and not self.export_settings["Export results using channels"]:
+        #     self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
 
     def update_subscriptions(self):
@@ -279,34 +304,59 @@ class pyPSSE_instance:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        print(curr_results)
-        for x in self.restructure_results(curr_results):
-            print(x)
-        return curr_results
+        #print(curr_results)
+        class_name = list(params.keys())[0]
+        #for x in self.restructure_results(curr_results, class_name):
+            #print(x)
+        restruct_results = self.restructure_results(curr_results, class_name)
+        return curr_results, restruct_results
 
-    def restructure_results(self, results):
-        cNames = []
+    def restructure_results(self, results, class_name):
+        #cNames = []
         pNames = []
         Data = []
         Bus_ID = []
         Id = []
+        ckt_id = []
+        to_bus = []
+        to_bus2 = []
+        print(results)
         for class_ppty, vdict in results.items():
-            cName = class_ppty.split("_")[0]
-            pName = class_ppty.split("_")[1]
-            cNames.append(cName)
-            pNames.append(pName)
-            keys = list(vdict.keys())
-            Bus_ID = []
-            Id = []
-            for k in keys:
-                k = str(k)
-                if "_" in k:
-                    Bus_ID.append(k.split("_")[0])
-                    Id.append(k.split("_")[1])
-                else:
-                    Bus_ID.append(k)
-            Data.append(list(vdict.values()))
-        return cNames, pNames, Bus_ID, Id, Data
+            if len(class_ppty.split("_"))==3:
+                cName = class_ppty.split("_")[0] + '_' + class_ppty.split("_")[1] 
+                pName = class_ppty.split("_")[2]
+            else:
+                cName = class_ppty.split("_")[0]
+                pName = class_ppty.split("_")[1]
+            if cName == class_name:
+                #cNames.append(cName)
+                pNames.append(pName)
+                keys = list(vdict.keys())
+                Bus_ID = []
+                ckt_id = []
+                Id = []
+                to_bus = []
+                to_bus2 = []
+
+                for k in keys:
+                    k = str(k)
+                    if "_" in k:
+                        if len(k.split('_'))==2:
+                            Bus_ID.append(k.split("_")[1])
+                            Id.append(k.split("_")[0])
+                        if len(k.split('_'))==3:
+                            Bus_ID.append(k.split("_")[0])
+                            ckt_id.append(k.split("_")[2])
+                            to_bus.append(k.split("_")[1])
+                        if len(k.split('_'))==4:
+                            Bus_ID.append(k.split("_")[0])
+                            ckt_id.append(k.split("_")[3])
+                            to_bus.append(k.split("_")[1])
+                            to_bus2.append(k.split("_")[2])
+                    else:
+                        Bus_ID.append(k)
+                Data.append(list(vdict.values()))
+        return pNames, Bus_ID, Id, to_bus, to_bus2, ckt_id, Data
 
     def get_bus_data(self, t, bus_subsystem_id):
         bus_data_formated = []
