@@ -24,6 +24,7 @@ import subprocess
 import os, sys
 import toml
 import time
+import shutil
 
 class pyPSSE_instance:
 
@@ -70,6 +71,13 @@ class pyPSSE_instance:
             #raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
 
+    def dump_settings(self, dest_dir):
+
+        setting_toml_file = os.path.join(os.path.dirname(__file__), 'defaults', 'pyPSSE_settings.toml' )
+        export_toml_file = os.path.join(os.path.dirname(__file__), 'defaults', 'export_settings.toml' )
+        shutil.copy(setting_toml_file, dest_dir)
+        shutil.copy(export_toml_file, dest_dir)
+    
     def read_allsettings(self,settinigs_toml_path):
 
         self.settings = self.read_settings(settinigs_toml_path)
@@ -281,7 +289,8 @@ class pyPSSE_instance:
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
-            curr_results = self.sim.read(self.exp_vars, self.raw_data)
+            curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
+            #curr_results = self.sim.read(self.exp_vars, self.raw_data)
         # if self.inc_time and not self.export_settings["Export results using channels"]:
         #     self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
@@ -303,8 +312,9 @@ class pyPSSE_instance:
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
-            curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        #print(curr_results)
+            curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
+            #curr_results = self.sim.read(self.exp_vars, self.raw_data)
+        
         class_name = list(params.keys())[0]
         #for x in self.restructure_results(curr_results, class_name):
             #print(x)
@@ -320,7 +330,7 @@ class pyPSSE_instance:
         ckt_id = []
         to_bus = []
         to_bus2 = []
-        print(results)
+        #print(results)
         for class_ppty, vdict in results.items():
             if len(class_ppty.split("_"))==3:
                 cName = class_ppty.split("_")[0] + '_' + class_ppty.split("_")[1] 
