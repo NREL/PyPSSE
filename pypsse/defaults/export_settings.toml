@@ -13,6 +13,37 @@
 "EVLMHI" = false
 "EVLMLO" = false
 
+[Areas]
+"LOAD" = false
+"LOADID" = false
+"LGDN" = false
+"LDGNLD" = false
+"GEN" = false
+"AREANAME" = false
+"AREANUMBER" = false
+
+[Zones]
+"LOAD" = false
+"LOADID" = false
+"LGDN" = false
+"LDGNLD" = false
+"GEN" = false
+"ZONENAME" = false
+"ZONENUMBER" = false
+
+[DCtransmissionlines]
+"DCLINENAME" = false
+"MDC" = false
+"RECT" = false
+"INV" = false
+"METER" = false
+"NBR" = false
+"NBI" = false
+"ICR" = false
+"ICI" = false
+"NDR" = false
+"NDI" = false
+
 [Loads]
 "MVA" = false 
 "IL" = false 

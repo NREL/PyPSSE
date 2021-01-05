@@ -44,7 +44,8 @@ class Dynamic(AbstractMode):
             if self.export_settings["Export results using channels"]:
                 self.setup_channels()
 
-            self.PSSE.snap(sfile=self.snp_file)
+            if self.snp_file.endswith('.snp'):
+                self.PSSE.snap(sfile=self.snp_file)
             # Load user defined models
             for mdl in self.settings["Simulation"]["User models"]:
                 dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)

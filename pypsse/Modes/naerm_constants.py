@@ -45,6 +45,21 @@ NAERM_TO_PYPSSE  ={
         'MW' : ["P"],
         'Mvar' : ["Q"],
         'Status' : ["STATUS"]
+    },
+    "Areas" : {
+        "TotalGenMW" : ["GEN", "REAL"],
+        "TotalGenMvar" : ["GEN", "IMAG"]
+    },
+    "Zones" : {
+        "TotalGenMW" : ["GEN", "REAL"],
+        "TotalGenMvar" : ["GEN", "IMAG"]
+    },
+    "Fixed_shunts" : {
+        "ShuntMW" : ["ACT", "REAL"],
+        "ShuntMvar" : ["ACT", "IMAG"]
+    },
+    "Loads" : {
+        "LoadMW" : ["MVA", "REAL"]
     }
 }
 
@@ -76,8 +91,7 @@ def naerm_decorator(func):
                                 complex_conversion_dict[class_name] = {}
                             complex_conversion_dict[class_name][v] = naerm_element_array[1]
                 quantities[class_name] = new_vars
-
-        
+                
         """ Pass extra string info if a variable requires it """
         
         if 'ext_string2_info' not in kwargs:
@@ -97,6 +111,11 @@ def naerm_decorator(func):
 
         for class_name_, sub_dict in result_dict.items():
             class_name, param = class_name_.split('_')[0], class_name_.split('_')[1]
+            class_name_with_ = [keys for keys in NAERM_TO_PYPSSE.keys() if '_' in keys and keys in class_name_]
+            if len(class_name_with_)!=0:
+                class_name = class_name_with_[0]
+                param = class_name_.split('_')[-1]
+             
             if class_name in complex_conversion_dict:
                 conv_dict = complex_conversion_dict[class_name]
                 if param in conv_dict:
