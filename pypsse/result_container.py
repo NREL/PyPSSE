@@ -7,7 +7,7 @@ class container:
     STREAMED_WRITE_MODES = ["h5"]
     def __init__(self, settings, export_settings):
         export__list = ['Buses', 'Branches', 'Loads', 'Induction_generators', 'Machines', 'Fixed_shunts',
-                        'Switched_shunts', 'Transformers',"Areas", "Zones", "DCtransmissionlines"]
+                        'Switched_shunts', 'Transformers',"Areas", "Zones", "DCtransmissionlines", "Stations"]
         export__dict = export_settings
         self.export_path = os.path.join(settings["Simulation"]["Project Path"], 'Exports')
         self.export_settings = export_settings
@@ -32,7 +32,7 @@ class container:
 
     def update_export_variables(self, params):
         export__list = ['Buses', 'Branches', 'Loads', 'Induction_generators', 'Machines', 'Fixed_shunts',
-                        'Switched_shunts', 'Transformers', "Areas", "Zones", "DCtransmissionlines"]
+                        'Switched_shunts', 'Transformers', "Areas", "Zones", "DCtransmissionlines", "Stations"]
         self.results = {}
         self.export_vars = {}
         for class_name in export__list:

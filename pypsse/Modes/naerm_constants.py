@@ -18,6 +18,8 @@ NAERM_TO_PYPSSE  ={
             'NomG' : ['YS', 'REAL', 'NOM'],
             'GenMW' : ['GENPOWER', 'REAL'],
             'GenMvar': ['GENPOWER', 'IMAG'],
+            'SubNumber': ['STATION'],
+            'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
             'Name' : ['NAME'],
             'Status' : ['STATUS']
     },
@@ -31,7 +33,9 @@ NAERM_TO_PYPSSE  ={
         'BusNumFrom' : ['FROMBUSNUM'],
         'BusNameTo' : ['TOBUSNAME'],
         'BusNumTo' : ['TOBUSNUM'],
-        'Circuit' : ['CIRCUIT']
+        'Circuit' : ['CIRCUIT'],
+        'SubNumberTo': ['SUBNUMBERTO'],
+        'SubNumberFrom': ['SUBNUMBERFROM']
     },
 
     'Machines' : {
@@ -44,7 +48,20 @@ NAERM_TO_PYPSSE  ={
         'MvarMax' : ["QMAX"],
         'MW' : ["P"],
         'Mvar' : ["Q"],
-        'Status' : ["STATUS"]
+        'Status' : ["STATUS"],
+        'SubNumber': ['SUBNUMBER'],
+        'SubLatitude': ['SUBLATITUDE'],
+        'SubLongitude': ['SUBLONGITUDE']
+    },
+    'Stations': {
+        "SubName": ["SUBNAME"],
+        "SubNum": ["SubNum"],
+        "Buses": ["BUSES"],
+        "Gens": ["GENERATORS"],
+        "Trans": ["TRANSFORMERS"],
+        "NomkV": ["NOMKV"],
+        "LoadMW": ["LOADMW"],
+        "GenMW": ["GENMW"]
     },
     "Areas" : {
         "TotalGenMW" : ["GEN", "REAL"],
@@ -115,6 +132,12 @@ def naerm_decorator(func):
             if len(class_name_with_)!=0:
                 class_name = class_name_with_[0]
                 param = class_name_.split('_')[-1]
+
+            # convert status to string
+            status_translation = {1: 'connected', 0: 'notconnected'}
+            if param.lower() == 'status':
+                for key, value in sub_dict.items():
+                    sub_dict[key] = status_translation[value]
              
             if class_name in complex_conversion_dict:
                 conv_dict = complex_conversion_dict[class_name]
