@@ -31,6 +31,16 @@
 "ZONENAME" = false
 "ZONENUMBER" = false
 
+[Stations]
+"SUBNAME" = false
+"SUBNUMBER" = false
+"BUSES"= false
+"GENERATORS"=false
+"TRANSFORMERS"=false 
+"NOMKV"=false
+"LOADMW"=false
+"GENMW"=false
+
 [DCtransmissionlines]
 "DCLINENAME" = false
 "MDC" = false
