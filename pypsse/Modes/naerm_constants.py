@@ -3,6 +3,7 @@
 NAERM_TO_PYPSSE  ={
     'Buses' : {
             'Number' : ['NUMBER'],
+            'BusNum': ['NUMBER'],
             'NomkV' : ['BASE'],
             'kV' : ['KV'],
             'Vpu' : ['PU'],
@@ -36,7 +37,10 @@ NAERM_TO_PYPSSE  ={
         'BusNumTo' : ['TOBUSNUM'],
         'Circuit' : ['CIRCUIT'],
         'SubNumberTo': ['SUBNUMBERTO'],
-        'SubNumberFrom': ['SUBNUMBERFROM']
+        'SubNumberFrom': ['SUBNUMBERFROM'],
+        'BusNum': ['FROMBUSNUM'],
+        'BusNum:1': ['TOBUSNUM'],
+        'LineCircuit': ['CIRCUIT']
     },
 
     'Machines' : {
@@ -52,7 +56,8 @@ NAERM_TO_PYPSSE  ={
         'Status' : ["STATUS"],
         'SubNumber': ['SUBNUMBER'],
         'SubLatitude': ['SUBLATITUDE'],
-        'SubLongitude': ['SUBLONGITUDE']
+        'SubLongitude': ['SUBLONGITUDE'],
+        'MachineID': ['MACID']
     },
     'Stations': {
         "SubName": ["SUBNAME"],
@@ -66,18 +71,39 @@ NAERM_TO_PYPSSE  ={
     },
     "Areas" : {
         "TotalGenMW" : ["GEN", "REAL"],
-        "TotalGenMvar" : ["GEN", "IMAG"]
+        "TotalGenMvar" : ["GEN", "IMAG"],
+        "AreaNum": ["AREANUMBER"]
     },
     "Zones" : {
         "TotalGenMW" : ["GEN", "REAL"],
-        "TotalGenMvar" : ["GEN", "IMAG"]
+        "TotalGenMvar" : ["GEN", "IMAG"],
+        "ZoneName": ["ZONENAME"]
     },
     "Fixed_shunts" : {
         "ShuntMW" : ["ACT", "REAL"],
-        "ShuntMvar" : ["ACT", "IMAG"]
+        "ShuntMvar" : ["ACT", "IMAG"],
+        "FXShuntID" : ["FXSHID"]
     },
     "Loads" : {
-        "LoadMW" : ["MVA", "REAL"]
+        "LoadMW" : ["MVA", "REAL"],
+        "LoadID": ['LOADID']
+    },
+    "Induction_generators": {
+        "IndID": ["INDID"]
+    },
+    'Switched_shunts': {
+        "BusNum": ["BUSNUM"]
+    },
+    "Transformers": {
+        "FromBus": ["FROMBUSNUM_3WDG"],
+        "ToBus": ["TOBUSNUM_3WDG"],
+        "ToBus2": ["TOBUS2NUM_3WDG"],
+        "TransCircuit": ["CIRCUIT_3WDG"]
+    },
+    "DCtransmissionlines": {
+        "BusNum": ["RECT"],
+        "BusNum:1": ["INV"],
+        "DCLID": ["DCLINENAME"]
     }
 }
 
