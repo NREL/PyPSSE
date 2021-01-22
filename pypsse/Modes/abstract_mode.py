@@ -20,7 +20,7 @@ class AbstractMode:
                     'gendat' : ['GENPOWER'],
                     'notona' : ['NAME'],
                     'busexs' : ['STATUS'],
-                    'busnofunc': ['NUMBER'] 
+                    'busnofunc': ['NUMBER', 'ISLOADBUS'] 
                 },
                 "Stations": {
                     "stanofunc": ["SUBNAME", "SUBNUMBER", "BUSES", "GENERATORS","TRANSFORMERS", "NOMKV", "LOADMW", "GENMW" ]
@@ -260,7 +260,15 @@ class AbstractMode:
 
         return list(set(transformers))
 
+    def check_for_loadbus(self,b):
 
+        ierr = self.PSSE.inilod(int(b))
+        if ierr == 0:
+            ierr = self.PSSE.inimac(int(b))
+            if ierr ==2:
+                return 1
+        
+        return 0
 
     @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
@@ -346,6 +354,9 @@ class AbstractMode:
                                         if func_name == 'busnofunc':
                                             if v == 'NUMBER':
                                                 results =self.add_result(results, q, int(b), b)
+                                            if v == 'ISLOADBUS':
+                                                val = self.check_for_loadbus(b)
+                                                results =self.add_result(results, q, val, b)
                                         
                                         if func_name in ["busdat",  "busint"]:
                                             irr, val = getattr(self.PSSE, func_name)(int(b), v)

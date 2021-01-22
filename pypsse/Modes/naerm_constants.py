@@ -21,7 +21,8 @@ NAERM_TO_PYPSSE  ={
             'SubNumber': ['STATION'],
             'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
             'Name' : ['NAME'],
-            'Status' : ['STATUS']
+            'Status' : ['STATUS'],
+            'IsFeederEligible':['ISLOADBUS']
     },
     'Branches' : {
         'LimitMVAA' : ['RATEA'],
