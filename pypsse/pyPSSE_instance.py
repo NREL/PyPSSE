@@ -393,7 +393,6 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    x = pyPSSE_instance(
-        r'C:\Users\KDUWADI\Box\NAERM_project\psse_empty_case\sample\Settings\pyPSSE_settings.toml')
+    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\wecc-naerm\Settings\pyPSSE_settings.toml')
     x.init()
     x.run()

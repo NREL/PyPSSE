@@ -12,52 +12,86 @@ class Dynamic(AbstractMode):
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
-        if len(self.settings["Simulation"]["Setup files"]):
-            ierr = None
-            for f in self.settings["Simulation"]["Setup files"]:
-                setup_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', f)
-                ierr = self.PSSE.runrspnsfile(setup_path)
-                if ierr:
-                    raise Exception('Error running setup file "{}"'.format(setup_path))
-                else:
-                    self.logger.debug('Setup file {} sucessfully run'.format(setup_path))
 
-        else:
-            if len(self.settings["Simulation"]["Rwm file"]):
-                self.PSSE.mcre([1, 0], self.rwn_file)
+        # if len(self.settings["Simulation"]["Setup files"]):
+        #     ierr = None
 
-            self.convert_load()
-            self.PSSE.cong(0)
-            # Solve for dynamics
-            self.PSSE.ordr(0)
-            self.PSSE.fact()
-            self.PSSE.tysl(0)
-            self.PSSE.tysl(0)
-            self.PSSE.save(self.study_case_path.split('.')[0] + ".sav")
-            self.logger.debug('Loading dynamic model....')
-            ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, '', '', '')
+        if len(self.settings["Simulation"]["Rwm file"]):
+            self.PSSE.mcre([1, 0], self.rwn_file)
+
+        self.PSSE.fnsl([0, 0, 0, 1, 0, 0, 0, self._i])
+
+        for f in self.settings["Simulation"]["Setup files"]:
+            setup_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', f)
+            ierr = self.PSSE.runrspnsfile(setup_path)
             if ierr:
-                raise Exception('Error loading dynamic model file "{}"'.format(self.dyr_path))
+                raise Exception('Error running setup file "{}"'.format(setup_path))
             else:
-                self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
+                self.logger.debug('Setup file {} sucessfully run'.format(setup_path))
 
-            if self.export_settings["Export results using channels"]:
-                self.setup_channels()
+        #self.convert_load()
 
-            if self.snp_file.endswith('.snp'):
-                self.PSSE.snap(sfile=self.snp_file)
-            # Load user defined models
-            for mdl in self.settings["Simulation"]["User models"]:
-                dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
-                self.PSSE.addmodellibrary(dll_path)
-                self.logger.debug('User defined library added: {}'.format(mdl))
-            # Load flow settings
-            self.PSSE.fdns([0, 0, 0, 1, 1, 0, 99, 0])
+        self.PSSE.bsysinit(1)
+        self.PSSE.bsys(1, 0, [0.0, 0.0], 0, [], 1, [38950], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [38951], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [22834], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [24659], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [24658], 0, [], 0, [])
+        self.PSSE.gnet(1, 0)
+        self.PSSE.fdns([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.switched_shunt_chng_4(73525, [self._i, self._i, self._i, self._i, self._i, self._i, self._i, self._i,
+                                                0, self._i, self._i, self._i, self._i],
+                                        [self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f,
+                                         self._f, self._f, self._f], self._s)
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 1, 1, 1, 0, 0, 0])
+
+        self.PSSE.cong(0)
+        # Solve for dynamics
+        self.PSSE.ordr(0)
+        self.PSSE.fact()
+        self.PSSE.tysl(0)
+        self.PSSE.tysl(0)
+        self.PSSE.save(self.study_case_path.split('.')[0] + ".sav")
+        self.logger.debug('Loading dynamic model....')
+        self.PSSE.dynamicsmode(1)
+        ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, r"""conec""",r"""conet""",r"""compile""")
+
+        self.PSSE.dynamics_solution_param_2([60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
+                                            [0.4, self._f, 0.0033333, self._f, self._f, self._f, self._f, self._f])
+        #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
+
+
+        if ierr:
+            raise Exception('Error loading dynamic model file "{}". Error code - {}'.format(self.dyr_path, ierr))
+        else:
+            self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
+
+        if self.export_settings["Export results using channels"]:
+            self.setup_channels()
+
+        if self.snp_file.endswith('.snp'):
+            self.PSSE.snap(sfile=self.snp_file)
+        # Load user defined models
+        for mdl in self.settings["Simulation"]["User models"]:
+            dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
+            self.PSSE.addmodellibrary(dll_path)
+            self.logger.debug('User defined library added: {}'.format(mdl))
+        # Load flow settings
+        self.PSSE.fdns([0, 0, 0, 1, 1, 0, 99, 0])
         # initialize
         iErr = self.PSSE.strt_2([1, self.settings["Generators"]["Missing machine model"]], self.outx_path)
         if iErr:
             self.initialization_complete = False
-            raise Exception('Dynamic simulation failed to successfully initialize')
+            raise Exception(f'Dynamic simulation failed to successfully initialize. Error code - {iErr}')
         else:
             self.initialization_complete = True
             self.logger.debug('Dynamic simulation initialization sucess!')

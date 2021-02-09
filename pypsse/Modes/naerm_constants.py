@@ -23,7 +23,10 @@ NAERM_TO_PYPSSE  ={
             'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
             'Name' : ['NAME'],
             'Status' : ['STATUS'],
-            'IsFeederEligible':['ISLOADBUS']
+            'IsFeederEligible':['ISLOADBUS'],
+            'BusName': ['NAME'],
+            'BusNomVolt': ['BASE'],
+            'BusPUVolt': ['PU']
     },
     'Branches' : {
         'LimitMVAA' : ['RATEA'],

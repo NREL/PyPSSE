@@ -6,6 +6,13 @@ class AbstractMode:
 
     def __init__(self, psse, dyntools, settings, export_settings, logger):
         self.PSSE = psse
+
+        from psspy import _i,_f,_s,_o
+        self._i = _i
+        self._f = _f
+        self._s = _s
+        self._o = _o
+        
         self.logger = logger
         self.dyntools = dyntools
         self.settings = settings
