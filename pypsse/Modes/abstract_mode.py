@@ -4,7 +4,7 @@ from pypsse.Modes.naerm_constants import naerm_decorator
 
 class AbstractMode:
 
-    def __init__(self, psse, dyntools, settings, export_settings, logger):
+    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses):
         self.PSSE = psse
 
         from psspy import _i,_f,_s,_o
@@ -12,7 +12,10 @@ class AbstractMode:
         self._f = _f
         self._s = _s
         self._o = _o
-        
+
+        self.bus_freq_channels = {}
+
+        self.sub_buses = subsystem_buses
         self.logger = logger
         self.dyntools = dyntools
         self.settings = settings
@@ -27,7 +30,8 @@ class AbstractMode:
                     'gendat' : ['GENPOWER'],
                     'notona' : ['NAME'],
                     'busexs' : ['STATUS'],
-                    'busnofunc': ['NUMBER', 'ISLOADBUS'] 
+                    'busnofunc': ['NUMBER', 'ISLOADBUS'],
+                    'frequency' : ["FREQ"]
                 },
                 "Stations": {
                     "stanofunc": ["SUBNAME", "SUBNUMBER", "BUSES", "GENERATORS","TRANSFORMERS", "NOMKV", "LOADMW", "GENMW" ]
@@ -138,7 +142,6 @@ class AbstractMode:
                 self.logger.debug('"{}" added to the channel file'.format(channel))
                 self.PSSE.chsb(0, 1, [-1, -1, -1, 1, channelID, 0])
 
-    
     def get_area_numbers(self, subsystem_buses):
         area_numbers = []
         for b in subsystem_buses:
@@ -154,7 +157,6 @@ class AbstractMode:
             if val:
                 substation_numbers.append(val)
         return list(set(substation_numbers))
-
 
     def get_zone_numbers(self, subsystem_buses):
         zone_numbers = []
@@ -220,7 +222,6 @@ class AbstractMode:
                 if isinstance(val, complex):
                     gen_mw += val.real
         return gen_mw
-    
 
     def get_a_list_of_generators_in_substation(self,sub_number, subsystem_buses):
         generators = []
@@ -279,7 +280,7 @@ class AbstractMode:
 
     @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
-
+        print(quantities)
         results = {}
         area_numbers = self.get_area_numbers(subsystem_buses)
         zone_numbers = self.get_zone_numbers(subsystem_buses)
@@ -356,7 +357,8 @@ class AbstractMode:
                             else:
                                 for b in subsystem_buses:
                                     
-                                    if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs', 'gendat','busnofunc']:
+                                    if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs',
+                                                     'gendat','busnofunc', "frequency"]:
 
                                         if func_name == 'busnofunc':
                                             if v == 'NUMBER':
@@ -364,10 +366,18 @@ class AbstractMode:
                                             if v == 'ISLOADBUS':
                                                 val = self.check_for_loadbus(b)
                                                 results =self.add_result(results, q, val, b)
+
+                                        if func_name == 'frequency':
+                                            if v == 'FREQ':
+                                                if b in self.bus_freq_channels:
+                                                   irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
+                                                   results =self.add_result(results, q, val, v)
+
                                         
                                         if func_name in ["busdat",  "busint"]:
-                                            irr, val = getattr(self.PSSE, func_name)(int(b), v)
-                                            results =self.add_result(results, q, val, b)
+                                            if v == 'FREQ':
+                                                irr, val = getattr(self.PSSE, func_name)(int(b), v)
+                                                results =self.add_result(results, q, val, b)
                                         
                                         elif func_name == "busdt2":
                                             string2 = 'ACT'
@@ -559,114 +569,8 @@ class AbstractMode:
                                                         irr,val = self.PSSE.notona(int(b1))
                                                         results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
                                             ierr, b1, b2, ickt = self.PSSE.nxtbrn3(int(b))
-
+        print(results)
         return results
-    
-    # @naerm_decorator
-    # def read(self, quantities, raw_data, ext_string2_info={}, mapping_dict={}):
-    #     results = {}
-    #     for class_name, vars in quantities.items():
-    #         if class_name in self.func_options:
-    #             funcs = self.func_options[class_name]
-    #             for v in vars:
-    #                 for func_name, settinsgs in funcs.items():
-
-    #                     if v in settinsgs:
-    #                         q = "{}_{}".format(class_name, v)
-
-    #                         if len(mapping_dict) !=0:
-    #                             if class_name in mapping_dict:
-    #                                 new_v = mapping_dict[class_name][id_]
-    #                                 q = "{}_{}".format(class_name, new_v)
-
-    #                         if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs', 'gendat', 'stadat']:
-    #                             for b in raw_data.buses:
-    #                                 if func_name == ["busdat", "busint"]:
-    #                                     irr, val = getattr(self.PSSE, func_name)(int(b), v)
-    #                                     results =self.add_result(results, q, val, b)
-                                    
-    #                                 elif func_name == "busdt2":
-    #                                     string2 = 'ACT'
-    #                                     if class_name in ext_string2_info:
-    #                                         if v in ext_string2_info[class_name]:
-    #                                             string2 = ext_string2_info[class_name][v]
-
-    #                                     irr, val = getattr(self.PSSE, func_name)(int(b), v, string2)
-    #                                     results = self.add_result(results, q, val, b)
-
-    #                                 elif func_name in ['notona', 'gendat']:
-    #                                     irr, val = getattr(self.PSSE, func_name)(int(b))
-    #                                     results =self.add_result(results, q, val, b)
-
-    #                                 elif func_name == 'busexs':
-    #                                     val = getattr(self.PSSE, func_name)(int(b))
-    #                                     results =self.add_result(results, q, val, b)
-
-    #                                 elif func_name == 'arenam':
-    #                                     irr, val = self.PSSE.busint(int(b), 'AREA')
-    #                                     if val:
-    #                                         irr, val = getattr(self.PSSE, func_name)(val)
-    #                                     results =self.add_result(results, q, val, b)
-                                    
-    #                                 elif func_name == 'stadat':
-                                   
-    #                                     irr, val = self.PSSE.busint(int(b), 'STATION')
-    #                                     if val:
-    #                                         irr, val = getattr(self.PSSE, func_name)(val, v)
-    #                                     results =self.add_result(results, q, val, b)
-
-    #                         elif func_name == "loddt2":
-    #                             for b, id in raw_data.loads:
-    #                                 ierr = self.PSSE.inilod(int(b))
-    #                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v, 'ACT')
-    #                                 results =self.add_result(results, q, val,  '{}_{}'.format(id, b))
-
-
-    #                         elif func_name in ["macdat", 'macdt2', 'nxtmac', 'macint']:
-    #                             for b, id in raw_data.generators:
-    #                                 ierr = self.PSSE.inimac(int(b))
-    #                                 if func_name == 'nxtmac':
-    #                                         if v in ['BUSNUM','MACID']:
-    #                                             val = {'BUSNUM': int(b), 'MACID': id}[v]
-    #                                             results = self.add_result(results, q, val, '{}_{}'.format(id, b))
-    #                                         elif v == 'BUSNAME':
-    #                                             irr, val = self.PSSE.notona(int(b))
-    #                                             results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),str(ickt)))
-    #                                 else:
-    #                                     irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
-    #                                     results = self.add_result(results, q, val, '{}_{}'.format(id, b))
-                            
-    #                         elif func_name == 'fxsdt2':
-    #                             for b, id in raw_data.fixed_stunts:
-    #                                 ierr = self.PSSE.inimac(int(b))
-    #                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
-    #                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
-
-
-    #                         elif func_name == 'swsdt1':
-    #                             for b in raw_data.switched_shunt:
-    #                                 irr, val = getattr(self.PSSE, func_name)(int(b), v)
-    #                                 results = self.add_result(results, q, val, b)
-
-    #                         if func_name in ['brndat', 'brndt2', 'brnmsc', 'brnint', 'nxtbrn']:
-                                
-    #                             for b, b1 in raw_data.branches:
-
-    #                                 irr, val = getattr(self.PSSE, func_name)(int(b),int(b1), '1 ', v)
-    #                                 results = self.add_result(results, q, val, b)
-
-
-    #                         if func_name in ['xfrdat', 'tr3dt2']:
-    #                             for b, b1, b2 in raw_data.transformers:
-    #                                 if func_name == 'xfrdat':
-    #                                     if int(b2.replace(' ', '')) == 0:
-    #                                         irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), '1 ', v)
-    #                                         results = self.add_result(results, q, val, b)
-    #                                 elif func_name == 'xfrdat':
-    #                                     if int(b2.replace(' ', '')) != 0:
-    #                                         irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), int(b2), '1 ', v)
-    #                                         results = self.add_result(results, q, val, b)
-    #     return results
 
     def add_result(self, results_dict, class_name, value, label):
         if value or value==0:
@@ -677,8 +581,6 @@ class AbstractMode:
             if class_name not in results_dict:
                 results_dict[class_name] = {}
             results_dict[class_name][label] = None
-
-
         return results_dict
 
     def update_object(self, dType, bus, id, values):

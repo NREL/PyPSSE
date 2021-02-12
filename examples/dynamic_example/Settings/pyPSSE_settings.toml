@@ -5,7 +5,7 @@
 "Simulation mode" = "Dynamic"
 "Use profile manager" = false
 PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = "C:/Users/alatif/Desktop/pypsse-code/examples/dynamic_example"
+"Project Path" = "C:/Users/alatif/Desktop/PYPSSE/examples/dynamic_example"
 "Case study" = "savnw.sav"
 "Raw file" = "savnw.raw"
 "Snp file" = ""

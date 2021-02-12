@@ -3,7 +3,7 @@ from pypsse.Modes.Static import Static
 import numpy as np
 import os
 
-def sim_controller(psse, dyntools, settings, export_settings, logger):
+def sim_controller(psse, dyntools, settings, export_settings, logger , subsystem_buses):
     sim_modes = {
         'Dynamic': Dynamic,
         'Steady-state': Static
@@ -12,7 +12,7 @@ def sim_controller(psse, dyntools, settings, export_settings, logger):
     assert (sim_mode in sim_modes), ("Invalid 'Simulation mode' entered. Possible values are: {}".format(
         ','.join(sim_modes.keys())
     ))
-    sim = sim_modes[settings["Simulation"]["Simulation mode"]](psse, dyntools, settings, export_settings, logger)
+    sim = sim_modes[settings["Simulation"]["Simulation mode"]](psse, dyntools, settings, export_settings, logger, subsystem_buses)
     return sim
 
 

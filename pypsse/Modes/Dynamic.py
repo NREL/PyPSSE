@@ -4,8 +4,8 @@ from pypsse.Modes.abstract_mode import AbstractMode
 import datetime
 class Dynamic(AbstractMode):
 
-    def __init__(self,psse, dyntools, settings, export_settings, logger):
-        super().__init__(psse, dyntools, settings, export_settings, logger)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
@@ -75,8 +75,15 @@ class Dynamic(AbstractMode):
         else:
             self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
 
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i
+            self.PSSE.bus_frequency_channel([i, bus], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i}")
+
         if self.export_settings["Export results using channels"]:
             self.setup_channels()
+
+
 
         if self.snp_file.endswith('.snp'):
             self.PSSE.snap(sfile=self.snp_file)
