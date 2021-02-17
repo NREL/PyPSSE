@@ -66,7 +66,7 @@ class container:
         if self.export_settings["Write format"] in self.BULK_WRITE_MODES:
             for df_name, df in self.results.items():
                 export_path = os.path.join(
-                    self.settings["HELICS"]["Project Path"],
+                    self.settings["Simulation"]["Project Path"],
                     'Exports',
                     '{}.{}'.format(df_name, self.export_settings["Write format"])
                 )

@@ -150,10 +150,10 @@ class pyPSSE_instance:
 
     def init(self):
         sucess = self.sim.init(self.bus_subsystems)
-        if sucess:
-            self.load_info = self.sim.load_info
-        else:
-            self.load_info = None
+        # if sucess:
+        #     self.load_info = self.sim.load_info
+        # else:
+        #     self.load_info = None
 
         if self.settings["Simulation"]["Use profile manager"]:
             self.pm = ProfileManager(None, self.sim, self.settings, self.logger)
@@ -218,6 +218,7 @@ class pyPSSE_instance:
         return toml_data
 
     def run(self):
+      
         if self.sim.initialization_complete:
             if self.settings['Plotting']["Enable dynamic plots"]:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
@@ -291,8 +292,9 @@ class pyPSSE_instance:
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        # if self.inc_time and not self.export_settings["Export results using channels"]:
-        #     self.results.Update(curr_results, None, t, self.sim.getTime())
+        if self.inc_time and not self.export_settings["Export results using channels"]:
+            print('I am here')
+            self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
 
     def update_subscriptions(self):
