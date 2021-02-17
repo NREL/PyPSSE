@@ -4,6 +4,7 @@
 
 [Buses]
 "BASE" = false
+"FREQ" = true
 "PU" = true
 "KV" = false
 "ANGLE" = false

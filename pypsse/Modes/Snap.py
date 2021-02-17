@@ -3,8 +3,8 @@ import os
 from pypsse.Modes.abstract_mode import AbstractMode
 import datetime
 class Snap(AbstractMode):
-    def __init__(self,psse, dyntools, settings, export_settings, logger):
-        super().__init__(psse, dyntools, settings, export_settings, logger)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
@@ -16,9 +16,19 @@ class Snap(AbstractMode):
         assert ierr == 0, "error={}".format(ierr)
         ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
         assert ierr == 0, "error={}".format(ierr)
+
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i
+            self.PSSE.bus_frequency_channel([i, int(bus)], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i}")
+
         self.logger.debug('pyPSSE initialization complete!')
         self.initialization_complete = True
+
+
         return self.initialization_complete
+
+
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)

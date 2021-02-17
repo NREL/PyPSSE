@@ -107,9 +107,14 @@ class pyPSSE_instance:
         self.logger.debug(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
 
         self.raw_data = rd.Reader(self.PSSE, self.logger)
-
-        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
+        if self.export_settings['Defined bus subsystems only']:
+            validBuses = self.all_subsysten_buses
+        else:
+            validBuses = self.raw_data.buses
+
+        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
+
 
         self.contingencies = self.build_contingencies()
 
@@ -395,6 +400,13 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\wecc-naerm\Settings\pyPSSE_settings.toml')
-    x.init()
-    x.run()
+    scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
+    for s in scenarios:
+        x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
+        x.init()
+        x.run()
+        del x
+        quit()
+        os.rename(
+            r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
+            f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')

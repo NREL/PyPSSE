@@ -1,18 +1,22 @@
 # Standard imports
 import os
 from pypsse.Modes.naerm_constants import naerm_decorator
+import numpy as np
 
 class AbstractMode:
 
-    def __init__(self, psse, dyntools, settings, export_settings, logger):
+    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses):
         self.PSSE = psse
+
+        self.bus_freq_channels = {}
 
         from psspy import _i,_f,_s,_o
         self._i = _i
         self._f = _f
         self._s = _s
         self._o = _o
-        
+
+        self.sub_buses = subsystem_buses
         self.logger = logger
         self.dyntools = dyntools
         self.settings = settings
@@ -27,7 +31,8 @@ class AbstractMode:
                     'gendat' : ['GENPOWER'],
                     'notona' : ['NAME'],
                     'busexs' : ['STATUS'],
-                    'busnofunc': ['NUMBER', 'ISLOADBUS'] 
+                    'busnofunc': ['NUMBER', 'ISLOADBUS'],
+                    'frequency': ["FREQ"]
                 },
                 "Stations": {
                     "stanofunc": ["SUBNAME", "SUBNUMBER", "BUSES", "GENERATORS","TRANSFORMERS", "NOMKV", "LOADMW", "GENMW" ]
@@ -220,7 +225,6 @@ class AbstractMode:
                 if isinstance(val, complex):
                     gen_mw += val.real
         return gen_mw
-    
 
     def get_a_list_of_generators_in_substation(self,sub_number, subsystem_buses):
         generators = []
@@ -279,7 +283,7 @@ class AbstractMode:
 
     @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
-
+        print(quantities)
         results = {}
         area_numbers = self.get_area_numbers(subsystem_buses)
         zone_numbers = self.get_zone_numbers(subsystem_buses)
@@ -356,7 +360,7 @@ class AbstractMode:
                             else:
                                 for b in subsystem_buses:
                                     
-                                    if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs', 'gendat','busnofunc']:
+                                    if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs', 'gendat','busnofunc', 'frequency']:
 
                                         if func_name == 'busnofunc':
                                             if v == 'NUMBER':
@@ -364,7 +368,16 @@ class AbstractMode:
                                             if v == 'ISLOADBUS':
                                                 val = self.check_for_loadbus(b)
                                                 results =self.add_result(results, q, val, b)
-                                        
+
+                                        if func_name == 'frequency':
+                                            if v == 'FREQ':
+                                                if b in self.bus_freq_channels:
+                                                   irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
+                                                   if not val:
+                                                       val = np.nan
+                                                   results =self.add_result(results, q, val, int(b))
+
+
                                         if func_name in ["busdat",  "busint"]:
                                             irr, val = getattr(self.PSSE, func_name)(int(b), v)
                                             results =self.add_result(results, q, val, b)
