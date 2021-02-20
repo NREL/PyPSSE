@@ -372,11 +372,12 @@ class AbstractMode:
                                         if func_name == 'frequency':
                                             if v == 'FREQ':
                                                 if b in self.bus_freq_channels:
-                                                   irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
-                                                   if not val:
-                                                       val = np.nan
-                                                   results =self.add_result(results, q, val, int(b))
-
+                                                    irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
+                                                    if not val:
+                                                        val = np.nan
+                                                    results =self.add_result(results, q, val, int(b))
+                                                else:
+                                                    results = self.add_result(results, q, 0, int(b))
 
                                         if func_name in ["busdat",  "busint"]:
                                             irr, val = getattr(self.PSSE, func_name)(int(b), v)

@@ -5,7 +5,7 @@
 "Simulation mode" = "Dynamic"
 "Use profile manager" = false
 PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = "C:/Users/alatif/Desktop/pypsse-code/examples/dynamic_example"
+"Project Path" = "C:/Users/alatif/Desktop/pypsse/examples/dynamic_example"
 "Case study" = "savnw.sav"
 "Raw file" = "savnw.raw"
 "Snp file" = ""
@@ -17,7 +17,7 @@ PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
 "Setup files" = []
 
 [HELICS]
-"Cosimulation mode" = false
+"Cosimulation mode" = true
 "Federate name" = "psse"
 "Time delta" = 0.004166667
 "Core type" = "zmq"
@@ -27,6 +27,11 @@ Uninterruptible = true
 "Iterative Mode" = false
 "Error tolerance" = 1e-5
 "Max co-iterations" = 15
+[HELICS.Publications.bus_subsystems]
+from_file = false
+bus_file = ""
+bus_subsystem_list = [[101, 102, 204, 205 , 3001]]
+publish_subsystems = [ 0,]
 
 [Export_settings]
 "Outx file" = "Results.outx"
@@ -56,7 +61,7 @@ columns = 2
 [bus_subsystems]
 from_file = false
 bus_file = ""
-bus_subsystem_list = []
+bus_subsystem_list = [[101, 102, 204, 205 , 3001]]
 publish_subsystems = [ 0,]
 
 [Loads]
