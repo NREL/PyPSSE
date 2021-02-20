@@ -1,13 +1,16 @@
 from pypsse.ProfileManager.common import PROFILE_VALIDATION
 import pandas as pd
 import helics as h
+import ast
 import os
+
 class helics_interface:
 
     n_states = 5
     init_state = 1
 
     def __init__(self, PSSE, sim, settings, export_settings, bus_subsystems, logger):
+        print("asdasdasdasdasd")
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
@@ -75,7 +78,7 @@ class helics_interface:
             self.pub_struc.append([{elmClass: properties}, bus_cluster])
             temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
             temp_res = self.get_restructured_results(temp_res)
-
+            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -106,7 +109,18 @@ class helics_interface:
                             self.logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
                         if dtype_matched:
                             self.logger.debug("Publication registered: {}".format(pub_tag))
-
+        # self.publications = {}
+        # for bus_subsystem_id in self.settings['bus_subsystems']["publish_subsystems"]:
+        #     if bus_subsystem_id in bus_subsystems:
+        #         buses = bus_subsystems[bus_subsystem_id]
+        #         for bus_id in buses:
+        #             self.publications[bus_id] = {}
+        #             for bus_p in self.bus_pubs:
+        #                 pub = "{}.bus-{}.{}".format(self.settings["HELICS"]['Federate name'], bus_id, bus_p)
+        #                 self.publications[bus_id][pub] = h.helicsFederateRegisterGlobalTypePublication(
+        #                     self.PSSEfederate, pub, 'double', ''
+        #                 )
+        #                 self.logger.debug("Publication registered: {}".format(pub))
         return
 
     def register_subscriptions(self, bus_subsystem_dict):
@@ -118,16 +132,27 @@ class helics_interface:
         )
         self.psse_dict = {}
         for ix, row in sub_data.iterrows():
+
+            row['property'] = ast.literal_eval(row['property'])
             if row["element_type"] not in PROFILE_VALIDATION:
                 raise Exception(f"Subscription file error: {row['element_type']} not a valid element_type."
                                 f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}")
 
-            if row['property'] not in PROFILE_VALIDATION[row["element_type"]]:
+            if isinstance(row["property"], str) and row['property'] not in PROFILE_VALIDATION[row["element_type"]]:
                 raise Exception(
                     f"Subscription file error: {row['property']} is not valid. "
                     f"Valid subtypes for '{row['element_type']}' are: {PROFILE_VALIDATION[row['element_type']]}")
 
+            valisSet = set(PROFILE_VALIDATION[row['element_type']])
+            sSet = set(row["property"])
+            if isinstance(row["property"], list) and valisSet.issubset(sSet):
+                raise Exception(
+                    f"Subscription file error: {row['property']} is not a valid subset. "
+                    f"Valid subtypes for '{row['element_type']}' are: {PROFILE_VALIDATION[row['element_type']]}")
+
+
             element_id = str(row['element_id'])
+
             self.subscriptions[row['sub_tag']] = {
                 'bus': row['bus'],
                 'element_id': element_id,
@@ -138,7 +163,7 @@ class helics_interface:
                 'subscription': h.helicsFederateRegisterSubscription(self.PSSEfederate, row['sub_tag'], ""),
             }
 
-            self.logger.debug("{} property of element {}.{} at bus {} has subscribed to {}".format(
+            self.logger.info("{} property of element {}.{} at bus {} has subscribed to {}".format(
                 row['property'], row['element_type'], row['element_id'], row['bus'], row['sub_tag']
             ))
 
@@ -148,8 +173,14 @@ class helics_interface:
                 self.psse_dict[row['bus']][row['element_type']] = {}
             if element_id not in self.psse_dict[row['bus']][row['element_type']]:
                 self.psse_dict[row['bus']][row['element_type']][element_id] = {}
-            if row['property'] not in self.psse_dict[row['bus']][row['element_type']][element_id]:
-                self.psse_dict[row['bus']][row['element_type']][element_id][row['property']] = 0
+            if isinstance(row["property"], str):
+                if row['property'] not in self.psse_dict[row['bus']][row['element_type']][element_id]:
+                    self.psse_dict[row['bus']][row['element_type']][element_id][row['property']] = 0
+            elif isinstance(row["property"], list):
+                for r in row['property']:
+                    if r not in self.psse_dict[row['bus']][row['element_type']][element_id]:
+                        self.psse_dict[row['bus']][row['element_type']][element_id][r] = 0
+
         return
 
     def request_time(self, t):
@@ -182,7 +213,8 @@ class helics_interface:
             if c not in results_dict:
                 results_dict[c] = {}
             for n, v in d.items():
-                n = n.replace(" ", "")
+                if isinstance(n, str):
+                    n = n.replace(" ", "")
                 if n not in results_dict[c]:
                     results_dict[c][n] = {p:v}
         return results_dict
@@ -191,6 +223,7 @@ class helics_interface:
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
             temp_res = self.get_restructured_results(temp_res)
+            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -216,8 +249,17 @@ class helics_interface:
 
     def subscribe(self):
         for sub_tag, sub_data in self.subscriptions.items():
-            sub_data['value'] = h.helicsInputGetDouble(sub_data['subscription'])
-            self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = sub_data['value']
+            if isinstance(sub_data["property"], str):
+                sub_data['value'] = h.helicsInputGetDouble(sub_data['subscription'])
+                self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = sub_data['value']
+            elif isinstance(sub_data["property"], list):
+                sub_data['value'] = h.helicsInputGetVector(sub_data['subscription'])
+                print(sub_data['value'] )
+                if isinstance(sub_data['value'], list) and len(sub_data['value']) == len(sub_data["property"]):
+                    for i, p in enumerate(sub_data["property"]):
+                        self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = sub_data['value'][i]
+
+
             self.logger.debug('Data received {} for tag {}'.format(sub_data['value'], sub_tag))
             if self.settings['HELICS']['Iterative Mode']:
                 if self.c_seconds != self.c_seconds_old:
@@ -230,9 +272,16 @@ class helics_interface:
                 for i , vDict in tInfo.items():
                     values = {}
                     for p, v in vDict.items():
-                        ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
-                        values[ppty] = v
-                    self.sim.update_object(t, b, i, values)
+                        if isinstance(p, str):
+                            ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
+                            values[ppty] = v
+                        elif isinstance(p, list):
+                            for ppt in p:
+                                ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
+                                values[ppty] = v
+                    if sum(values.values()) != 0:
+                        self.sim.update_object(t, b, i, values)
+
 
         self.c_seconds_old = self.c_seconds
         return self.subscriptions

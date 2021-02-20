@@ -43,7 +43,8 @@ NAERM_TO_PYPSSE  ={
         'SubNumberFrom': ['SUBNUMBERFROM'],
         'BusNum': ['FROMBUSNUM'],
         'BusNum:1': ['TOBUSNUM'],
-        'LineCircuit': ['CIRCUIT']
+        'LineCircuit': ['CIRCUIT'],
+        'LineStatus': ['STATUS']
     },
 
     'Machines' : {
