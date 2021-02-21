@@ -18,7 +18,7 @@ class hdf5Writer:
         self.store_datasets = {}
         self.row = {}
         self.columnLength = columnLength
-        self.chunkRows = 10
+        self.chunkRows = 1
         self.step = 0
         self.dfs = {}
         self.Timestamp = self.store.create_dataset(

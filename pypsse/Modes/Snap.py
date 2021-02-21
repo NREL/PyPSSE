@@ -3,9 +3,10 @@ import os
 from pypsse.Modes.abstract_mode import AbstractMode
 import datetime
 class Snap(AbstractMode):
-    def __init__(self,psse, dyntools, settings, export_settings, logger):
-        super().__init__(psse, dyntools, settings, export_settings, logger)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
     def init(self, bus_subsystems):
@@ -16,12 +17,23 @@ class Snap(AbstractMode):
         assert ierr == 0, "error={}".format(ierr)
         ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
         assert ierr == 0, "error={}".format(ierr)
+
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i+1
+            self.PSSE.bus_frequency_channel([i+1, int(bus)], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i+1}")
+
         self.logger.debug('pyPSSE initialization complete!')
         self.initialization_complete = True
+
+
         return self.initialization_complete
+
+
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)
+
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}
         for id in bus_subsystems.keys():
@@ -38,12 +50,16 @@ class Snap(AbstractMode):
                 }
             all_bus_ids[id] = load_info
         return all_bus_ids
+
     def getTime(self):
         return self.time
+
     def GetTotalSeconds(self):
         return (self.time - self._StartTime).total_seconds()
+
     def GetStepSizeSec(self):
         return self.settings["Simulation"]["Step resolution (sec)"]
+
     def convert_load(self, busSubsystem= None):
         if self.settings['Loads']['Convert']:
             P1 = self.settings['Loads']['active_load']["% constant current"]

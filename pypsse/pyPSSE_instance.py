@@ -26,6 +26,8 @@ import toml
 import time
 import shutil
 
+USING_NAERM = 1
+
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path='', psse_path=''):
@@ -64,11 +66,8 @@ class pyPSSE_instance:
             if settinigs_toml_path != '':
                 self.read_allsettings(settinigs_toml_path)
                 self.start_simulation()
-
-            print(ierr)
-        finally:
-            print("asd")
-            #raise Exception("A valid PSS/E license not found. License may currently be in use.")
+        except:
+            raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
 
     def dump_settings(self, dest_dir):
@@ -88,15 +87,12 @@ class pyPSSE_instance:
 
 
     def start_simulation(self):
-
         self.hi = None
         self.simStartTime = time.time()
 
         log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
         self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
         self.logger.debug('Starting PSSE instance')
-        
-
         #** Initialize PSSE modules
 
         self.PSSE.case(
@@ -104,12 +100,15 @@ class pyPSSE_instance:
                          "Case_study",
                          self.settings["Simulation"]["Case study"])
         )
-        self.logger.debug(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
+        self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
 
         self.raw_data = rd.Reader(self.PSSE, self.logger)
-
-        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
+        if self.export_settings['Defined bus subsystems only']:
+            validBuses = self.all_subsysten_buses
+        else:
+            validBuses = self.raw_data.buses
+        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
 
         self.contingencies = self.build_contingencies()
 
@@ -120,7 +119,6 @@ class pyPSSE_instance:
             self.publications = self.hi.register_publications(self.bus_subsystems)
             if self.settings["HELICS"]["Create subscriptions"]:
                 self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
-
         if self.settings["Simulation"]["GIC file"]:
             self.network_graph = self.parse_GIC_file()
             self.bus_ids = self.network_graph.nodes.keys()
@@ -130,6 +128,7 @@ class pyPSSE_instance:
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
         self.inc_time = True
+
         return
 
 
@@ -159,8 +158,9 @@ class pyPSSE_instance:
             self.pm = ProfileManager(None, self.sim, self.settings, self.logger)
             self.pm.setup_profiles()
         if self.settings["HELICS"]["Cosimulation mode"]:
+            print("trying helics execution")
             self.hi.enter_execution_mode()
-
+            print(" helics execution ended")
         return
 
     def parse_GIC_file(self):
@@ -275,6 +275,7 @@ class pyPSSE_instance:
         self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
         if self.settings["HELICS"]["Cosimulation mode"]:
             if self.settings["HELICS"]["Create subscriptions"]:
+                print("Here")
                 self.update_subscriptions()
                 self.logger.debug('Time requested: {}'.format(t))
                 self.inc_time, helics_time = self.update_federate_time(t)
@@ -292,8 +293,9 @@ class pyPSSE_instance:
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        # if self.inc_time and not self.export_settings["Export results using channels"]:
-        #     self.results.Update(curr_results, None, t, self.sim.getTime())
+        if not USING_NAERM:
+            if self.inc_time and not self.export_settings["Export results using channels"]:
+                self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
 
     def update_subscriptions(self):
@@ -399,6 +401,12 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\wecc-naerm\Settings\pyPSSE_settings.toml')
-    x.init()
-    x.run()
+    scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
+    for s in scenarios:
+        x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
+        x.init()
+        x.run()
+        del x
+        os.rename(
+            r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
+            f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')

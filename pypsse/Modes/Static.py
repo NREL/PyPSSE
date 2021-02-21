@@ -9,8 +9,8 @@ import datetime
 from pypsse.Modes.abstract_mode import AbstractMode
 
 class Static(AbstractMode):
-    def __init__(self,psse, dyntools, settings, export_settings, logger):
-        super().__init__(psse, dyntools, settings, export_settings, logger)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
