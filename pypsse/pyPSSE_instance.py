@@ -292,9 +292,8 @@ class pyPSSE_instance:
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
-        if self.inc_time and not self.export_settings["Export results using channels"]:
-            print('I am here')
-            self.results.Update(curr_results, None, t, self.sim.getTime())
+        # if self.inc_time and not self.export_settings["Export results using channels"]:
+        #     self.results.Update(curr_results, None, t, self.sim.getTime())
         return curr_results
 
     def update_subscriptions(self):
@@ -392,6 +391,11 @@ class pyPSSE_instance:
     def update_contingencies(self, t):
         for c_name, c in self.contingencies.items():
             c.update(t)
+
+    def inject_contingencies_external(self,temp):
+        print("external settings : ", temp , flush=True)
+        contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
+        self.contingencies.update(contingencies)
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')

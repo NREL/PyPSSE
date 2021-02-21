@@ -44,7 +44,8 @@ NAERM_TO_PYPSSE  ={
         'BusNum': ['FROMBUSNUM'],
         'BusNum:1': ['TOBUSNUM'],
         'LineCircuit': ['CIRCUIT'],
-        'LineStatus': ['STATUS']
+        'LineStatus': ['STATUS'],
+        'LineMaxPercentAmp': ['PCTRTA']
     },
 
     'Machines' : {

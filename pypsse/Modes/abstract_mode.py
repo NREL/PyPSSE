@@ -48,7 +48,7 @@ class AbstractMode:
                     'brndat': ['RATEn', 'RATEA', 'RATEB', 'RATEC', 'RATE', 'LENGTH', 'CHARG', 'CHARGZ', 'FRACT1', 'FRACT2',
                                'FRACT3', 'FRACT4'],
                     'brndt2': ['RX', 'ISHNT', 'JSHNT', 'RXZ', 'ISHNTZ', 'JSHNTZ', 'LOSSES', 'O_LOSSES', 'RX'],
-                    'brnmsc': ['MVA', 'AMPS', 'PUCUR', 'CURANG', 'P', 'O_P', 'Q', 'O_Q', 'PLOS', 'O_PLOS', 'QLOS', 'O_QLOS'],
+                    'brnmsc': ['MVA', 'AMPS', 'PUCUR', 'CURANG', 'P', 'O_P', 'Q', 'O_Q', 'PLOS', 'O_PLOS', 'QLOS', 'O_QLOS', 'PCTRTA'],
                     'brnint' : ['STATUS', 'METER', 'NMETR', 'OWNERS', 'OWN1', 'OWN2', 'OWN3', 'OWN4', 'STATION_I', 'STATION_J', 'SECTION_I', 'SECTION_J', 'NODE_I', 'NODE_J', 'SCTYPE'],
                     'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM'] 
                 }, 
