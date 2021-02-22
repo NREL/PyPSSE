@@ -131,6 +131,7 @@ class _line_fault(_base_fault):
         super(_line_fault, self).__init__(psse, settings, logger, contingency_type)
         self.fault_settings['ibus'] = settings["bus_ids"][0]
         self.fault_settings['jbus'] = settings["bus_ids"][1]
+        self.fault_settings['id'] = settings["bus_ids"][2]
         self.fault_settings['units'] = 3
         self.fault_settings['values'] = settings["fault_impedance"]
         self.fault_settings['basekv'] = 0.0
