@@ -60,7 +60,7 @@ class Dynamic(AbstractMode):
         self.PSSE.fact()
         self.PSSE.tysl(0)
         self.PSSE.tysl(0)
-        self.PSSE.save(self.study_case_path.split('.')[0] + ".sav")
+        #self.PSSE.save(self.study_case_path.split('.')[0] + ".sav")
         self.logger.debug('Loading dynamic model....')
         self.PSSE.dynamicsmode(1)
         ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, r"""conec""",r"""conet""",r"""compile""")
