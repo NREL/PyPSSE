@@ -34,6 +34,9 @@ class Snap(AbstractMode):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)
 
+    def resolveStep(self, t):
+        return self.PSSE.run(0, t + self.incTime / 1000.0, 1, 1, 1)
+
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}
         for id in bus_subsystems.keys():

@@ -24,6 +24,7 @@ pypsse.egg-info/entry_points.txt
 pypsse.egg-info/requires.txt
 pypsse.egg-info/top_level.txt
 pypsse/Modes/Dynamic.py
+pypsse/Modes/Snap.py
 pypsse/Modes/Static.py
 pypsse/Modes/__init__.py
 pypsse/Modes/abstract_mode.py

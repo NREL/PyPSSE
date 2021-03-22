@@ -121,6 +121,9 @@ class Dynamic(AbstractMode):
             all_bus_ids[id] = load_info
         return all_bus_ids
 
+    def resolveStep(self, t):
+        return self.PSSE.run(0, t + self.incTime / 1000.0, 1, 1, 1)
+
     def getTime(self):
         return self.time
 

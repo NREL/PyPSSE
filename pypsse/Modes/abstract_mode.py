@@ -120,7 +120,7 @@ class AbstractMode:
     def step(self, dt):
         return
 
-    def resolveStep(self):
+    def resolveStep(self, dt):
         return
 
     def export(self):

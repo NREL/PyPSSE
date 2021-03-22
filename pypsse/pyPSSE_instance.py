@@ -284,7 +284,7 @@ class pyPSSE_instance:
         if self.inc_time:
             self.sim.step(t)
         else:
-            self.sim.resolveStep()
+            self.sim.resolveStep(t)
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_data()
