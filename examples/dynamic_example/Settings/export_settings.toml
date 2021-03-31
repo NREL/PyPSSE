@@ -56,12 +56,20 @@
 "NDI" = false
 
 [Loads]
-"MVA" = false 
+"MVA" = true
 "IL" = false 
 "YL" = false 
 "TOTAL" = false 
 "YNEG" = false 
 "YZERO" = false
+"FmA" = false
+"FmB" = false
+"FmC" = false
+"FmD" = false
+"Fwl" = false
+"PFel" = false
+"TD" = false
+"TC" = false
 
 [Fixed_shunts]
 "ACT" = false 
