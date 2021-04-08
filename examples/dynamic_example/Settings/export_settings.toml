@@ -62,8 +62,8 @@
 "TOTAL" = false 
 "YNEG" = false 
 "YZERO" = false
-"FmA" = false
-"FmB" = false
+"FmA" = true
+"FmB" = true
 "FmC" = false
 "FmD" = false
 "Fwl" = false

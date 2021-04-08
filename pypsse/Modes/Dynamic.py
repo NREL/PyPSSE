@@ -168,15 +168,17 @@ class Dynamic(AbstractMode):
                                     if class_name == "Loads":
                                         ierr = self.PSSE.inilod(int(bus))
                                         ierr, ld_id = self.PSSE.nxtlod(int(bus))
-                                        irr, con_index = getattr(self.PSSE, funcName)(int(bus), ld_id, 'CHARAC', 'CON')
-                                        act_con_index = con_index + con_ind
-                                        irr, value = self.PSSE.dsrval('CON', act_con_index)
-                                        # print(class_name, funcName, bus, ld_id, con_index, con_num, v, value)
-                                        res_base = f"{class_name}_{v}"
-                                        if res_base not in results:
-                                            results[res_base] = {}
-                                        obj_name = f"{bus}_{ld_id}"
-                                        results[res_base][obj_name] = value
+                                        if ld_id is not None:
+                                            irr, con_index = getattr(self.PSSE, funcName)(int(bus), ld_id, 'CHARAC', 'CON')
+                                            if con_index is not None:
+                                                act_con_index = con_index + con_ind
+                                                irr, value = self.PSSE.dsrval('CON', act_con_index)
+                                                # print(class_name, funcName, bus, ld_id, con_index, con_num, v, value)
+                                                res_base = f"{class_name}_{v}"
+                                                if res_base not in results:
+                                                    results[res_base] = {}
+                                                obj_name = f"{bus}_{ld_id}"
+                                                results[res_base][obj_name] = value
             else:
                 self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
 
