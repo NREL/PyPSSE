@@ -16,7 +16,15 @@ class Snap(AbstractMode):
         ierr = self.PSSE.rstr(self.snp_file)
         assert ierr == 0, "error={}".format(ierr)
         ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
-        assert ierr == 0, "error={}".format(ierr)
+
+        if ierr==1:
+            self.PSSE.cong(0)
+            ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
+            assert ierr == 0, "error={}".format(ierr)
+        
+        elif ierr >1:
+            raise Exception("Error starting simulation")
+            
 
         for i, bus in enumerate(self.sub_buses):
             self.bus_freq_channels[bus] = i+1
