@@ -7,6 +7,7 @@ class Dynamic(AbstractMode):
     def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
 
@@ -65,8 +66,21 @@ class Dynamic(AbstractMode):
         self.PSSE.dynamicsmode(1)
         ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, r"""conec""",r"""conet""",r"""compile""")
 
-        self.PSSE.dynamics_solution_param_2([60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
-                                            [0.4, self._f, 0.0033333, self._f, self._f, self._f, self._f, self._f])
+
+        if self.settings["HELICS"]["Cosimulation mode"]:
+            if self.settings["HELICS"]["Iterative Mode"]:
+                sim_step = self.settings["Simulation"]["Step resolution (sec)"] / 100.0
+            else:
+                sim_step = self.settings["Simulation"]["Step resolution (sec)"]
+        else:
+            sim_step = self.settings["Simulation"]["Step resolution (sec)"]
+
+        self.PSSE.dynamics_solution_param_2(
+            [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
+            [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
+        )
+
+
         #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
 
 
@@ -98,10 +112,12 @@ class Dynamic(AbstractMode):
         # get load info for the sub system
         self.load_info = self.get_load_indices(bus_subsystems)
         self.logger.debug('pyPSSE initialization complete!')
+        self.xTime = 0
         return self.initialization_complete
 
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
+        self.xTime = 0
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def get_load_indices(self, bus_subsystems):
@@ -122,7 +138,8 @@ class Dynamic(AbstractMode):
         return all_bus_ids
 
     def resolveStep(self, t):
-        return self.PSSE.run(0, t + self.incTime / 1000.0, 1, 1, 1)
+        self.xTime += 1
+        return self.PSSE.run(0, t + self.xTime * self.incTime / 1000.0, 1, 1, 1)
 
     def getTime(self):
         return self.time

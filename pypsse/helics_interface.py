@@ -10,7 +10,6 @@ class helics_interface:
     init_state = 1
 
     def __init__(self, PSSE, sim, settings, export_settings, bus_subsystems, logger):
-        print("asdasdasdasdasd")
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
@@ -78,7 +77,6 @@ class helics_interface:
             self.pub_struc.append([{elmClass: properties}, bus_cluster])
             temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
             temp_res = self.get_restructured_results(temp_res)
-            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -223,7 +221,6 @@ class helics_interface:
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
             temp_res = self.get_restructured_results(temp_res)
-            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -254,7 +251,6 @@ class helics_interface:
                 self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = sub_data['value']
             elif isinstance(sub_data["property"], list):
                 sub_data['value'] = h.helicsInputGetVector(sub_data['subscription'])
-                print(sub_data['value'] )
                 if isinstance(sub_data['value'], list) and len(sub_data['value']) == len(sub_data["property"]):
                     for i, p in enumerate(sub_data["property"]):
                         self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = sub_data['value'][i]
@@ -274,11 +270,11 @@ class helics_interface:
                     for p, v in vDict.items():
                         if isinstance(p, str):
                             ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
-                            values[ppty] = v
+                            values[ppty] = v * sub_data['scaler']
                         elif isinstance(p, list):
                             for ppt in p:
                                 ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
-                                values[ppty] = v
+                                values[ppty] = v * sub_data['scaler']
                     if sum(values.values()) != 0:
                         self.sim.update_object(t, b, i, values)
 

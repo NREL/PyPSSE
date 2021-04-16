@@ -695,6 +695,7 @@ class AbstractMode:
         return results_dict
 
     def update_object(self, dType, bus, id, values):
+        print(dType, bus, id, values)
         if dType == "Load":
             ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
         elif dType == "Induction_machine":

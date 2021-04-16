@@ -26,16 +26,18 @@ class Snap(AbstractMode):
         self.logger.debug('pyPSSE initialization complete!')
         self.initialization_complete = True
 
-
+        self.xTime = 0
         return self.initialization_complete
 
 
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
+        self.xTime = 0
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def resolveStep(self, t):
-        return self.PSSE.run(0, t + self.incTime / 1000.0, 1, 1, 1)
+        self.xTime += 1
+        return self.PSSE.run(0, t + self.xTime * self.incTime / 1000.0, 1, 1, 1)
 
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}
