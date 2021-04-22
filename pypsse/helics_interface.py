@@ -38,6 +38,11 @@ class helics_interface:
         h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings["HELICS"]['Federate name'])
         h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings["HELICS"]['Core type'])
         h.helicsFederateInfoSetCoreInitString(self.fedinfo, "--federates=1")
+        if self.settings['HELICS']['Broker']:
+            h.helicsFederateInfoSetBroker(self.fedinfo, self.settings['HELICS']['Broker'])
+        if self.settings['HELICS']['Broker port']:
+            h.helicsFederateInfoSetBrokerPort(self.fedinfo, self.settings['HELICS']['Broker port'])
+
         h.helicsFederateInfoSetTimeProperty(
             self.fedinfo,
             h.helics_property_time_delta,
@@ -132,6 +137,7 @@ class helics_interface:
         for ix, row in sub_data.iterrows():
 
             row['property'] = ast.literal_eval(row['property'])
+            row['scaler'] = ast.literal_eval(row['scaler'])
             if row["element_type"] not in PROFILE_VALIDATION:
                 raise Exception(f"Subscription file error: {row['element_type']} not a valid element_type."
                                 f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}")
@@ -267,14 +273,20 @@ class helics_interface:
             for t , tInfo in bInfo.items():
                 for i , vDict in tInfo.items():
                     values = {}
+                    j = 0
                     for p, v in vDict.items():
                         if isinstance(p, str):
                             ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
-                            values[ppty] = v * sub_data['scaler']
-                        elif isinstance(p, list):
-                            for ppt in p:
-                                ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
+                            if isinstance(sub_data['scaler'], list):
+                                values[ppty] = v * sub_data['scaler'][j]
+                            else:
                                 values[ppty] = v * sub_data['scaler']
+                        elif isinstance(p, list):
+                            for alpha, ppt in enumerate(p):
+                                ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
+
+                                values[ppty] = v * sub_data['scaler'][alpha]
+                        j +=1
                     if sum(values.values()) != 0:
                         self.sim.update_object(t, b, i, values)
 
