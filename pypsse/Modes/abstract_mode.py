@@ -55,7 +55,7 @@ class AbstractMode:
                     'brndt2': ['RX', 'ISHNT', 'JSHNT', 'RXZ', 'ISHNTZ', 'JSHNTZ', 'LOSSES', 'O_LOSSES', 'RX'],
                     'brnmsc': ['MVA', 'AMPS', 'PUCUR', 'CURANG', 'P', 'O_P', 'Q', 'O_Q', 'PLOS', 'O_PLOS', 'QLOS', 'O_QLOS', 'PCTRTA'],
                     'brnint' : ['STATUS', 'METER', 'NMETR', 'OWNERS', 'OWN1', 'OWN2', 'OWN3', 'OWN4', 'STATION_I', 'STATION_J', 'SECTION_I', 'SECTION_J', 'NODE_I', 'NODE_J', 'SCTYPE'],
-                    'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM'] 
+                    'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM', 'FROMAREANUMBER', 'TOAREANUMBER'] 
                 }, 
                 'Induction_generators': {
                     'inddt1': ["MBASE", "RATEKV", "PSET", "RA", "XA", "R1", "X1", "R2", "X2", "X3", "E1", "SE1", "E2",
@@ -74,7 +74,7 @@ class AbstractMode:
                                "O_MVA", "P", "O_P", "Q", "O_Q", "PERCENT", "GENTAP", "VSCHED", "WPF", "RMPCT", "RPOS",
                                "XSUBTR", "XTRANS", "XSYNCH"],
                     'macdt2': ["PQ", "O_PQ", "ZSORCE", "XTRAN", "ZPOS", "ZNEG", "ZZERO", "ZGRND"],
-                    'macnofunc' : ['MACID','BUSNUM','BUSNAME', 'SUBNUMBER', 'SUBLATITUDE', 'SUBLONGITUDE'],
+                    'macnofunc' : ['MACID','BUSNUM','BUSNAME', 'SUBNUMBER', 'SUBLATITUDE', 'SUBLONGITUDE','AREANUMBER'],
                     'macint' : ['STATION', 'SECTION', 'STATUS', 'IREG', 'NREG', 'OWNERS', 'WMOD', 'PERCENT', 'CZG']
                 },
                 'Fixed_shunts': {
@@ -466,6 +466,10 @@ class AbstractMode:
                                                     irr, val = self.PSSE.busint(int(b), 'STATION')
                                                     results = self.add_result(results, q, val, "{}_{}".format(id,b))
 
+                                                elif v == "AREANUMBER":
+                                                    irr, val = self.PSSE.busint(int(b), 'AREA')
+                                                    results = self.add_result(results, q, val, "{}_{}".format(id,b))
+
                                                 elif v in ['SUBLATITUDE', 'SUBLONGITUDE']:
                                                     sub_dict = {'SUBLATITUDE': 'LATI', 'SUBLONGITUDE': 'LONG'}
                                                     irr, val = self.PSSE.busint(int(b), 'STATION')
@@ -525,6 +529,12 @@ class AbstractMode:
                                                     sub_dict = {'SUBNUMBERFROM': int(b), 'SUBNUMBERTO': int(b1)}
                                                     ierr, val = self.PSSE.busint(sub_dict[v], 'STATION')
                                                     results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
+                                            
+                                                elif v in ['FROMAREANUMBER', 'TOAREANUMBER']:
+                                                    bus_dict = {'FROMAREANUMBER': int(b), 'TOAREANUMBER': int(b1)}
+                                                    irr, val = self.PSSE.busint(bus_dict[v], 'AREA')
+                                                    results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
+
                                             else:
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), str(ickt), v)
                                                 if irr == 0:

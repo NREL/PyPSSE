@@ -45,7 +45,9 @@ NAERM_TO_PYPSSE  ={
         'BusNum:1': ['TOBUSNUM'],
         'LineCircuit': ['CIRCUIT'],
         'LineStatus': ['STATUS'],
-        'LineMaxPercentAmp': ['PCTRTA']
+        'LineMaxPercentAmp': ['PCTRTA'],
+        'FromAreaNumber': ['FROMAREANUMBER'],
+        'ToAreaNumber': ['TOAREANUMBER']
     },
 
     'Machines' : {
@@ -62,7 +64,8 @@ NAERM_TO_PYPSSE  ={
         'SubNumber': ['SUBNUMBER'],
         'SubLatitude': ['SUBLATITUDE'],
         'SubLongitude': ['SUBLONGITUDE'],
-        'MachineID': ['MACID']
+        'MachineID': ['MACID'],
+        'AreaNumber': ['AREANUMBER']
     },
     'Stations': {
         "SubName": ["SUBNAME"],
