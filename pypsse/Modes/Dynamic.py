@@ -156,6 +156,7 @@ class Dynamic(AbstractMode):
             P2 = self.settings['Loads']['active_load']["% constant admittance"]
             Q1 = self.settings['Loads']['reactive_load']["% constant current"]
             Q2 = self.settings['Loads']['reactive_load']["% constant admittance"]
+
             if busSubsystem:
                 self.PSSE.conl(busSubsystem, 0, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
                 self.PSSE.conl(busSubsystem, 0, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
@@ -164,4 +165,3 @@ class Dynamic(AbstractMode):
                 self.PSSE.conl(0, 1, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
                 self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
                 self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
-

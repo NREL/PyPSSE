@@ -112,18 +112,6 @@ class helics_interface:
                             self.logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
                         if dtype_matched:
                             self.logger.debug("Publication registered: {}".format(pub_tag))
-        # self.publications = {}
-        # for bus_subsystem_id in self.settings['bus_subsystems']["publish_subsystems"]:
-        #     if bus_subsystem_id in bus_subsystems:
-        #         buses = bus_subsystems[bus_subsystem_id]
-        #         for bus_id in buses:
-        #             self.publications[bus_id] = {}
-        #             for bus_p in self.bus_pubs:
-        #                 pub = "{}.bus-{}.{}".format(self.settings["HELICS"]['Federate name'], bus_id, bus_p)
-        #                 self.publications[bus_id][pub] = h.helicsFederateRegisterGlobalTypePublication(
-        #                     self.PSSEfederate, pub, 'double', ''
-        #                 )
-        #                 self.logger.debug("Publication registered: {}".format(pub))
         return
 
     def register_subscriptions(self, bus_subsystem_dict):
@@ -270,8 +258,8 @@ class helics_interface:
                     sub_data['dStates'].insert(0, sub_data['dStates'].pop())
 
         for b, bInfo in self.psse_dict.items():
-            for t , tInfo in bInfo.items():
-                for i , vDict in tInfo.items():
+            for t, tInfo in bInfo.items():
+                for i, vDict in tInfo.items():
                     values = {}
                     j = 0
                     for p, v in vDict.items():

@@ -73,7 +73,7 @@ class hdf5Writer:
                 si = int(self.step / self.chunkRows) * self.chunkRows
                 ei = si + self.chunkRows
                 for colName in powerflow_output[obj_type].keys():
-                    self.store_datasets[obj_type][colName][si:ei] = self.dfs[obj_type][colName]
+                    self.store_datasets[obj_type][colName][si:ei] = np.real(self.dfs[obj_type][colName])
                 self.dfs[obj_type] = None
             self.Timestamp[self.step-1] = np.string_(str(currenttime))
             # Add object status data to a DataFrame
