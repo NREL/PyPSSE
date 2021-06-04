@@ -376,8 +376,8 @@ class AbstractMode:
                                                 if b in self.bus_freq_channels:
                                                     irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
                                                     if not val:
-                                                        val = np.nan
-                                                    results =self.add_result(results, q, val, int(b))
+                                                        val = np.NaN
+                                                    results = self.add_result(results, q, val, int(b))
                                                 else:
                                                     results = self.add_result(results, q, 0, int(b))
 

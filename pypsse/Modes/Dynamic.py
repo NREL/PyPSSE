@@ -69,20 +69,16 @@ class Dynamic(AbstractMode):
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             if self.settings["HELICS"]["Iterative Mode"]:
-                sim_step = self.settings["Simulation"]["Step resolution (sec)"] / self.iter_const
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"] / self.iter_const
             else:
-                sim_step = self.settings["Simulation"]["Step resolution (sec)"]
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
         else:
-            sim_step = self.settings["Simulation"]["Step resolution (sec)"]
+            sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
 
         self.PSSE.dynamics_solution_param_2(
             [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
             [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
         )
-
-
-        #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
-
 
         if ierr:
             raise Exception('Error loading dynamic model file "{}". Error code - {}'.format(self.dyr_path, ierr))
@@ -112,6 +108,12 @@ class Dynamic(AbstractMode):
         # get load info for the sub system
         self.load_info = self.get_load_indices(bus_subsystems)
         self.logger.debug('pyPSSE initialization complete!')
+
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i + 1
+            self.PSSE.bus_frequency_channel([i + 1, int(bus)], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i + 1}")
+
         self.xTime = 0
         return self.initialization_complete
 

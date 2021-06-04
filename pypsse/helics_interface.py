@@ -276,14 +276,17 @@ class helics_interface:
                             if isinstance(sub_data['scaler'], list):
                                 values[ppty] = v * sub_data['scaler'][j]
                             else:
+                                print(sub_data['scaler'])
                                 values[ppty] = v * sub_data['scaler']
                         elif isinstance(p, list):
                             for alpha, ppt in enumerate(p):
                                 ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
 
                                 values[ppty] = v * sub_data['scaler'][alpha]
-                        j +=1
-                    if sum(values.values()) != 0:
+                        j += 1
+                    print(values.values())
+                    isEmpty = [0 if not vx else 1 for vx in values.values()]
+                    if sum(isEmpty) != 0:
                         self.sim.update_object(t, b, i, values)
 
 
