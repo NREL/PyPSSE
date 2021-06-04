@@ -699,18 +699,20 @@ class AbstractMode:
 
     def update_object(self, dType, bus, id, values):
         #print(dType, bus, id, values)
-        if dType == "Load":
-            ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
-        elif dType == "Induction_machine":
-            ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
-        elif dType == "Machine":
-            ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
-        elif dType == "Plant":
-            ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
-        else:
-            ierr = 1
+        val = sum([x for x in values.values()])
+        if val > -1000000.0 and val < 100000.0:
+            if dType == "Load":
+                ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
+            elif dType == "Induction_machine":
+                ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
+            elif dType == "Machine":
+                ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
+            elif dType == "Plant":
+                ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
+            else:
+                ierr = 1
 
-        if ierr == 0:
-            self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
-        else:
-            self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")
+            if ierr == 0:
+                self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
+            else:
+                self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")

@@ -13,7 +13,7 @@ class Dynamic(AbstractMode):
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
-
+        self.iter_const = 100.0
         # if len(self.settings["Simulation"]["Setup files"]):
         #     ierr = None
 
@@ -69,7 +69,7 @@ class Dynamic(AbstractMode):
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             if self.settings["HELICS"]["Iterative Mode"]:
-                sim_step = self.settings["Simulation"]["Step resolution (sec)"] / 100.0
+                sim_step = self.settings["Simulation"]["Step resolution (sec)"] / self.iter_const
             else:
                 sim_step = self.settings["Simulation"]["Step resolution (sec)"]
         else:
@@ -118,6 +118,7 @@ class Dynamic(AbstractMode):
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         self.xTime = 0
+        print(t)
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def get_load_indices(self, bus_subsystems):
@@ -130,16 +131,19 @@ class Dynamic(AbstractMode):
             bus_data = bus_data[0]
             for i, bus_id in enumerate(bus_data):
                 load_info[bus_id] = {
-                    'Load ID' : load_data[0,i],
-                    'Bus name' : load_data[1,i],
-                    'Bus name (ext)' : load_data[2,i],
+                    'Load ID': load_data[0, i],
+                    'Bus name': load_data[1, i],
+                    'Bus name (ext)': load_data[2, i],
                 }
             all_bus_ids[id] = load_info
         return all_bus_ids
 
     def resolveStep(self, t):
+        print(t)
+        print(self.xTime * self.incTime / self.iter_const)
+        err = self.PSSE.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
         self.xTime += 1
-        return self.PSSE.run(0, t + self.xTime * self.incTime / 1000.0, 1, 1, 1)
+        return err
 
     def getTime(self):
         return self.time

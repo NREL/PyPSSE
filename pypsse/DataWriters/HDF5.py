@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Standard libraries
+#from common import DTYPE_MAPPING
 import pandas as pd
 import numpy as np
+
 import h5py
 import os
 
@@ -52,6 +54,7 @@ class hdf5Writer:
                 self.store_groups[obj_type] = self.store.create_group(obj_type)
                 self.store_datasets[obj_type] = {}
                 for colName in powerflow_output[obj_type].keys():
+                    print( Data[colName], )
                     self.store_datasets[obj_type][colName] = self.store_groups[obj_type].create_dataset(
                         str(colName),
                         shape=(self.columnLength, ),
@@ -59,7 +62,8 @@ class hdf5Writer:
                         chunks=True,
                         compression="gzip",
                         compression_opts=4,
-                        shuffle=True
+                        shuffle=True,
+                        dtype=Data[colName].dtype
                     )
             if obj_type not in self.dfs:
                 self.dfs[obj_type] = Data
@@ -73,7 +77,7 @@ class hdf5Writer:
                 si = int(self.step / self.chunkRows) * self.chunkRows
                 ei = si + self.chunkRows
                 for colName in powerflow_output[obj_type].keys():
-                    self.store_datasets[obj_type][colName][si:ei] = np.real(self.dfs[obj_type][colName])
+                    self.store_datasets[obj_type][colName][si:ei] = self.dfs[obj_type][colName]
                 self.dfs[obj_type] = None
             self.Timestamp[self.step-1] = np.string_(str(currenttime))
             # Add object status data to a DataFrame

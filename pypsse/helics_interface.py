@@ -46,11 +46,12 @@ class helics_interface:
         h.helicsFederateInfoSetTimeProperty(
             self.fedinfo,
             h.helics_property_time_delta,
-            self.settings["Simulation"]["Step resolution (sec)"]
+            self.settings["Simulation"]["Step resolution (sec)"] / 1000.0
         )
-        h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
-                                               self.settings["HELICS"]['Helics logging level'])
-        h.helicsFederateInfoSetFlagOption(self.fedinfo, h.helics_flag_uninterruptible, True)
+
+        # h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
+        #                                        self.settings["HELICS"]['Helics logging level'])
+
         self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
         return
 
@@ -123,9 +124,14 @@ class helics_interface:
         )
         self.psse_dict = {}
         for ix, row in sub_data.iterrows():
-
-            row['property'] = ast.literal_eval(row['property'])
-            row['scaler'] = ast.literal_eval(row['scaler'])
+            try:
+                row['property'] = ast.literal_eval(row['property'])
+            except:
+                pass
+            try:
+                row['scaler'] = ast.literal_eval(row['scaler'])
+            except:
+                pass
             if row["element_type"] not in PROFILE_VALIDATION:
                 raise Exception(f"Subscription file error: {row['element_type']} not a valid element_type."
                                 f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}")
@@ -191,11 +197,13 @@ class helics_interface:
             )
             self.logger.info('Time requested: {} - time granted: {} error: {} it: {}'.format(
                 r_seconds, self.c_seconds, error, self.itr))
+            # self._co_convergance_error_tolerance
             if error > -1 and self.itr < self._co_convergance_max_iterations:
                 self.itr += 1
                 return False, self.c_seconds
             else:
                 self.itr = 0
+                self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
                 return True, self.c_seconds
 
     def get_restructured_results(self, results):
