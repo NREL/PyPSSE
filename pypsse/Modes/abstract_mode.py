@@ -377,7 +377,7 @@ class AbstractMode:
                                                     irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
                                                     if not val:
                                                         val = np.NaN
-                                                    results = self.add_result(results, q, val, int(b))
+                                                    results = self.add_result(results, q, val * 60.0, int(b))
                                                 else:
                                                     results = self.add_result(results, q, 0, int(b))
 
