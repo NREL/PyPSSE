@@ -35,6 +35,7 @@ setup(name='pssepy',
       url='http://www.github.com/nrel/pypsse',
       packages=find_packages(),
       install_requires=requirements,
+      include_package_data=True,
       package_data={'pypsse': ['*.toml']},
         entry_points={
             "console_scripts": [
