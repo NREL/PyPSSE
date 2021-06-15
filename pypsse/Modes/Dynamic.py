@@ -1,7 +1,9 @@
-import numpy as np
-import os
+from pypsse.Modes.naerm_constants import naerm_decorator, DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.Modes.abstract_mode import AbstractMode
+import numpy as np
 import datetime
+import os
+
 class Dynamic(AbstractMode):
 
     def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
@@ -145,3 +147,39 @@ class Dynamic(AbstractMode):
                 self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
                 self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
 
+    @naerm_decorator
+    def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
+        print(ext_string2_info, mapping_dict)
+        results = super(Dynamic, self).read_subsystems(
+            quantities,
+            subsystem_buses,
+            mapping_dict=mapping_dict,
+            ext_string2_info=ext_string2_info
+        )
+        """ Add """
+        for class_name, vars in quantities.items():
+            if class_name in dyn_only_options:
+                for v in vars:
+                    if v in DYNAMIC_ONLY_PPTY[class_name]:
+                        for funcName in dyn_only_options[class_name]:
+                            if v in dyn_only_options[class_name][funcName]:
+                                con_ind = dyn_only_options[class_name][funcName][v]
+                                for bus in subsystem_buses:
+                                    if class_name == "Loads":
+                                        ierr = self.PSSE.inilod(int(bus))
+                                        ierr, ld_id = self.PSSE.nxtlod(int(bus))
+                                        if ld_id is not None:
+                                            irr, con_index = getattr(self.PSSE, funcName)(int(bus), ld_id, 'CHARAC', 'CON')
+                                            if con_index is not None:
+                                                act_con_index = con_index + con_ind
+                                                irr, value = self.PSSE.dsrval('CON', act_con_index)
+                                                # print(class_name, funcName, bus, ld_id, con_index, con_num, v, value)
+                                                res_base = f"{class_name}_{v}"
+                                                if res_base not in results:
+                                                    results[res_base] = {}
+                                                obj_name = f"{bus}_{ld_id}"
+                                                results[res_base][obj_name] = value
+            else:
+                self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
+
+        return results
