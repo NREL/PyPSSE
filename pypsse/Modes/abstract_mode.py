@@ -443,7 +443,7 @@ class AbstractMode:
                                                     irr, val = self.PSSE.notona(int(b))
                                                     results = self.add_result(results, q, val, "{}_{}".format(id, b))
                                             elif func_name == "loddt2": 
-                                                string2 = 'NOM'
+                                                string2 = 'ACT'
                                                 if class_name in ext_string2_info:
                                                     if v in ext_string2_info[class_name]:
                                                         string2 = ext_string2_info[class_name][v]   
