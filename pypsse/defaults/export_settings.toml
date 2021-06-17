@@ -1,10 +1,10 @@
 "Export results using channels" = false
-"Defined bus subsystems only" = false
+"Defined bus subsystems only" = true
 "Write format" = "h5"
 
 [Buses]
 "BASE" = false
-"FREQ" = true
+"FREQ" = false
 "PU" = true
 "KV" = false
 "ANGLE" = false
