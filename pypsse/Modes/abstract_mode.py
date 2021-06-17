@@ -282,9 +282,9 @@ class AbstractMode:
         
         return 0
 
-    @naerm_decorator
+    #@naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
-        print("here")
+        
         results = {}
         area_numbers = self.get_area_numbers(subsystem_buses)
         zone_numbers = self.get_zone_numbers(subsystem_buses)
@@ -442,8 +442,12 @@ class AbstractMode:
                                                 elif v == 'BUSNAME':
                                                     irr, val = self.PSSE.notona(int(b))
                                                     results = self.add_result(results, q, val, "{}_{}".format(id, b))
-                                            elif func_name == "loddt2":    
-                                                irr, val = getattr(self.PSSE, func_name)(int(b), id, v, 'ACT')
+                                            elif func_name == "loddt2": 
+                                                string2 = 'NOM'
+                                                if class_name in ext_string2_info:
+                                                    if v in ext_string2_info[class_name]:
+                                                        string2 = ext_string2_info[class_name][v]   
+                                                irr, val = getattr(self.PSSE, func_name)(int(b), id, v, string2)
                                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                                             elif func_name == "lodint":
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v)

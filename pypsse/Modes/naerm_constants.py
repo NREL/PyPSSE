@@ -125,8 +125,8 @@ NAERM_TO_PYPSSE  ={
     "Loads" : {
         "LoadMW" : ["MVA", "REAL"],
         "LoadID": ['LOADID'],
-        "MW": ["MVA", "REAL"],
-        "Mvar": ["MVA", "IMAG"],
+        "MW": ["MVA", "REAL", "NOM"],
+        "Mvar": ["MVA", "IMAG", "NOM"],
         "ID": ["LOADID"],
         "BusNum": ["BUSNUM"],
         "Status": ["STATUS"],
