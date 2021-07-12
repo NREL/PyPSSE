@@ -1,5 +1,6 @@
 from pypsse.Modes.naerm_constants import naerm_decorator, DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.Modes.abstract_mode import AbstractMode
+from pypsse.common import MACHINE_CHANNELS
 import numpy as np
 import datetime
 import os
@@ -84,6 +85,10 @@ class Dynamic(AbstractMode):
         self.chnl_idx = 1
         self.setup_bus_channels([101, 102, 204, 205, 3001], ["voltage_and_angle", "frequency"])
         self.setup_load_channels([('1', 153), ('1', 154), ('2', 154), ('1', 3005)])
+        self.setup_machine_channels(
+            machines=[('1', 101), ('1', 102), ('1', 206), ('1', 211), ('1', 3011), ('1', 3018)],
+            properties=["PELEC", "QELEC", "SPEED"]
+        )
 
         if self.snp_file.endswith('.snp'):
             self.PSSE.snap(sfile=self.snp_file)
@@ -111,6 +116,19 @@ class Dynamic(AbstractMode):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)
 
+    def setup_machine_channels(self, machines, properties):
+        for i, qty in enumerate(properties):
+            if qty not in self.channel_map:
+                nqty = f"MACHINE_{qty}"
+                self.channel_map[nqty] = {}
+            for mch, b in machines:
+                if qty in MACHINE_CHANNELS:
+                    self.channel_map[nqty][f"{b}_{mch}"] = [self.chnl_idx]
+                    chnl_id = MACHINE_CHANNELS[qty]
+                    self.logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
+                    self.PSSE.machine_array_channel([self.chnl_idx, chnl_id, int(b)], mch, "")
+                    self.chnl_idx += 1
+        return
 
     def setup_load_channels(self, loads):
         if "LOAD_P" not in self.channel_map:
@@ -125,12 +143,11 @@ class Dynamic(AbstractMode):
             self.logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
             self.chnl_idx += 2
 
-    def setup_bus_channels(self, buses, qunatities):
-        for i, qty in enumerate(qunatities):
+    def setup_bus_channels(self, buses, properties):
+        for i, qty in enumerate(properties):
             if qty not in self.channel_map:
                 self.channel_map[qty] = {}
             for j, b in enumerate(buses):
-                #TODO: add machine array channel last
                 if qty == "frequency":
                     self.channel_map[qty][b] = [ self.chnl_idx]
                     self.PSSE.bus_frequency_channel([ self.chnl_idx, int(b)], "")
@@ -156,10 +173,7 @@ class Dynamic(AbstractMode):
                         results[nName] = {}
                     ierr, value = self.PSSE.chnval(idx)
                     results[nName][b] = value
-
         return results
-
-        #
 
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}
@@ -214,10 +228,7 @@ class Dynamic(AbstractMode):
         )
 
         poll_results = self.poll_channels()
-        print(poll_results)
-        quit()
         results.update(poll_results)
-        print(results)
         """ Add """
         for class_name, vars in quantities.items():
             if class_name in dyn_only_options:
