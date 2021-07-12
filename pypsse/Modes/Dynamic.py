@@ -229,7 +229,6 @@ class Dynamic(AbstractMode):
 
         poll_results = self.poll_channels()
         results.update(poll_results)
-        """ Add """
         for class_name, vars in quantities.items():
             if class_name in dyn_only_options:
                 for v in vars:

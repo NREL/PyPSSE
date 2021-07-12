@@ -26,7 +26,7 @@ import toml
 import time
 import shutil
 
-USING_NAERM = 1
+USING_NAERM = 0
 
 class pyPSSE_instance:
 
@@ -275,7 +275,6 @@ class pyPSSE_instance:
         self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
         if self.settings["HELICS"]["Cosimulation mode"]:
             if self.settings["HELICS"]["Create subscriptions"]:
-                print("Here")
                 self.update_subscriptions()
                 self.logger.debug('Time requested: {}'.format(t))
                 self.inc_time, helics_time = self.update_federate_time(t)
