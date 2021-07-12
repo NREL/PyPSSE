@@ -1,11 +1,12 @@
 [Simulation]
-"Simulation time (sec)" = 25
-"Step resolution (sec)" = 1
+"Simulation time (sec)" = 1
+"Step resolution (sec)" = 0.004166667
+"PSSE solver timestep (sec)" = 0.004166667
 "Start time" = "01/01/2020 00:00:00"
 "Simulation mode" = "Dynamic"
 "Use profile manager" = false
 PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = "C:/Users/KDUWADI/Desktop/NREL_Projects/NAERM-DOE/DEE_BES_cosim/PyPSSE/examples/dynamic_example"
+"Project Path" = "C:\\Users\\alatif\\Desktop\\psse_channel\\PyPSSE\\examples\\dynamic_example"
 "Case study" = "savnw.sav"
 "Raw file" = "savnw.raw"
 "Snp file" = ""
@@ -64,11 +65,11 @@ bus_file = ""
 bus_subsystem_list = [[101, 102, 204, 205 , 3001]]
 publish_subsystems = [ 0,]
 
-[Loads]
-Convert = false
-
 [Generators]
 "Missing machine model" = 1
+
+[Loads]
+Convert = false
 
 [Loads.active_load]
 "% constant current" = 50.0
@@ -77,3 +78,30 @@ Convert = false
 [Loads.reactive_load]
 "% constant current" = 50.0
 "% constant admittance" = 50.0
+
+[contingencies.bus_fault.bf_1]
+"time" = 0.4
+"bus_id" = 3001
+"duration" = 0.1 
+"bus_trip" = false
+"trip_delay" = 0.05
+"fault_impedance" = [0.006, 0.001]
+
+#[contingencies.machine_trip.mt_1]
+#"time" = 100.0
+#"bus_id" = 21528
+#"machine_id" = "1"
+#
+#[contingencies.bus_trip.bt_1]
+#"time" = 100.0
+#"bus_id" = 21528
+#
+#[contingencies.line_trip.lt_1]
+#"time" = 100.0
+#"bus_ids" = [21528, 21542]
+#
+#[contingencies.line_fault.lf_1]
+#"time" = 100.0
+#"bus_ids" = [21528, 21542]
+#"duration" = 0.01667
+#"fault_impedance" = [0.3, 0.00000001]

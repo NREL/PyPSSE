@@ -80,6 +80,11 @@ class Dynamic(AbstractMode):
         if self.export_settings["Export results using channels"]:
             self.setup_channels()
 
+        self.channel_map = {}
+        self.chnl_idx = 1
+        self.setup_bus_channels([101, 102, 204, 205, 3001], ["voltage_and_angle", "frequency"])
+        self.setup_load_channels([('1', 153), ('1', 154), ('2', 154), ('1', 3005)])
+
         if self.snp_file.endswith('.snp'):
             self.PSSE.snap(sfile=self.snp_file)
         # Load user defined models
@@ -105,6 +110,56 @@ class Dynamic(AbstractMode):
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)
+
+
+    def setup_load_channels(self, loads):
+        if "LOAD_P" not in self.channel_map:
+            self.channel_map["LOAD_P"] = {}
+            self.channel_map["LOAD_Q"] = {}
+
+        for ld, b in loads:
+            self.channel_map["LOAD_P"][f"{b}_{ld}"] = [self.chnl_idx]
+            self.channel_map["LOAD_Q"][f"{b}_{ld}"] = [self.chnl_idx + 1]
+            self.PSSE.load_array_channel([self.chnl_idx, 1, int(b)], ld, "")
+            self.PSSE.load_array_channel([self.chnl_idx + 1, 2, int(b)], ld, "")
+            self.logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
+            self.chnl_idx += 2
+
+    def setup_bus_channels(self, buses, qunatities):
+        for i, qty in enumerate(qunatities):
+            if qty not in self.channel_map:
+                self.channel_map[qty] = {}
+            for j, b in enumerate(buses):
+                #TODO: add machine array channel last
+                if qty == "frequency":
+                    self.channel_map[qty][b] = [ self.chnl_idx]
+                    self.PSSE.bus_frequency_channel([ self.chnl_idx, int(b)], "")
+                    self.logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
+                    self.chnl_idx += 1
+                elif qty == "voltage_and_angle":
+                    self.channel_map[qty][b] = [ self.chnl_idx,  self.chnl_idx+1]
+                    self.PSSE.voltage_and_angle_channel([ self.chnl_idx, -1, -1, int(b)], "")
+                    self.logger.info(f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}")
+                    self.chnl_idx += 2
+
+    def poll_channels(self):
+        results = {}
+        for ppty , bDict in self.channel_map.items():
+            ppty_new = ppty.split("_and_")
+            for b, indices in bDict.items():
+                for n, idx in zip(ppty_new, indices):
+                    if "_" not in n:
+                        nName = f"BUS_{n}"
+                    else:
+                        nName = n
+                    if nName not in results:
+                        results[nName] = {}
+                    ierr, value = self.PSSE.chnval(idx)
+                    results[nName][b] = value
+
+        return results
+
+        #
 
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}
@@ -147,15 +202,22 @@ class Dynamic(AbstractMode):
                 self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
                 self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
 
+
+
     @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
-        print(ext_string2_info, mapping_dict)
         results = super(Dynamic, self).read_subsystems(
             quantities,
             subsystem_buses,
             mapping_dict=mapping_dict,
             ext_string2_info=ext_string2_info
         )
+
+        poll_results = self.poll_channels()
+        print(poll_results)
+        quit()
+        results.update(poll_results)
+        print(results)
         """ Add """
         for class_name, vars in quantities.items():
             if class_name in dyn_only_options:
