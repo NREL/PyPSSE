@@ -39,7 +39,6 @@ class Snap(AbstractMode):
         self.initialization_complete = True
         return self.initialization_complete
 
-
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         return self.PSSE.run(0, t, 1, 1, 1)

@@ -289,6 +289,8 @@ class pyPSSE_instance:
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_data()
+
+        curr_results = {}
         if self.export_settings['Defined bus subsystems only']:
 
             # Let's find current results for all subsystems
@@ -304,7 +306,7 @@ class pyPSSE_instance:
             if self.inc_time and not self.export_settings["Export results using channels"]:
                 self.results.Update(curr_results, None, t, self.sim.getTime())
 
-        print(curr_results)
+        # print(curr_results)
         return curr_results
 
     def update_subscriptions(self):
