@@ -424,10 +424,22 @@ class pyPSSE_instance:
 if __name__ == '__main__':
     
     
-    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\psse_service\src\tmp\wecc\Settings\pyPSSE_settings.toml')
+    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\psse_service\src\tmp\9e816d8d-ea81-4897-82eb-9d1da1f08211_wecc_federate\Settings\pyPSSE_settings.toml')
     x.init()
     x.step(0)
-    #x.get_results()
+    curr, re_curr = x.get_results({"DCtransmissionlines": {
+        "name": True,
+        "BusNumRect": True,
+        "BusNumInv": True,
+        "BusNameRect": True,
+        "BusNameInv": True,
+        "Status": True,
+        "R": True,
+        "SetpointVolt": True,
+        "Circuit": True
+    }})
+
+    print(curr)
     # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
     # for s in scenarios:
     #     x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')

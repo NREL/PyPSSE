@@ -46,8 +46,10 @@ class AbstractMode:
                     "zndat": ["LOAD", "LOADID", "LDGN", "LDGNLD", "GEN", "LOSS"]
                 },
                 "DCtransmissionlines": {
-                    'dctnofunc' : ['DCLINENAME'],
-                    'dc2int_2' : ['MDC', 'RECT', 'INV', 'METER', 'NBR', 'NBI', 'ICR', 'ICI', 'NDR', 'NDI']
+                    'dctnofunc' : ['DCLINENAME', "BUSNAMERECT", "BUSNAMEINV", "CIRCUIT"],
+                    'dc2int_2' : ['MDC', 'RECT', 'INV', 'METER', 'NBR', 'NBI', 'ICR', 'ICI', 'NDR', 'NDI'],
+                    'dc2mind': ['CON', 'STATE', 'VAR', 'ICON', 'NCON', 'NSTATE', 'NVAR', 'NICON', 'STATUS'],
+                    'dc2dat_2': ["RDC", "VSCHD"]
                 },
                 'Branches': {
                     'brndat': ['RATEn', 'RATEA', 'RATEB', 'RATEC', 'RATE', 'LENGTH', 'CHARG', 'CHARGZ', 'FRACT1', 'FRACT2',
@@ -173,14 +175,15 @@ class AbstractMode:
     def get_dctr_line_names(self, subsystem_buses):
         dc_lines = []
         ierr = self.PSSE.ini2dc()
-        ierr, dc_line_name = self.PSSE.nxtmdc()
+        ierr, dc_line_name = self.PSSE.nxt2dc()
         while dc_line_name != None:
-            ierr, rectbus = dc2int_2(dc_line_name, 'RECT')
-            ierr, invbus = dc2int_2(dc_line_name, 'INV')
+            ierr, rectbus = self.PSSE.dc2int_2(dc_line_name, 'RECT')
+            ierr, invbus = self.PSSE.dc2int_2(dc_line_name, 'INV')
             if rectbus in subsystem_buses and invbus in subsystem_buses:
                 dc_lines.append(dc_line_name)
 
             ierr, dc_line_name = self.PSSE.nxt2dc()
+
         return list(set(dc_lines))
 
     def get_a_list_of_buses_in_substation(self, sub_number, subsystem_buses):
@@ -354,8 +357,23 @@ class AbstractMode:
                                     if func_name == 'dctnofunc':
                                         if v == 'DCLINENAME':
                                             results =self.add_result(results, q, dcline, dcline)
-                                    elif func_name == 'dc2int_2':
+                                        if v == "BUSNAMERECT":
+                                            ierr, b = self.PSSE.dc2int_2(dcline, 'RECT')
+                                            irr, val = self.PSSE.notona(int(b))
+                                            results = self.add_result(results, q, val, dcline)
+                                        if v == "BUSNAMEINV":
+                                            ierr, b = self.PSSE.dc2int_2(dcline, 'INV')
+                                            irr, val = self.PSSE.notona(int(b))
+                                            results = self.add_result(results, q, val, dcline)
+                                        if v == "CIRCUIT":
+                                            results = self.add_result(results, q, '1', dcline)
+                                    elif func_name in ['dc2int_2', 'dc2mind']:
                                         ierr, val = getattr(self.PSSE, func_name)(dcline, v)
+                                        results =self.add_result(results, q, val, dcline)
+
+                                    elif func_name == 'dc2dat_2':
+                                        ierr, b = self.PSSE.dc2int_2(dcline, 'RECT')
+                                        ierr, val = getattr(self.PSSE, func_name)(dcline, int(b), v)
                                         results =self.add_result(results, q, val, dcline)
 
                             else:
