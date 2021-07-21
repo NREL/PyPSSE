@@ -125,8 +125,8 @@ NAERM_TO_PYPSSE  ={
     "Loads" : {
         "LoadMW" : ["MVA", "REAL"],
         "LoadID": ['LOADID'],
-        "MW": ["MVA", "REAL"],
-        "Mvar": ["MVA", "IMAG"],
+        "MW": ["MVA", "REAL", "NOM"],
+        "Mvar": ["MVA", "IMAG", "NOM"],
         "ID": ["LOADID"],
         "BusNum": ["BUSNUM"],
         "Status": ["STATUS"],
@@ -144,9 +144,15 @@ NAERM_TO_PYPSSE  ={
         "TransCircuit": ["CIRCUIT_3WDG"]
     },
     "DCtransmissionlines": {
-        "BusNum": ["RECT"],
-        "BusNum:1": ["INV"],
-        "DCLID": ["DCLINENAME"]
+        "name": ["DCLINENAME"],
+        "BusNumRect": ["RECT"],
+        "BusNumInv": ["INV"],
+        "BusNameRect": ["BUSNAMERECT"],
+        "BusNameInv": ["BUSNAMEINV"],
+        "Status": ["STATUS"],
+        "R": ["RDC"],
+        "SetpointVolt": ["VSCHD"],
+        "Circuit": ["CIRCUIT"]
     }
 }
 
@@ -207,7 +213,8 @@ def naerm_decorator(func):
             status_translation = {1: 'connected', 0: 'notconnected'}
             if param.lower() == 'status':
                 for key, value in sub_dict.items():
-                    sub_dict[key] = status_translation[value]
+                    print(key, value, type(key), type(value))
+                    sub_dict[key] = status_translation[value] if value in status_translation else status_translation[0]
              
             if class_name in complex_conversion_dict:
                 conv_dict = complex_conversion_dict[class_name]

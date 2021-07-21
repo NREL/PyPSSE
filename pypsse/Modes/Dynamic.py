@@ -71,7 +71,6 @@ class Dynamic(AbstractMode):
                                             [0.4, self._f, 0.0033333, self._f, self._f, self._f, self._f, self._f])
         #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
 
-
         if ierr:
             raise Exception('Error loading dynamic model file "{}". Error code - {}'.format(self.dyr_path, ierr))
         else:

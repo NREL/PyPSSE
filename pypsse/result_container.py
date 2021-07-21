@@ -9,6 +9,8 @@ class container:
         export__list = ['Buses', 'Branches', 'Loads', 'Induction_generators', 'Machines', 'Fixed_shunts',
                         'Switched_shunts', 'Transformers',"Areas", "Zones", "DCtransmissionlines", "Stations"]
         export__dict = export_settings
+        
+        self.exp_vars_by_subsystem = []
         self.export_path = os.path.join(settings["Simulation"]["Project Path"], 'Exports')
         self.export_settings = export_settings
         self.settings = settings
@@ -18,11 +20,31 @@ class container:
             variable_dict = export_settings[class_name]
             if isinstance(variable_dict, dict):
                 for variable_name, is_exporting in variable_dict.items():
+                    
+                    # Handle boolean or tuple coming from is_exporting
+                    if isinstance(is_exporting, list): 
+
+                        # fill array with none
+                        if not self.exp_vars_by_subsystem:
+                            self.exp_vars_by_subsystem = [None]*len(is_exporting)
+                        
+                        for id, each in enumerate(is_exporting):
+                            if not self.exp_vars_by_subsystem[id]:
+                                self.exp_vars_by_subsystem[id] = {}
+                            if class_name not in self.exp_vars_by_subsystem[id]:
+                                self.exp_vars_by_subsystem[id][class_name] = set()
+                            if each:
+                                self.exp_vars_by_subsystem[id][class_name].add(variable_name)
+                            
+                        is_exporting = any(is_exporting)
+                    
                     if is_exporting:
                         self.results['{}_{}'.format(class_name, variable_name)] = None
                         if class_name not in self.export_vars:
                             self.export_vars[class_name] = []
                         self.export_vars[class_name].append(variable_name)
+
+
 
         timeSteps = int(self.settings["Simulation"]["Simulation time (sec)"] /
                         self.settings["Simulation"]["Step resolution (sec)"])
@@ -35,17 +57,45 @@ class container:
                         'Switched_shunts', 'Transformers', "Areas", "Zones", "DCtransmissionlines", "Stations"]
         self.results = {}
         self.export_vars = {}
+        self.exp_vars_by_subsystem = []
         for class_name in export__list:
             if class_name in params:
                 variable_dict = params[class_name]
                 if isinstance(variable_dict, dict):
                     for variable_name, is_exporting in variable_dict.items():
+                        
+                        if isinstance(is_exporting, list): 
+
+                            # fill array with none
+                            if not self.exp_vars_by_subsystem:
+                                self.exp_vars_by_subsystem = [None]*len(is_exporting)
+                            
+                            for id, each in enumerate(is_exporting):
+
+                                if not self.exp_vars_by_subsystem[id]:
+                                    self.exp_vars_by_subsystem[id] = {}
+
+                                if class_name not in self.exp_vars_by_subsystem[id]:
+                                    self.exp_vars_by_subsystem[id][class_name] = set()
+                                
+                                if each:
+                                    print(each, class_name, variable_name, is_exporting)
+                                    self.exp_vars_by_subsystem[id][class_name].add(variable_name)
+                                
+                            is_exporting = any(is_exporting)
+
                         if is_exporting:
                             self.results['{}_{}'.format(class_name, variable_name)] = None
                             if class_name not in self.export_vars:
                                 self.export_vars[class_name] = []
                             self.export_vars[class_name].append(variable_name)
         return self.export_vars
+
+    def get_export_variables_by_subsystem(self):
+        for each in self.exp_vars_by_subsystem:
+            for class_ in each:
+                each[class_] = list(each[class_])
+        return self.exp_vars_by_subsystem
 
     def get_export_variables(self):
         return self.export_vars

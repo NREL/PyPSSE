@@ -127,6 +127,7 @@ class pyPSSE_instance:
 
         self.results = container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
+        self.exp_vars_by_subsystem = self.results.get_export_variables_by_subsystem()
         self.inc_time = True
 
         return
@@ -288,14 +289,24 @@ class pyPSSE_instance:
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_data()
+
+        curr_results = {}
         if self.export_settings['Defined bus subsystems only']:
-            curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+
+            # Let's find current results for all subsystems
+            if len(self.exp_vars_by_subsystem) == len(self.bus_subsystems):
+                for subsystem, buses in self.bus_subsystems.items():
+                    curr_results = self.sim.read_subsystems(self.exp_vars_by_subsystem[subsystem], buses)
+            else:
+                curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
         if not USING_NAERM:
             if self.inc_time and not self.export_settings["Export results using channels"]:
                 self.results.Update(curr_results, None, t, self.sim.getTime())
+
+        # print(curr_results)
         return curr_results
 
     def update_subscriptions(self):
@@ -310,13 +321,24 @@ class pyPSSE_instance:
         self.hi.publish()
         return
 
-    def get_results(self, params):
+    def get_results(self, params, all_buses=True):
+        
         self.exp_vars = self.results.update_export_variables(params)
-        if self.export_settings['Defined bus subsystems only']:
-            curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+        self.exp_vars_by_subsystem = self.results.get_export_variables_by_subsystem()
+        
+        if not all_buses:
+            if self.export_settings['Defined bus subsystems only']:
+                #curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+                if len(self.exp_vars_by_subsystem) == len(self.bus_subsystems):
+                    for subsystem, buses in self.bus_subsystems.items():
+                        curr_results = self.sim.read_subsystems(self.exp_vars_by_subsystem[subsystem], buses)
+                else:
+                    curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+            else:
+                curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
+                #curr_results = self.sim.read(self.exp_vars, self.raw_data)
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
-            #curr_results = self.sim.read(self.exp_vars, self.raw_data)
         
         class_name = list(params.keys())[0]
         #for x in self.restructure_results(curr_results, class_name):
@@ -400,7 +422,24 @@ class pyPSSE_instance:
         self.contingencies.update(contingencies)
 
 if __name__ == '__main__':
-    #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
+    
+    
+    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\psse_service\src\tmp\9e816d8d-ea81-4897-82eb-9d1da1f08211_wecc_federate\Settings\pyPSSE_settings.toml')
+    x.init()
+    x.step(0)
+    curr, re_curr = x.get_results({"DCtransmissionlines": {
+        "name": True,
+        "BusNumRect": True,
+        "BusNumInv": True,
+        "BusNameRect": True,
+        "BusNameInv": True,
+        "Status": True,
+        "R": True,
+        "SetpointVolt": True,
+        "Circuit": True
+    }})
+
+    print(curr)
     # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
     # for s in scenarios:
     #     x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
