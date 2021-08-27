@@ -11,6 +11,7 @@ class Dynamic(AbstractMode):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
+        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         return
 
     def init(self, bus_subsystems):
@@ -18,6 +19,8 @@ class Dynamic(AbstractMode):
 
         # if len(self.settings["Simulation"]["Setup files"]):
         #     ierr = None
+
+
 
         if len(self.settings["Simulation"]["Rwm file"]):
             self.PSSE.mcre([1, 0], self.rwn_file)
@@ -70,8 +73,8 @@ class Dynamic(AbstractMode):
 
         self.PSSE.dynamics_solution_param_2([60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
                                             [0.4, self._f, 0.0033333, self._f, self._f, self._f, self._f, self._f])
-        #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
 
+        #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
 
         if ierr:
             raise Exception('Error loading dynamic model file "{}". Error code - {}'.format(self.dyr_path, ierr))
@@ -81,17 +84,24 @@ class Dynamic(AbstractMode):
         if self.export_settings["Export results using channels"]:
             self.setup_channels()
 
+        self.PSSE.delete_all_plot_channels()
+
         self.channel_map = {}
         self.chnl_idx = 1
-        self.setup_bus_channels([101, 102, 204, 205, 3001], ["voltage_and_angle", "frequency"])
-        self.setup_load_channels([('1', 153), ('1', 154), ('2', 154), ('1', 3005)])
+        self.setup_bus_channels(
+            [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121],
+            ["voltage_and_angle", "frequency"])
+        self.setup_load_channels([
+            ('AP', 14303), ('AP', 14352), ('SR', 15108), ('1', 15561), ('AE', 17604),
+            ('AE', 17605), ('1', 37102), ('1', 37124), ('1', 37121)
+        ])
         self.setup_machine_channels(
-            machines=[('1', 101), ('1', 102), ('1', 206), ('1', 211), ('1', 3011), ('1', 3018)],
+            machines=[
+                ('1', 15140), ('1', 15252), ('7', 17189), ('1', 37102), ('1', 37121), ('1', 37124)
+            ],
             properties=["PELEC", "QELEC", "SPEED"]
         )
 
-        if self.snp_file.endswith('.snp'):
-            self.PSSE.snap(sfile=self.snp_file)
         # Load user defined models
         for mdl in self.settings["Simulation"]["User models"]:
             dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
@@ -109,7 +119,16 @@ class Dynamic(AbstractMode):
             self.logger.debug('Dynamic simulation initialization sucess!')
         # get load info for the sub system
         self.load_info = self.get_load_indices(bus_subsystems)
+
+        snp_path = os.path.join(
+            self.settings["Simulation"]["Project Path"],
+            'Case_study',
+            self.settings["Simulation"]["Snp file"]
+        )
+        #self.PSSE.snap(sfile=snp_path)
+
         self.logger.debug('pyPSSE initialization complete!')
+
         return self.initialization_complete
 
     def step(self, t):
@@ -172,6 +191,8 @@ class Dynamic(AbstractMode):
                     if nName not in results:
                         results[nName] = {}
                     ierr, value = self.PSSE.chnval(idx)
+                    if value is None:
+                        value = -1
                     results[nName][b] = value
         return results
 
@@ -253,5 +274,5 @@ class Dynamic(AbstractMode):
                                                 results[res_base][obj_name] = value
             else:
                 self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
-
+        #print(results)
         return results
