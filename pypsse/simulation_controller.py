@@ -4,7 +4,8 @@ from pypsse.Modes.Snap import Snap
 import numpy as np
 import os
 
-def sim_controller(psse, dyntools, settings, export_settings, logger, subsystem_buses):
+
+def sim_controller(psse, dyntools, settings, export_settings, logger , subsystem_buses):
     sim_modes = {
         'Dynamic': Dynamic,
         'Steady-state': Static,

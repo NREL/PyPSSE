@@ -1,5 +1,35 @@
 # Handle complex and nominal this way
 
+
+dyn_only_options = {
+    'Loads': {
+        'lmodind': {
+            "TD": 14,
+            "TC": 15,
+            "FmA": 18,
+            "FmB": 19,
+            "FmC": 20,
+            "FmD": 21,
+            "Fel": 22,
+            "PFel": 23,
+        }
+    },
+}
+
+DYNAMIC_ONLY_PPTY = {
+    "Loads": {
+        "FmA": ["FmA"],
+        "FmB": ["FmB"],
+        "FmC": ["FmC"],
+        "FmD": ["FmD"],
+        "Fel": ["Fel"],
+        "PFel": ["PFel"],
+        "TD": ["TD"],
+        "TC": ["TC"],
+
+    }
+}
+
 NAERM_TO_PYPSSE  ={
     'Buses' : {
             'Number' : ['NUMBER'],
@@ -50,6 +80,7 @@ NAERM_TO_PYPSSE  ={
         'NomKVTo': ['NOMKVTO'],
         "R": ["RX", "REAL"],
         "X": ["RX", "IMAG"]
+
     },
 
     'Machines' : {
@@ -66,7 +97,8 @@ NAERM_TO_PYPSSE  ={
         'SubNumber': ['SUBNUMBER'],
         'SubLatitude': ['SUBLATITUDE'],
         'SubLongitude': ['SUBLONGITUDE'],
-        'MachineID': ['MACID']
+        'MachineID': ['MACID'],
+        'AreaNumber': ['AREANUMBER']
     },
     'Stations': {
         "SubName": ["SUBNAME"],
@@ -106,7 +138,7 @@ NAERM_TO_PYPSSE  ={
         "IMvar": ["IL", "IMAG"],
         "ID": ["LOADID"],
         "BusNum": ["BUSNUM"],
-        "Status": ["STATUS"]
+        "Status": ["STATUS"],
     },
     "Induction_generators": {
         "IndID": ["INDID"]

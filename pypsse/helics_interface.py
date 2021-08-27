@@ -10,7 +10,6 @@ class helics_interface:
     init_state = 1
 
     def __init__(self, PSSE, sim, settings, export_settings, bus_subsystems, logger):
-        print("asdasdasdasdasd")
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
@@ -39,14 +38,20 @@ class helics_interface:
         h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings["HELICS"]['Federate name'])
         h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings["HELICS"]['Core type'])
         h.helicsFederateInfoSetCoreInitString(self.fedinfo, "--federates=1")
+        if self.settings['HELICS']['Broker']:
+            h.helicsFederateInfoSetBroker(self.fedinfo, self.settings['HELICS']['Broker'])
+        if self.settings['HELICS']['Broker port']:
+            h.helicsFederateInfoSetBrokerPort(self.fedinfo, self.settings['HELICS']['Broker port'])
+
         h.helicsFederateInfoSetTimeProperty(
             self.fedinfo,
             h.helics_property_time_delta,
-            self.settings["Simulation"]["Step resolution (sec)"]
+            self.settings["Simulation"]["Step resolution (sec)"] / 1000.0
         )
-        h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
-                                               self.settings["HELICS"]['Helics logging level'])
-        h.helicsFederateInfoSetFlagOption(self.fedinfo, h.helics_flag_uninterruptible, True)
+
+        # h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
+        #                                        self.settings["HELICS"]['Helics logging level'])
+
         self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
         return
 
@@ -78,7 +83,6 @@ class helics_interface:
             self.pub_struc.append([{elmClass: properties}, bus_cluster])
             temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
             temp_res = self.get_restructured_results(temp_res)
-            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -109,18 +113,6 @@ class helics_interface:
                             self.logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
                         if dtype_matched:
                             self.logger.debug("Publication registered: {}".format(pub_tag))
-        # self.publications = {}
-        # for bus_subsystem_id in self.settings['bus_subsystems']["publish_subsystems"]:
-        #     if bus_subsystem_id in bus_subsystems:
-        #         buses = bus_subsystems[bus_subsystem_id]
-        #         for bus_id in buses:
-        #             self.publications[bus_id] = {}
-        #             for bus_p in self.bus_pubs:
-        #                 pub = "{}.bus-{}.{}".format(self.settings["HELICS"]['Federate name'], bus_id, bus_p)
-        #                 self.publications[bus_id][pub] = h.helicsFederateRegisterGlobalTypePublication(
-        #                     self.PSSEfederate, pub, 'double', ''
-        #                 )
-        #                 self.logger.debug("Publication registered: {}".format(pub))
         return
 
     def register_subscriptions(self, bus_subsystem_dict):
@@ -133,7 +125,15 @@ class helics_interface:
         self.psse_dict = {}
         for ix, row in sub_data.iterrows():
 
-            row['property'] = ast.literal_eval(row['property'])
+            try:
+                row['property'] = ast.literal_eval(row['property'])
+            except:
+                pass
+            try:
+                row['scaler'] = ast.literal_eval(row['scaler'])
+            except:
+                pass
+
             if row["element_type"] not in PROFILE_VALIDATION:
                 raise Exception(f"Subscription file error: {row['element_type']} not a valid element_type."
                                 f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}")
@@ -199,11 +199,13 @@ class helics_interface:
             )
             self.logger.info('Time requested: {} - time granted: {} error: {} it: {}'.format(
                 r_seconds, self.c_seconds, error, self.itr))
+            # self._co_convergance_error_tolerance
             if error > -1 and self.itr < self._co_convergance_max_iterations:
                 self.itr += 1
                 return False, self.c_seconds
             else:
                 self.itr = 0
+                self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
                 return True, self.c_seconds
 
     def get_restructured_results(self, results):
@@ -223,7 +225,6 @@ class helics_interface:
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
             temp_res = self.get_restructured_results(temp_res)
-            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -251,13 +252,12 @@ class helics_interface:
         for sub_tag, sub_data in self.subscriptions.items():
             if isinstance(sub_data["property"], str):
                 sub_data['value'] = h.helicsInputGetDouble(sub_data['subscription'])
-                self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = sub_data['value']
+                self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = (sub_data['value'], sub_data['scaler'])
             elif isinstance(sub_data["property"], list):
                 sub_data['value'] = h.helicsInputGetVector(sub_data['subscription'])
-                print(sub_data['value'] )
                 if isinstance(sub_data['value'], list) and len(sub_data['value']) == len(sub_data["property"]):
                     for i, p in enumerate(sub_data["property"]):
-                        self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = sub_data['value'][i]
+                        self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = (sub_data['value'][i], sub_data['scaler'][i])
 
 
             self.logger.debug('Data received {} for tag {}'.format(sub_data['value'], sub_tag))
@@ -268,18 +268,24 @@ class helics_interface:
                     sub_data['dStates'].insert(0, sub_data['dStates'].pop())
 
         for b, bInfo in self.psse_dict.items():
-            for t , tInfo in bInfo.items():
-                for i , vDict in tInfo.items():
+            for t, tInfo in bInfo.items():
+                for i, vDict in tInfo.items():
                     values = {}
+                    j = 0
                     for p, v in vDict.items():
-                        if isinstance(p, str):
-                            ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
-                            values[ppty] = v
-                        elif isinstance(p, list):
-                            for ppt in p:
-                                ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
-                                values[ppty] = v
-                    if sum(values.values()) != 0:
+                        if isinstance(v, tuple):
+                            v , scale = v
+                            if isinstance(p, str):
+                                ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
+                                values[ppty] = v * scale
+                            elif isinstance(p, list):
+                                for alpha, ppt in enumerate(p):
+                                    ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
+                                    values[ppty] = v * scale
+                        j += 1
+
+                    isEmpty = [0 if not vx else 1 for vx in values.values()]
+                    if sum(isEmpty) != 0:
                         self.sim.update_object(t, b, i, values)
 
 

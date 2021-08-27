@@ -26,7 +26,7 @@ import toml
 import time
 import shutil
 
-USING_NAERM = 1
+USING_NAERM = 0
 
 class pyPSSE_instance:
 
@@ -54,6 +54,7 @@ class pyPSSE_instance:
             import psspy
             import dyntools
 
+
             self.dyntools = dyntools
             self.PSSE = psspy
             # self.logger.debug('Initializing PSS/E. connecting to license server')
@@ -68,7 +69,6 @@ class pyPSSE_instance:
                 self.start_simulation()
         except:
             raise Exception("A valid PSS/E license not found. License may currently be in use.")
-
 
     def dump_settings(self, dest_dir):
 
@@ -85,7 +85,6 @@ class pyPSSE_instance:
         )
         self.export_settings = self.read_settings(export_settings_path)
 
-
     def start_simulation(self):
         self.hi = None
         self.simStartTime = time.time()
@@ -93,15 +92,26 @@ class pyPSSE_instance:
         log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
         self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
         self.logger.debug('Starting PSSE instance')
+
         #** Initialize PSSE modules
 
-        self.PSSE.case(
-            os.path.join(self.settings["Simulation"]["Project Path"],
-                         "Case_study",
-                         self.settings["Simulation"]["Case study"])
-        )
-        self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
+        if self.settings["Simulation"]["Case study"]:
+            self.PSSE.case(
+                os.path.join(self.settings["Simulation"]["Project Path"],
+                             "Case_study",
+                             self.settings["Simulation"]["Case study"])
+            )
+        elif self.settings["Simulation"]["Raw file"] != "":
+            self.PSSE.read(0,
+                           os.path.join(self.settings["Simulation"]["Project Path"],
+                                        "Case_study",
+                                        self.settings["Simulation"]["Raw file"]
+                                        )
+                           )
+        else:
+            raise Exception("Please pass a RAW or SAV file in the settings dictionary")
 
+        self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
         self.raw_data = rd.Reader(self.PSSE, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
         if self.export_settings['Defined bus subsystems only']:
@@ -109,6 +119,14 @@ class pyPSSE_instance:
         else:
             validBuses = self.raw_data.buses
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
+
+        if self.export_settings['Defined bus subsystems only']:
+            validBuses = self.all_subsysten_buses
+        else:
+            validBuses = self.raw_data.buses
+
+        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
+
 
         self.contingencies = self.build_contingencies()
 
@@ -130,7 +148,6 @@ class pyPSSE_instance:
         self.inc_time = True
 
         return
-
 
     def initialize_loads(self):
         #         data = pd.read_csv(r'C:\NAERM-global\init_Conditions_3_new.csv', header=0, index_col=None)
@@ -179,7 +196,7 @@ class pyPSSE_instance:
             all_subsysten_buses.extend(buses)
             ierr = self.PSSE.bsysinit(i)
             if ierr:
-                raise Exception("Failed to create bus subsystem for FIVR event buses.")
+                raise Exception("Failed to create bus subsystem chosen buses.")
             else:
                 self.logger.debug('Bus subsystem "{}" created'.format(i))
 
@@ -191,7 +208,6 @@ class pyPSSE_instance:
                 self.logger.debug('Buses {} added to subsystem "{}"'.format(buses, i))
         all_subsysten_buses = [str(x) for x in all_subsysten_buses]
         return bus_subsystems_dict, all_subsysten_buses
-
 
     def get_bus_indices(self):
         if self.settings['bus_subsystems']["from_file"]:
@@ -232,11 +248,7 @@ class pyPSSE_instance:
                 'Simulation time step {} sec'.format(self.settings["Simulation"]["Step resolution (sec)"]))
             T = self.settings["Simulation"]["Simulation time (sec)"]
             t = 0
-            self.test = False
             while True:
-                dT = self.check_contingency_updates(t)
-                if dT:
-                    T += dT
                 self.step(t)
                 if self.inc_time:
                     t += self.settings["Simulation"]["Step resolution (sec)"]
@@ -244,7 +256,6 @@ class pyPSSE_instance:
                     break
 
             self.PSSE.pssehalt_2()
-
             if not self.export_settings["Export results using channels"]:
                 self.results.export_results()
             else:
@@ -255,12 +266,6 @@ class pyPSSE_instance:
         else:
             self.logger.error(
                 'Run init() command to initialize models before running the simulation')
-        return
-
-    def check_contingency_updates(self, t):
-        if t > 1 and not self.test:
-            self.test = True
-            return 0.1
         return
 
     def get_bus_ids(self):
@@ -275,7 +280,6 @@ class pyPSSE_instance:
         self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
         if self.settings["HELICS"]["Cosimulation mode"]:
             if self.settings["HELICS"]["Create subscriptions"]:
-                print("Here")
                 self.update_subscriptions()
                 self.logger.debug('Time requested: {}'.format(t))
                 self.inc_time, helics_time = self.update_federate_time(t)
@@ -284,7 +288,7 @@ class pyPSSE_instance:
         if self.inc_time:
             self.sim.step(t)
         else:
-            self.sim.resolveStep()
+            self.sim.resolveStep(t)
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_data()
@@ -293,9 +297,11 @@ class pyPSSE_instance:
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
+
         if not USING_NAERM:
             if self.inc_time and not self.export_settings["Export results using channels"]:
                 self.results.Update(curr_results, None, t, self.sim.getTime())
+
         return curr_results
 
     def update_subscriptions(self):
@@ -401,12 +407,21 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
-    for s in scenarios:
-        x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
-        x.init()
-        x.run()
-        del x
-        os.rename(
-            r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
-            f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')
+    x = pyPSSE_instance(r'C:\Users\alatif\Desktop\PYPSSE\examples\dynamic_example\Settings\pyPSSE_settings.toml')
+    x.init()
+    for i in range(10):
+        t = i / 240.0
+        res = x.step(t)
+        print(res)
+        res = x.get_results({'Buses': ['PU', 'FREQ']})
+
+    # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
+    # for s in scenarios:
+    #     x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
+    #     x.init()
+    #     x.run()
+    #     del x
+    #     os.rename(
+    #         r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
+    #         f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')
+

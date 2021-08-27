@@ -75,7 +75,7 @@ from pypsse.ProfileManager.common import DEFAULT_PROFILE_NAME, DEFAULT_START_TIM
 def create_profiles(project_path, csv_file_path, profile_folder, profile_name, profile_type, start_time, profile_res, profile_info):
     """Run a PyPSSE simulation."""
     logging.root.setLevel("DEBUG")
-    settingsFile = os.path.join(project_path, 'Settings', DEFAULT_PROFILE_STORE_FILENAME)
+    settingsFile = os.path.join(project_path, 'Settings', SIMULATION_SETTINGS_FILENAME)
     if os.path.exists(settingsFile):
         if csv_file_path and os.path.exists(csv_file_path):
             settings = toml.load(settingsFile)
