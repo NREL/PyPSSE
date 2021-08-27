@@ -1,18 +1,20 @@
 # Standard imports
 import os
 from pypsse.Modes.naerm_constants import naerm_decorator
+import numpy as np
 
 class AbstractMode:
 
     def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses):
         self.PSSE = psse
 
+        self.bus_freq_channels = {}
+
         from psspy import _i,_f,_s,_o
         self._i = _i
         self._f = _f
         self._s = _s
         self._o = _o
-
         self.bus_freq_channels = {}
 
         self.sub_buses = subsystem_buses
@@ -52,9 +54,9 @@ class AbstractMode:
                     'brndat': ['RATEn', 'RATEA', 'RATEB', 'RATEC', 'RATE', 'LENGTH', 'CHARG', 'CHARGZ', 'FRACT1', 'FRACT2',
                                'FRACT3', 'FRACT4'],
                     'brndt2': ['RX', 'ISHNT', 'JSHNT', 'RXZ', 'ISHNTZ', 'JSHNTZ', 'LOSSES', 'O_LOSSES', 'RX'],
-                    'brnmsc': ['MVA', 'AMPS', 'PUCUR', 'CURANG', 'P', 'O_P', 'Q', 'O_Q', 'PLOS', 'O_PLOS', 'QLOS', 'O_QLOS'],
+                    'brnmsc': ['MVA', 'AMPS', 'PUCUR', 'CURANG', 'P', 'O_P', 'Q', 'O_Q', 'PLOS', 'O_PLOS', 'QLOS', 'O_QLOS', 'PCTRTA'],
                     'brnint' : ['STATUS', 'METER', 'NMETR', 'OWNERS', 'OWN1', 'OWN2', 'OWN3', 'OWN4', 'STATION_I', 'STATION_J', 'SECTION_I', 'SECTION_J', 'NODE_I', 'NODE_J', 'SCTYPE'],
-                    'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM'] 
+                    'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM', 'FROMAREANUMBER', 'TOAREANUMBER'] 
                 }, 
                 'Induction_generators': {
                     'inddt1': ["MBASE", "RATEKV", "PSET", "RA", "XA", "R1", "X1", "R2", "X2", "X3", "E1", "SE1", "E2",
@@ -65,14 +67,15 @@ class AbstractMode:
                 },
                 'Loads': {
                     'loddt2': ["MVA", "IL", "YL", "TOTAL", "YNEG", "YZERO"], # required string 2 input
-                    'lodnofunc': ["LOADID", "BUSNUM", "BUSNAME"]
+                    'lodnofunc': ["LOADID", "BUSNUM", "BUSNAME"],
+                    'lodint': ['STATION', 'SECTION', 'STATUS', 'AREA', 'ZONE', 'OWNER', 'SCALE', 'CGR']
                 },
                 'Machines': {
                     'macdat': ["QMAX", "O_QMAX", "QMIN", "O_QMIN", "PMAX", "O_PMAX", "PMIN", "O_PMIN", "MBASE", "MVA",
                                "O_MVA", "P", "O_P", "Q", "O_Q", "PERCENT", "GENTAP", "VSCHED", "WPF", "RMPCT", "RPOS",
                                "XSUBTR", "XTRANS", "XSYNCH"],
                     'macdt2': ["PQ", "O_PQ", "ZSORCE", "XTRAN", "ZPOS", "ZNEG", "ZZERO", "ZGRND"],
-                    'macnofunc' : ['MACID','BUSNUM','BUSNAME', 'SUBNUMBER', 'SUBLATITUDE', 'SUBLONGITUDE'],
+                    'macnofunc' : ['MACID','BUSNUM','BUSNAME', 'SUBNUMBER', 'SUBLATITUDE', 'SUBLONGITUDE','AREANUMBER'],
                     'macint' : ['STATION', 'SECTION', 'STATUS', 'IREG', 'NREG', 'OWNERS', 'WMOD', 'PERCENT', 'CZG']
                 },
                 'Fixed_shunts': {
@@ -111,7 +114,10 @@ class AbstractMode:
         self.rwn_file = os.path.join(
             self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Rwm file"]
         )
-        self.ext = self.study_case_path.split('.')[1]
+        # if self.settings["Simulation"]["Case study"]:
+        #     self.ext = self.study_case_path.split('.')[1]
+        # else:
+        #     self.ext = self.study_case_path.split('.')[1]
 
         if self.settings["Logging"]["Disable PSSE logging"]:
             self.disable_logging()
@@ -119,7 +125,7 @@ class AbstractMode:
     def step(self, dt):
         return
 
-    def resolveStep(self):
+    def resolveStep(self, dt):
         return
 
     def export(self):
@@ -356,10 +362,7 @@ class AbstractMode:
 
                             else:
                                 for b in subsystem_buses:
-                                    
-                                    if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs',
-                                                     'gendat','busnofunc', "frequency"]:
-
+                                    if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs', 'gendat','busnofunc', 'frequency']:
                                         if func_name == 'busnofunc':
                                             if v == 'NUMBER':
                                                 results =self.add_result(results, q, int(b), b)
@@ -370,9 +373,12 @@ class AbstractMode:
                                         if func_name == 'frequency':
                                             if v == 'FREQ':
                                                 if b in self.bus_freq_channels:
-                                                   irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
-                                                   results =self.add_result(results, q, val, v)
-
+                                                    irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
+                                                    if not val:
+                                                        val = np.NaN
+                                                    results = self.add_result(results, q, val * 60.0, int(b))
+                                                else:
+                                                    results = self.add_result(results, q, 0, int(b))
                                         
                                         if func_name in ["busdat",  "busint"]:
                                             if v == 'FREQ':
@@ -420,13 +426,13 @@ class AbstractMode:
                                                     results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                                                 elif v == 'BUSNAME':
                                                     irr, val = self.PSSE.notona(int(b))
-                                                    results = self.add_result(results, q, val, "{}_{}_{}".format(id,b))
+                                                    results = self.add_result(results, q, val, "{}_{}".format(id,b))
                                             else:    
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
                                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                                             ierr, id = self.PSSE.nxtind(int(b))
 
-                                    elif func_name in ["loddt2", "lodnofunc"]:
+                                    elif func_name in ["loddt2", "lodnofunc", "lodint"]:
                                         ierr = self.PSSE.inilod(int(b))
                                         ierr, id = self.PSSE.nxtlod(int(b))
                                         while id != None:
@@ -436,10 +442,14 @@ class AbstractMode:
                                                     results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                                                 elif v == 'BUSNAME':
                                                     irr, val = self.PSSE.notona(int(b))
-                                                    results = self.add_result(results, q, val, "{}_{}_{}".format(id,b))
-                                            else:    
+                                                    results = self.add_result(results, q, val, "{}_{}".format(id, b))
+                                            elif func_name == "loddt2":    
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v, 'ACT')
                                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
+                                            elif func_name == "lodint":
+                                                irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
+                                                results = self.add_result(results, q, val, '{}_{}'.format(id, b))
+
                                             ierr, id = self.PSSE.nxtlod(int(b))
                                     
                                     elif func_name in ["macdat", 'macdt2','macnofunc', 'macint']:
@@ -456,6 +466,10 @@ class AbstractMode:
                                                     results = self.add_result(results, q, val, "{}_{}".format(id,b))
                                                 elif v == 'SUBNUMBER':
                                                     irr, val = self.PSSE.busint(int(b), 'STATION')
+                                                    results = self.add_result(results, q, val, "{}_{}".format(id,b))
+
+                                                elif v == "AREANUMBER":
+                                                    irr, val = self.PSSE.busint(int(b), 'AREA')
                                                     results = self.add_result(results, q, val, "{}_{}".format(id,b))
 
                                                 elif v in ['SUBLATITUDE', 'SUBLONGITUDE']:
@@ -517,6 +531,12 @@ class AbstractMode:
                                                     sub_dict = {'SUBNUMBERFROM': int(b), 'SUBNUMBERTO': int(b1)}
                                                     ierr, val = self.PSSE.busint(sub_dict[v], 'STATION')
                                                     results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
+                                            
+                                                elif v in ['FROMAREANUMBER', 'TOAREANUMBER']:
+                                                    bus_dict = {'FROMAREANUMBER': int(b), 'TOAREANUMBER': int(b1)}
+                                                    irr, val = self.PSSE.busint(bus_dict[v], 'AREA')
+                                                    results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
+
                                             else:
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), int(b1), str(ickt), v)
                                                 if irr == 0:
@@ -584,18 +604,21 @@ class AbstractMode:
         return results_dict
 
     def update_object(self, dType, bus, id, values):
-        if dType == "Load":
-            ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
-        elif dType == "Induction_machine":
-            ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
-        elif dType == "Machine":
-            ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
-        elif dType == "Plant":
-            ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
-        else:
-            ierr = 1
+        #print(dType, bus, id, values)
+        val = sum([x for x in values.values()])
+        if val > -1000000.0 and val < 100000.0:
+            if dType == "Load":
+                ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
+            elif dType == "Induction_machine":
+                ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
+            elif dType == "Machine":
+                ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
+            elif dType == "Plant":
+                ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
+            else:
+                ierr = 1
 
-        if ierr == 0:
-            self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
-        else:
-            self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")
+            if ierr == 0:
+                self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
+            else:
+                self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")

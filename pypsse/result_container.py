@@ -58,6 +58,7 @@ class container:
                 if not isinstance(self.results['{}'.format(variable_name)], pd.DataFrame):
                     self.results['{}'.format(variable_name)] = pd.DataFrame(bus_data[variable_name], index=[0])
                 else:
+
                     self.results['{}'.format(variable_name)] = self.results['{}'.format(variable_name)].append(
                         bus_data[variable_name], ignore_index=True)
         return
@@ -66,7 +67,7 @@ class container:
         if self.export_settings["Write format"] in self.BULK_WRITE_MODES:
             for df_name, df in self.results.items():
                 export_path = os.path.join(
-                    self.settings["HELICS"]["Project Path"],
+                    self.settings["Simulation"]["Project Path"],
                     'Exports',
                     '{}.{}'.format(df_name, self.export_settings["Write format"])
                 )

@@ -27,7 +27,7 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-setup(name='pypsse',
+setup(name='pssepy',
       version=find_version("pypsse", "__init__.py"),
       description='A high-level python interface for PSS/E',
       author='Aadil Latif',
@@ -35,6 +35,7 @@ setup(name='pypsse',
       url='http://www.github.com/nrel/pypsse',
       packages=find_packages(),
       install_requires=requirements,
+      include_package_data=True,
       package_data={'pypsse': ['*.toml']},
         entry_points={
             "console_scripts": [

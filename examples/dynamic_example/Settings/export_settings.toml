@@ -1,5 +1,5 @@
 "Export results using channels" = false
-"Defined bus subsystems only" = false
+"Defined bus subsystems only" = true
 "Write format" = "h5"
 
 [Buses]
@@ -56,12 +56,20 @@
 "NDI" = false
 
 [Loads]
-"MVA" = false 
+"MVA" = true
 "IL" = false 
 "YL" = false 
 "TOTAL" = false 
 "YNEG" = false 
 "YZERO" = false
+"FmA" = true
+"FmB" = true
+"FmC" = false
+"FmD" = false
+"Fwl" = false
+"PFel" = false
+"TD" = false
+"TC" = false
 
 [Fixed_shunts]
 "ACT" = false 

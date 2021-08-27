@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Standard libraries
+#from common import DTYPE_MAPPING
 import pandas as pd
 import numpy as np
+
 import h5py
 import os
 
@@ -18,7 +20,7 @@ class hdf5Writer:
         self.store_datasets = {}
         self.row = {}
         self.columnLength = columnLength
-        self.chunkRows = 10
+        self.chunkRows = 1
         self.step = 0
         self.dfs = {}
         self.Timestamp = self.store.create_dataset(
@@ -44,7 +46,6 @@ class hdf5Writer:
         :param powerflow_output: Powerflow solver timestep output as a dict
         """
         # Iterate through each object type
-
         for obj_type in powerflow_output:
             Data = pd.DataFrame(powerflow_output[obj_type], index=[self.step])
             if obj_type not in self.row:
@@ -52,6 +53,7 @@ class hdf5Writer:
                 self.store_groups[obj_type] = self.store.create_group(obj_type)
                 self.store_datasets[obj_type] = {}
                 for colName in powerflow_output[obj_type].keys():
+                    print( Data[colName], )
                     self.store_datasets[obj_type][colName] = self.store_groups[obj_type].create_dataset(
                         str(colName),
                         shape=(self.columnLength, ),
@@ -59,7 +61,8 @@ class hdf5Writer:
                         chunks=True,
                         compression="gzip",
                         compression_opts=4,
-                        shuffle=True
+                        shuffle=True,
+                        dtype=Data[colName].dtype
                     )
             if obj_type not in self.dfs:
                 self.dfs[obj_type] = Data

@@ -1,5 +1,35 @@
 # Handle complex and nominal this way
 
+
+dyn_only_options = {
+    'Loads': {
+        'lmodind': {
+            "TD": 14,
+            "TC": 15,
+            "FmA": 18,
+            "FmB": 19,
+            "FmC": 20,
+            "FmD": 21,
+            "Fel": 22,
+            "PFel": 23,
+        }
+    },
+}
+
+DYNAMIC_ONLY_PPTY = {
+    "Loads": {
+        "FmA": ["FmA"],
+        "FmB": ["FmB"],
+        "FmC": ["FmC"],
+        "FmD": ["FmD"],
+        "Fel": ["Fel"],
+        "PFel": ["PFel"],
+        "TD": ["TD"],
+        "TC": ["TC"],
+
+    }
+}
+
 NAERM_TO_PYPSSE  ={
     'Buses' : {
             'Number' : ['NUMBER'],
@@ -43,7 +73,11 @@ NAERM_TO_PYPSSE  ={
         'SubNumberFrom': ['SUBNUMBERFROM'],
         'BusNum': ['FROMBUSNUM'],
         'BusNum:1': ['TOBUSNUM'],
-        'LineCircuit': ['CIRCUIT']
+        'LineCircuit': ['CIRCUIT'],
+        'LineStatus': ['STATUS'],
+        'LineMaxPercentAmp': ['PCTRTA'],
+        'FromAreaNumber': ['FROMAREANUMBER'],
+        'ToAreaNumber': ['TOAREANUMBER']
     },
 
     'Machines' : {
@@ -60,7 +94,8 @@ NAERM_TO_PYPSSE  ={
         'SubNumber': ['SUBNUMBER'],
         'SubLatitude': ['SUBLATITUDE'],
         'SubLongitude': ['SUBLONGITUDE'],
-        'MachineID': ['MACID']
+        'MachineID': ['MACID'],
+        'AreaNumber': ['AREANUMBER']
     },
     'Stations': {
         "SubName": ["SUBNAME"],
@@ -89,7 +124,12 @@ NAERM_TO_PYPSSE  ={
     },
     "Loads" : {
         "LoadMW" : ["MVA", "REAL"],
-        "LoadID": ['LOADID']
+        "LoadID": ['LOADID'],
+        "MW": ["MVA", "REAL"],
+        "Mvar": ["MVA", "IMAG"],
+        "ID": ["LOADID"],
+        "BusNum": ["BUSNUM"],
+        "Status": ["STATUS"],
     },
     "Induction_generators": {
         "IndID": ["INDID"]
