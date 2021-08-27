@@ -3,6 +3,7 @@
 NAERM_TO_PYPSSE  ={
     'Buses' : {
             'Number' : ['NUMBER'],
+            'BusNum': ['NUMBER'],
             'NomkV' : ['BASE'],
             'kV' : ['KV'],
             'Vpu' : ['PU'],
@@ -18,8 +19,14 @@ NAERM_TO_PYPSSE  ={
             'NomG' : ['YS', 'REAL', 'NOM'],
             'GenMW' : ['GENPOWER', 'REAL'],
             'GenMvar': ['GENPOWER', 'IMAG'],
+            'SubNumber': ['STATION'],
+            'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
             'Name' : ['NAME'],
-            'Status' : ['STATUS']
+            'Status' : ['STATUS'],
+            'IsFeederEligible':['ISLOADBUS'],
+            'BusName': ['NAME'],
+            'BusNomVolt': ['BASE'],
+            'BusPUVolt': ['PU']
     },
     'Branches' : {
         'LimitMVAA' : ['RATEA'],
@@ -31,7 +38,14 @@ NAERM_TO_PYPSSE  ={
         'BusNumFrom' : ['FROMBUSNUM'],
         'BusNameTo' : ['TOBUSNAME'],
         'BusNumTo' : ['TOBUSNUM'],
-        'Circuit' : ['CIRCUIT']
+        'Circuit' : ['CIRCUIT'],
+        'SubNumberTo': ['SUBNUMBERTO'],
+        'SubNumberFrom': ['SUBNUMBERFROM'],
+        'BusNum': ['FROMBUSNUM'],
+        'BusNum:1': ['TOBUSNUM'],
+        'LineCircuit': ['CIRCUIT'],
+        'LineStatus': ['STATUS'],
+        'LineMaxPercentAmp': ['PCTRTA']
     },
 
     'Machines' : {
@@ -44,7 +58,57 @@ NAERM_TO_PYPSSE  ={
         'MvarMax' : ["QMAX"],
         'MW' : ["P"],
         'Mvar' : ["Q"],
-        'Status' : ["STATUS"]
+        'Status' : ["STATUS"],
+        'SubNumber': ['SUBNUMBER'],
+        'SubLatitude': ['SUBLATITUDE'],
+        'SubLongitude': ['SUBLONGITUDE'],
+        'MachineID': ['MACID']
+    },
+    'Stations': {
+        "SubName": ["SUBNAME"],
+        "SubNum": ["SubNum"],
+        "Buses": ["BUSES"],
+        "Gens": ["GENERATORS"],
+        "Trans": ["TRANSFORMERS"],
+        "NomkV": ["NOMKV"],
+        "LoadMW": ["LOADMW"],
+        "GenMW": ["GENMW"]
+    },
+    "Areas" : {
+        "TotalGenMW" : ["GEN", "REAL"],
+        "TotalGenMvar" : ["GEN", "IMAG"],
+        "AreaNum": ["AREANUMBER"]
+    },
+    "Zones" : {
+        "TotalGenMW" : ["GEN", "REAL"],
+        "TotalGenMvar" : ["GEN", "IMAG"],
+        "ZoneName": ["ZONENAME"]
+    },
+    "Fixed_shunts" : {
+        "ShuntMW" : ["ACT", "REAL"],
+        "ShuntMvar" : ["ACT", "IMAG"],
+        "FXShuntID" : ["FXSHID"]
+    },
+    "Loads" : {
+        "LoadMW" : ["MVA", "REAL"],
+        "LoadID": ['LOADID']
+    },
+    "Induction_generators": {
+        "IndID": ["INDID"]
+    },
+    'Switched_shunts': {
+        "BusNum": ["BUSNUM"]
+    },
+    "Transformers": {
+        "FromBus": ["FROMBUSNUM_3WDG"],
+        "ToBus": ["TOBUSNUM_3WDG"],
+        "ToBus2": ["TOBUS2NUM_3WDG"],
+        "TransCircuit": ["CIRCUIT_3WDG"]
+    },
+    "DCtransmissionlines": {
+        "BusNum": ["RECT"],
+        "BusNum:1": ["INV"],
+        "DCLID": ["DCLINENAME"]
     }
 }
 
@@ -76,8 +140,7 @@ def naerm_decorator(func):
                                 complex_conversion_dict[class_name] = {}
                             complex_conversion_dict[class_name][v] = naerm_element_array[1]
                 quantities[class_name] = new_vars
-
-        
+                
         """ Pass extra string info if a variable requires it """
         
         if 'ext_string2_info' not in kwargs:
@@ -97,6 +160,17 @@ def naerm_decorator(func):
 
         for class_name_, sub_dict in result_dict.items():
             class_name, param = class_name_.split('_')[0], class_name_.split('_')[1]
+            class_name_with_ = [keys for keys in NAERM_TO_PYPSSE.keys() if '_' in keys and keys in class_name_]
+            if len(class_name_with_)!=0:
+                class_name = class_name_with_[0]
+                param = class_name_.split('_')[-1]
+
+            # convert status to string
+            status_translation = {1: 'connected', 0: 'notconnected'}
+            if param.lower() == 'status':
+                for key, value in sub_dict.items():
+                    sub_dict[key] = status_translation[value]
+             
             if class_name in complex_conversion_dict:
                 conv_dict = complex_conversion_dict[class_name]
                 if param in conv_dict:

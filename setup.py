@@ -35,6 +35,7 @@ setup(name='pypsse',
       url='http://www.github.com/nrel/pypsse',
       packages=find_packages(),
       install_requires=requirements,
+      include_package_data=True,
       package_data={'pypsse': ['*.toml']},
         entry_points={
             "console_scripts": [
@@ -42,7 +43,7 @@ setup(name='pypsse',
             ],
         },
       license='BSD 3 clause',
-      python_requires='==3.7',
+      python_requires='==3.7.*',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',

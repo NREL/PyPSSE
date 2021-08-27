@@ -4,69 +4,123 @@ from pypsse.Modes.abstract_mode import AbstractMode
 import datetime
 class Dynamic(AbstractMode):
 
-    def __init__(self,psse, dyntools, settings, export_settings, logger):
-        super().__init__(psse, dyntools, settings, export_settings, logger)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         return
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
-        if len(self.settings["Simulation"]["Setup files"]):
-            ierr = None
-            for f in self.settings["Simulation"]["Setup files"]:
-                setup_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', f)
-                ierr = self.PSSE.runrspnsfile(setup_path)
-                if ierr:
-                    raise Exception('Error running setup file "{}"'.format(setup_path))
-                else:
-                    self.logger.debug('Setup file {} sucessfully run'.format(setup_path))
+        self.iter_const = 100.0
+        # if len(self.settings["Simulation"]["Setup files"]):
+        #     ierr = None
 
-        else:
-            if len(self.settings["Simulation"]["Rwm file"]):
-                self.PSSE.mcre([1, 0], self.rwn_file)
+        if len(self.settings["Simulation"]["Rwm file"]):
+            self.PSSE.mcre([1, 0], self.rwn_file)
 
-            self.convert_load()
-            self.PSSE.cong(0)
-            # Solve for dynamics
-            self.PSSE.ordr(0)
-            self.PSSE.fact()
-            self.PSSE.tysl(0)
-            self.PSSE.tysl(0)
-            self.PSSE.save(self.study_case_path.split('.')[0] + ".sav")
-            self.logger.debug('Loading dynamic model....')
-            ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, '', '', '')
+        self.PSSE.fnsl([0, 0, 0, 1, 0, 0, 0, self._i])
+
+        for f in self.settings["Simulation"]["Setup files"]:
+            setup_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', f)
+            ierr = self.PSSE.runrspnsfile(setup_path)
             if ierr:
-                raise Exception('Error loading dynamic model file "{}"'.format(self.dyr_path))
+                raise Exception('Error running setup file "{}"'.format(setup_path))
             else:
-                self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
+                self.logger.debug('Setup file {} sucessfully run'.format(setup_path))
 
-            if self.export_settings["Export results using channels"]:
-                self.setup_channels()
+        #self.convert_load()
 
+        self.PSSE.bsysinit(1)
+        self.PSSE.bsys(1, 0, [0.0, 0.0], 0, [], 1, [38950], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [38951], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [22834], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [24659], 0, [], 0, [])
+        self.PSSE.bsysadd(1, 0, [0.0, 0.0], 0, [], 1, [24658], 0, [], 0, [])
+        self.PSSE.gnet(1, 0)
+        self.PSSE.fdns([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 0, 1, 1, 0, 0, 0])
+        self.PSSE.switched_shunt_chng_4(73525, [self._i, self._i, self._i, self._i, self._i, self._i, self._i, self._i,
+                                                0, self._i, self._i, self._i, self._i],
+                                        [self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f,
+                                         self._f, self._f, self._f], self._s)
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fnsl([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 1, 1, 1, 0, 0, 0])
+        self.PSSE.fdns([1, 1, 1, 1, 1, 0, 0, 0])
+
+        self.PSSE.cong(0)
+        # Solve for dynamics
+        self.PSSE.ordr(0)
+        self.PSSE.fact()
+        self.PSSE.tysl(0)
+        self.PSSE.tysl(0)
+        #self.PSSE.save(self.study_case_path.split('.')[0] + ".sav")
+        self.logger.debug('Loading dynamic model....')
+        self.PSSE.dynamicsmode(1)
+        ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, r"""conec""",r"""conet""",r"""compile""")
+
+
+        if self.settings["HELICS"]["Cosimulation mode"]:
+            if self.settings["HELICS"]["Iterative Mode"]:
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"] / self.iter_const
+            else:
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+        else:
+            sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+
+        self.PSSE.dynamics_solution_param_2(
+            [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
+            [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
+        )
+
+        if ierr:
+            raise Exception('Error loading dynamic model file "{}". Error code - {}'.format(self.dyr_path, ierr))
+        else:
+            self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
+
+        if self.export_settings["Export results using channels"]:
+            self.setup_channels()
+
+        if self.snp_file.endswith('.snp'):
             self.PSSE.snap(sfile=self.snp_file)
-            # Load user defined models
-            for mdl in self.settings["Simulation"]["User models"]:
-                dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
-                self.PSSE.addmodellibrary(dll_path)
-                self.logger.debug('User defined library added: {}'.format(mdl))
-            # Load flow settings
-            self.PSSE.fdns([0, 0, 0, 1, 1, 0, 99, 0])
+        # Load user defined models
+        for mdl in self.settings["Simulation"]["User models"]:
+            dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
+            self.PSSE.addmodellibrary(dll_path)
+            self.logger.debug('User defined library added: {}'.format(mdl))
+        # Load flow settings
+        self.PSSE.fdns([0, 0, 0, 1, 1, 0, 99, 0])
         # initialize
         iErr = self.PSSE.strt_2([1, self.settings["Generators"]["Missing machine model"]], self.outx_path)
         if iErr:
             self.initialization_complete = False
-            raise Exception('Dynamic simulation failed to successfully initialize')
+            raise Exception(f'Dynamic simulation failed to successfully initialize. Error code - {iErr}')
         else:
             self.initialization_complete = True
             self.logger.debug('Dynamic simulation initialization sucess!')
         # get load info for the sub system
         self.load_info = self.get_load_indices(bus_subsystems)
         self.logger.debug('pyPSSE initialization complete!')
+
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i + 1
+            self.PSSE.bus_frequency_channel([i + 1, int(bus)], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i + 1}")
+
+        self.xTime = 0
         return self.initialization_complete
 
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
+        self.xTime = 0
+        print(t)
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def get_load_indices(self, bus_subsystems):
@@ -79,12 +133,19 @@ class Dynamic(AbstractMode):
             bus_data = bus_data[0]
             for i, bus_id in enumerate(bus_data):
                 load_info[bus_id] = {
-                    'Load ID' : load_data[0,i],
-                    'Bus name' : load_data[1,i],
-                    'Bus name (ext)' : load_data[2,i],
+                    'Load ID': load_data[0, i],
+                    'Bus name': load_data[1, i],
+                    'Bus name (ext)': load_data[2, i],
                 }
             all_bus_ids[id] = load_info
         return all_bus_ids
+
+    def resolveStep(self, t):
+        print(t)
+        print(self.xTime * self.incTime / self.iter_const)
+        err = self.PSSE.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
+        self.xTime += 1
+        return err
 
     def getTime(self):
         return self.time
@@ -101,6 +162,7 @@ class Dynamic(AbstractMode):
             P2 = self.settings['Loads']['active_load']["% constant admittance"]
             Q1 = self.settings['Loads']['reactive_load']["% constant current"]
             Q2 = self.settings['Loads']['reactive_load']["% constant admittance"]
+
             if busSubsystem:
                 self.PSSE.conl(busSubsystem, 0, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
                 self.PSSE.conl(busSubsystem, 0, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
@@ -109,4 +171,3 @@ class Dynamic(AbstractMode):
                 self.PSSE.conl(0, 1, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
                 self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
                 self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
-

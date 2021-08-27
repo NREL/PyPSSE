@@ -53,6 +53,8 @@ class Profile:
                 if self.valueSettings[objName]['interpolate']:
                     value = value1
                 mult = self.valueSettings[objName]['multiplier']
+                if isinstance(mult, list):
+                    mult = np.array(mult)
                 if self.valueSettings[objName]['normalize']:
                     valueF = value / self.attrs["max"] * mult
                 else:
