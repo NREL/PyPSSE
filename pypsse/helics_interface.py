@@ -10,7 +10,6 @@ class helics_interface:
     init_state = 1
 
     def __init__(self, PSSE, sim, settings, export_settings, bus_subsystems, logger):
-        print("asdasdasdasdasd")
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
@@ -39,14 +38,20 @@ class helics_interface:
         h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings["HELICS"]['Federate name'])
         h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings["HELICS"]['Core type'])
         h.helicsFederateInfoSetCoreInitString(self.fedinfo, "--federates=1")
+        if self.settings['HELICS']['Broker']:
+            h.helicsFederateInfoSetBroker(self.fedinfo, self.settings['HELICS']['Broker'])
+        if self.settings['HELICS']['Broker port']:
+            h.helicsFederateInfoSetBrokerPort(self.fedinfo, self.settings['HELICS']['Broker port'])
+
         h.helicsFederateInfoSetTimeProperty(
             self.fedinfo,
             h.helics_property_time_delta,
-            self.settings["Simulation"]["Step resolution (sec)"]
+            self.settings["Simulation"]["Step resolution (sec)"] / 1000.0
         )
-        h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
-                                               self.settings["HELICS"]['Helics logging level'])
-        h.helicsFederateInfoSetFlagOption(self.fedinfo, h.helics_flag_uninterruptible, True)
+
+        # h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
+        #                                        self.settings["HELICS"]['Helics logging level'])
+
         self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
         return
 
@@ -78,7 +83,6 @@ class helics_interface:
             self.pub_struc.append([{elmClass: properties}, bus_cluster])
             temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
             temp_res = self.get_restructured_results(temp_res)
-            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -109,18 +113,6 @@ class helics_interface:
                             self.logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
                         if dtype_matched:
                             self.logger.debug("Publication registered: {}".format(pub_tag))
-        # self.publications = {}
-        # for bus_subsystem_id in self.settings['bus_subsystems']["publish_subsystems"]:
-        #     if bus_subsystem_id in bus_subsystems:
-        #         buses = bus_subsystems[bus_subsystem_id]
-        #         for bus_id in buses:
-        #             self.publications[bus_id] = {}
-        #             for bus_p in self.bus_pubs:
-        #                 pub = "{}.bus-{}.{}".format(self.settings["HELICS"]['Federate name'], bus_id, bus_p)
-        #                 self.publications[bus_id][pub] = h.helicsFederateRegisterGlobalTypePublication(
-        #                     self.PSSEfederate, pub, 'double', ''
-        #                 )
-        #                 self.logger.debug("Publication registered: {}".format(pub))
         return
 
     def register_subscriptions(self, bus_subsystem_dict):
@@ -207,11 +199,13 @@ class helics_interface:
             )
             self.logger.info('Time requested: {} - time granted: {} error: {} it: {}'.format(
                 r_seconds, self.c_seconds, error, self.itr))
+            # self._co_convergance_error_tolerance
             if error > -1 and self.itr < self._co_convergance_max_iterations:
                 self.itr += 1
                 return False, self.c_seconds
             else:
                 self.itr = 0
+                self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
                 return True, self.c_seconds
 
     def get_restructured_results(self, results):
@@ -231,7 +225,6 @@ class helics_interface:
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
             temp_res = self.get_restructured_results(temp_res)
-            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():

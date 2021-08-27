@@ -10,13 +10,14 @@ class Dynamic(AbstractMode):
     def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         return
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
-
+        self.iter_const = 100.0
         # if len(self.settings["Simulation"]["Setup files"]):
         #     ierr = None
 
@@ -71,10 +72,18 @@ class Dynamic(AbstractMode):
         self.PSSE.dynamicsmode(1)
         ierr = self.PSSE.dyre_new([1, 1, 1, 1], self.dyr_path, r"""conec""",r"""conet""",r"""compile""")
 
-        self.PSSE.dynamics_solution_param_2([60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
-                                            [0.4, self._f, 0.0033333, self._f, self._f, self._f, self._f, self._f])
+        if self.settings["HELICS"]["Cosimulation mode"]:
+            if self.settings["HELICS"]["Iterative Mode"]:
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"] / self.iter_const
+            else:
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+        else:
+            sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
 
-        #self.PSSE.snap([1246543, 276458, 1043450, 452309, 0], snpFilePath)
+        self.PSSE.dynamics_solution_param_2(
+            [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
+            [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
+        )
 
         if ierr:
             raise Exception('Error loading dynamic model file "{}". Error code - {}'.format(self.dyr_path, ierr))
@@ -129,10 +138,20 @@ class Dynamic(AbstractMode):
 
         self.logger.debug('pyPSSE initialization complete!')
 
+
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i + 1
+            self.PSSE.bus_frequency_channel([i + 1, int(bus)], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i + 1}")
+
+        self.xTime = 0
+
         return self.initialization_complete
 
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
+        self.xTime = 0
+        print(t)
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def setup_machine_channels(self, machines, properties):
@@ -206,12 +225,19 @@ class Dynamic(AbstractMode):
             bus_data = bus_data[0]
             for i, bus_id in enumerate(bus_data):
                 load_info[bus_id] = {
-                    'Load ID' : load_data[0,i],
-                    'Bus name' : load_data[1,i],
-                    'Bus name (ext)' : load_data[2,i],
+                    'Load ID': load_data[0, i],
+                    'Bus name': load_data[1, i],
+                    'Bus name (ext)': load_data[2, i],
                 }
             all_bus_ids[id] = load_info
         return all_bus_ids
+
+    def resolveStep(self, t):
+        print(t)
+        print(self.xTime * self.incTime / self.iter_const)
+        err = self.PSSE.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
+        self.xTime += 1
+        return err
 
     def getTime(self):
         return self.time
@@ -228,6 +254,7 @@ class Dynamic(AbstractMode):
             P2 = self.settings['Loads']['active_load']["% constant admittance"]
             Q1 = self.settings['Loads']['reactive_load']["% constant current"]
             Q2 = self.settings['Loads']['reactive_load']["% constant admittance"]
+
             if busSubsystem:
                 self.PSSE.conl(busSubsystem, 0, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
                 self.PSSE.conl(busSubsystem, 0, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
@@ -236,8 +263,6 @@ class Dynamic(AbstractMode):
                 self.PSSE.conl(0, 1, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
                 self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
                 self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
-
-
 
     @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
@@ -276,3 +301,4 @@ class Dynamic(AbstractMode):
                 self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
         #print(results)
         return results
+

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Standard libraries
+#from common import DTYPE_MAPPING
 import pandas as pd
 import numpy as np
+
 import h5py
 import os
 
@@ -51,6 +53,7 @@ class hdf5Writer:
                 self.store_groups[obj_type] = self.store.create_group(obj_type)
                 self.store_datasets[obj_type] = {}
                 for colName in powerflow_output[obj_type].keys():
+                    print( Data[colName], )
                     self.store_datasets[obj_type][colName] = self.store_groups[obj_type].create_dataset(
                         str(colName),
                         shape=(self.columnLength, ),

@@ -73,6 +73,7 @@ class Snap(AbstractMode):
                     self.chnl_idx += 1
         return
 
+
     def setup_bus_channels(self, buses, properties):
         for i, qty in enumerate(properties):
             if qty not in self.channel_map:
@@ -93,7 +94,6 @@ class Snap(AbstractMode):
         if "LOAD_P" not in self.channel_map:
             self.channel_map["LOAD_P"] = {}
             self.channel_map["LOAD_Q"] = {}
-
         for ld, b in loads:
             self.channel_map["LOAD_P"][f"{b}_{ld}"] = [self.chnl_idx]
             self.channel_map["LOAD_Q"][f"{b}_{ld}"] = [self.chnl_idx + 1]
@@ -104,7 +104,9 @@ class Snap(AbstractMode):
 
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
+        self.xTime = 0
         return self.PSSE.run(0, t, 1, 1, 1)
+
 
     def poll_channels(self):
         results = {}
@@ -123,6 +125,11 @@ class Snap(AbstractMode):
                         value = -1
                     results[nName][b] = value
         return results
+
+    def resolveStep(self, t):
+        self.xTime += 1
+        return self.PSSE.run(0, t + self.xTime * self.incTime / 1000.0, 1, 1, 1)
+
 
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}

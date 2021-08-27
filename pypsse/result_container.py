@@ -58,6 +58,7 @@ class container:
                 if not isinstance(self.results['{}'.format(variable_name)], pd.DataFrame):
                     self.results['{}'.format(variable_name)] = pd.DataFrame(bus_data[variable_name], index=[0])
                 else:
+
                     self.results['{}'.format(variable_name)] = self.results['{}'.format(variable_name)].append(
                         bus_data[variable_name], ignore_index=True)
         return

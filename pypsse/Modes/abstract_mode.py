@@ -113,7 +113,10 @@ class AbstractMode:
         self.rwn_file = os.path.join(
             self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Rwm file"]
         )
-        self.ext = self.study_case_path.split('.')[1]
+        # if self.settings["Simulation"]["Case study"]:
+        #     self.ext = self.study_case_path.split('.')[1]
+        # else:
+        #     self.ext = self.study_case_path.split('.')[1]
 
         if self.settings["Logging"]["Disable PSSE logging"]:
             self.disable_logging()
@@ -121,7 +124,7 @@ class AbstractMode:
     def step(self, dt):
         return
 
-    def resolveStep(self):
+    def resolveStep(self, dt):
         return
 
     def export(self):
@@ -375,8 +378,8 @@ class AbstractMode:
                                                 if b in self.bus_freq_channels:
                                                     irr, val = self.PSSE.chnval(self.bus_freq_channels[b])
                                                     if not val:
-                                                        val = np.nan
-                                                    results =self.add_result(results, q, val, int(b))
+                                                        val = np.NaN
+                                                    results = self.add_result(results, q, val * 60.0, int(b))
                                                 else:
                                                     results = self.add_result(results, q, 0, int(b))
 
@@ -711,18 +714,21 @@ class AbstractMode:
         return results_dict
 
     def update_object(self, dType, bus, id, values):
-        if dType == "Load":
-            ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
-        elif dType == "Induction_machine":
-            ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
-        elif dType == "Machine":
-            ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
-        elif dType == "Plant":
-            ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
-        else:
-            ierr = 1
+        #print(dType, bus, id, values)
+        val = sum([x for x in values.values()])
+        if val > -1000000.0 and val < 100000.0:
+            if dType == "Load":
+                ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
+            elif dType == "Induction_machine":
+                ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
+            elif dType == "Machine":
+                ierr = self.PSSE.machine_data_2(i=int(bus), id=id, **values)
+            elif dType == "Plant":
+                ierr = self.PSSE.plant_data_4(ibus=int(bus), inode=id, **values)
+            else:
+                ierr = 1
 
-        if ierr == 0:
-            self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
-        else:
-            self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")
+            if ierr == 0:
+                self.logger.info(f"Profile Manager: {dType} '{id}' on bus '{bus}' has been updated. {values}")
+            else:
+                self.logger.error(f"Profile Manager: Error updating {dType} '{id}' on bus '{bus}'.")

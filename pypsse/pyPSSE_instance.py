@@ -54,6 +54,7 @@ class pyPSSE_instance:
             import psspy
             import dyntools
 
+
             self.dyntools = dyntools
             self.PSSE = psspy
             # self.logger.debug('Initializing PSS/E. connecting to license server')
@@ -95,11 +96,23 @@ class pyPSSE_instance:
         self.logger.debug('Starting PSSE instance')
         #** Initialize PSSE modules
 
-        self.PSSE.case(
-            os.path.join(self.settings["Simulation"]["Project Path"],
-                         "Case_study",
-                         self.settings["Simulation"]["Case study"])
-        )
+        if self.settings["Simulation"]["Case study"]:
+            self.PSSE.case(
+                os.path.join(self.settings["Simulation"]["Project Path"],
+                             "Case_study",
+                             self.settings["Simulation"]["Case study"])
+            )
+        elif self.settings["Simulation"]["Raw file"] != "":
+            self.PSSE.read(0,
+                           os.path.join(self.settings["Simulation"]["Project Path"],
+                                        "Case_study",
+                                        self.settings["Simulation"]["Raw file"]
+                                        )
+                           )
+        else:
+            raise Exception("Please pass a RAW or SAV file in the settings dictionary")
+
+
         self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
 
         self.raw_data = rd.Reader(self.PSSE, self.logger)
@@ -192,7 +205,6 @@ class pyPSSE_instance:
         all_subsysten_buses = [str(x) for x in all_subsysten_buses]
         return bus_subsystems_dict, all_subsysten_buses
 
-
     def get_bus_indices(self):
         if self.settings['bus_subsystems']["from_file"]:
             bus_file = os.path.join(self.settings["Project Path"], 'Case_study',
@@ -232,11 +244,7 @@ class pyPSSE_instance:
                 'Simulation time step {} sec'.format(self.settings["Simulation"]["Step resolution (sec)"]))
             T = self.settings["Simulation"]["Simulation time (sec)"]
             t = 0
-            self.test = False
             while True:
-                dT = self.check_contingency_updates(t)
-                if dT:
-                    T += dT
                 self.step(t)
                 if self.inc_time:
                     t += self.settings["Simulation"]["Step resolution (sec)"]
@@ -244,7 +252,6 @@ class pyPSSE_instance:
                     break
 
             self.PSSE.pssehalt_2()
-
             if not self.export_settings["Export results using channels"]:
                 self.results.export_results()
             else:
@@ -255,12 +262,6 @@ class pyPSSE_instance:
         else:
             self.logger.error(
                 'Run init() command to initialize models before running the simulation')
-        return
-
-    def check_contingency_updates(self, t):
-        if t > 1 and not self.test:
-            self.test = True
-            return 0.1
         return
 
     def get_bus_ids(self):
@@ -283,7 +284,7 @@ class pyPSSE_instance:
         if self.inc_time:
             self.sim.step(t)
         else:
-            self.sim.resolveStep()
+            self.sim.resolveStep(t)
 
         if self.settings["HELICS"]["Cosimulation mode"]:
             self.publish_data()
