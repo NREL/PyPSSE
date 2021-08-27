@@ -91,7 +91,12 @@ NAERM_TO_PYPSSE  ={
     },
     "Loads" : {
         "LoadMW" : ["MVA", "REAL"],
-        "LoadID": ['LOADID']
+        "LoadID": ['LOADID'],
+        "MW": ["MVA", "REAL"],
+        "Mvar": ["MVA", "IMAG"],
+        "ID": ["LOADID"],
+        "BusNum": ["BUSNUM"],
+        "Status": ["STATUS"]
     },
     "Induction_generators": {
         "IndID": ["INDID"]

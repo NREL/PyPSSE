@@ -66,7 +66,8 @@ class AbstractMode:
                 },
                 'Loads': {
                     'loddt2': ["MVA", "IL", "YL", "TOTAL", "YNEG", "YZERO"], # required string 2 input
-                    'lodnofunc': ["LOADID", "BUSNUM", "BUSNAME"]
+                    'lodnofunc': ["LOADID", "BUSNUM", "BUSNAME"],
+                    'lodint': ['STATION', 'SECTION', 'STATUS', 'AREA', 'ZONE', 'OWNER', 'SCALE', 'CGR']
                 },
                 'Machines': {
                     'macdat': ["QMAX", "O_QMAX", "QMIN", "O_QMIN", "PMAX", "O_PMAX", "PMIN", "O_PMIN", "MBASE", "MVA",
@@ -432,7 +433,7 @@ class AbstractMode:
                                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
                                             ierr, id = self.PSSE.nxtind(int(b))
 
-                                    elif func_name in ["loddt2", "lodnofunc"]:
+                                    elif func_name in ["loddt2", "lodnofunc", "lodint"]:
                                         ierr = self.PSSE.inilod(int(b))
                                         ierr, id = self.PSSE.nxtlod(int(b))
                                         while id != None:
@@ -443,9 +444,13 @@ class AbstractMode:
                                                 elif v == 'BUSNAME':
                                                     irr, val = self.PSSE.notona(int(b))
                                                     results = self.add_result(results, q, val, "{}_{}_{}".format(id,b))
-                                            else:    
+                                            elif func_name == "loddt2":    
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v, 'ACT')
                                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
+                                            elif func_name == "lodint":
+                                                irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
+                                                results = self.add_result(results, q, val, '{}_{}'.format(id, b))
+
                                             ierr, id = self.PSSE.nxtlod(int(b))
                                     
                                     elif func_name in ["macdat", 'macdt2','macnofunc', 'macint']:
