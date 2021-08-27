@@ -90,6 +90,11 @@ class Dynamic(AbstractMode):
         else:
             self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
 
+        for i, bus in enumerate(self.sub_buses):
+            self.bus_freq_channels[bus] = i
+            self.PSSE.bus_frequency_channel([i, bus], "")
+            self.logger.info(f"Frequency for bus {bus} added to channel {i}")
+
         if self.export_settings["Export results using channels"]:
             self.setup_channels()
 

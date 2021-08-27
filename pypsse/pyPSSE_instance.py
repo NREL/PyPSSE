@@ -70,7 +70,6 @@ class pyPSSE_instance:
         except:
             raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
-
     def dump_settings(self, dest_dir):
 
         setting_toml_file = os.path.join(os.path.dirname(__file__), 'defaults', 'pyPSSE_settings.toml' )
@@ -86,7 +85,6 @@ class pyPSSE_instance:
         )
         self.export_settings = self.read_settings(export_settings_path)
 
-
     def start_simulation(self):
         self.hi = None
         self.simStartTime = time.time()
@@ -94,6 +92,7 @@ class pyPSSE_instance:
         log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
         self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
         self.logger.debug('Starting PSSE instance')
+
         #** Initialize PSSE modules
 
         if self.settings["Simulation"]["Case study"]:
@@ -112,9 +111,7 @@ class pyPSSE_instance:
         else:
             raise Exception("Please pass a RAW or SAV file in the settings dictionary")
 
-
         self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
-
         self.raw_data = rd.Reader(self.PSSE, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
         if self.export_settings['Defined bus subsystems only']:
@@ -122,6 +119,14 @@ class pyPSSE_instance:
         else:
             validBuses = self.raw_data.buses
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
+
+        if self.export_settings['Defined bus subsystems only']:
+            validBuses = self.all_subsysten_buses
+        else:
+            validBuses = self.raw_data.buses
+
+        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
+
 
         self.contingencies = self.build_contingencies()
 
@@ -143,7 +148,6 @@ class pyPSSE_instance:
         self.inc_time = True
 
         return
-
 
     def initialize_loads(self):
         #         data = pd.read_csv(r'C:\NAERM-global\init_Conditions_3_new.csv', header=0, index_col=None)
@@ -192,7 +196,7 @@ class pyPSSE_instance:
             all_subsysten_buses.extend(buses)
             ierr = self.PSSE.bsysinit(i)
             if ierr:
-                raise Exception("Failed to create bus subsystem for FIVR event buses.")
+                raise Exception("Failed to create bus subsystem chosen buses.")
             else:
                 self.logger.debug('Bus subsystem "{}" created'.format(i))
 
@@ -293,9 +297,11 @@ class pyPSSE_instance:
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
+
         if not USING_NAERM:
             if self.inc_time and not self.export_settings["Export results using channels"]:
                 self.results.Update(curr_results, None, t, self.sim.getTime())
+
         return curr_results
 
     def update_subscriptions(self):
@@ -401,6 +407,14 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
+    x = pyPSSE_instance(r'C:\Users\alatif\Desktop\PYPSSE\examples\dynamic_example\Settings\pyPSSE_settings.toml')
+    x.init()
+    for i in range(10):
+        t = i / 240.0
+        res = x.step(t)
+        print(res)
+        res = x.get_results({'Buses': ['PU', 'FREQ']})
+
     # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
     # for s in scenarios:
     #     x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
@@ -411,4 +425,3 @@ if __name__ == '__main__':
     #         r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
     #         f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')
 
-    pass
