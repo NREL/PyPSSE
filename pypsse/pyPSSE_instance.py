@@ -401,12 +401,14 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
-    for s in scenarios:
-        x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
-        x.init()
-        x.run()
-        del x
-        os.rename(
-            r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
-            f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')
+    # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
+    # for s in scenarios:
+    #     x = pyPSSE_instance(f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Settings\{s}.toml')
+    #     x.init()
+    #     x.run()
+    #     del x
+    #     os.rename(
+    #         r'C:\Users\alatif\Desktop\Naerm\PyPSSE\TransOnly\Exports\Simulation_results.hdf5',
+    #         f'C:\\Users\\alatif\\Desktop\\Naerm\\PyPSSE\\TransOnly\\Exports\\{s}.hdf5')
+
+    pass

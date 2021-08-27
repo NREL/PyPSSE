@@ -46,7 +46,6 @@ class hdf5Writer:
         :param powerflow_output: Powerflow solver timestep output as a dict
         """
         # Iterate through each object type
-
         for obj_type in powerflow_output:
             Data = pd.DataFrame(powerflow_output[obj_type], index=[self.step])
             if obj_type not in self.row:

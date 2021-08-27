@@ -10,3 +10,32 @@ REQUIRED_DYNAMIC = ["Dyr file"]
 REQUIRED_NETWORKX = ["GIC file"]
 REQUIRED_HELICS = ["Subscriptions file"]
 SUBSCRIPTION_FIELDS = {"bus_subsystem_id", "bus_id", "load_id",	"load_type", "sub_tag"}
+
+
+MACHINE_CHANNELS = {
+    "ANGLE": 1,
+    "PELEC": 2,
+    "QELEC": 3,
+    "ETERM": 4,
+    "EFD": 5,
+    "PMECH": 6,
+    "SPEED": 7,
+    "XADIFD": 8,
+    "ECOMP": 9,
+    "VOTHSG": 10,
+    "VREF": 11,
+    "VUEL": 12,
+    "VOEL": 13,
+    "GREF": 14,
+    "LCREF": 15,
+    "WVLCTY": 16,
+    "WTRBSP": 17,
+    "WPITCH": 18,
+    "WAEROT": 19,
+    "WROTRV": 20,
+    "WROTRI": 21,
+    "WPCMND": 22,
+    "WQCMND": 23,
+    "WAUXSG": 24,
+
+}

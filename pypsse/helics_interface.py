@@ -124,6 +124,7 @@ class helics_interface:
         )
         self.psse_dict = {}
         for ix, row in sub_data.iterrows():
+
             try:
                 row['property'] = ast.literal_eval(row['property'])
             except:
@@ -132,6 +133,7 @@ class helics_interface:
                 row['scaler'] = ast.literal_eval(row['scaler'])
             except:
                 pass
+
             if row["element_type"] not in PROFILE_VALIDATION:
                 raise Exception(f"Subscription file error: {row['element_type']} not a valid element_type."
                                 f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}")
@@ -250,12 +252,12 @@ class helics_interface:
         for sub_tag, sub_data in self.subscriptions.items():
             if isinstance(sub_data["property"], str):
                 sub_data['value'] = h.helicsInputGetDouble(sub_data['subscription'])
-                self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = sub_data['value']
+                self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][sub_data["property"]] = (sub_data['value'], sub_data['scaler'])
             elif isinstance(sub_data["property"], list):
                 sub_data['value'] = h.helicsInputGetVector(sub_data['subscription'])
                 if isinstance(sub_data['value'], list) and len(sub_data['value']) == len(sub_data["property"]):
                     for i, p in enumerate(sub_data["property"]):
-                        self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = sub_data['value'][i]
+                        self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = (sub_data['value'][i], sub_data['scaler'][i])
 
 
             self.logger.debug('Data received {} for tag {}'.format(sub_data['value'], sub_tag))
@@ -271,20 +273,17 @@ class helics_interface:
                     values = {}
                     j = 0
                     for p, v in vDict.items():
-                        if isinstance(p, str):
-                            ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
-                            if isinstance(sub_data['scaler'], list):
-                                values[ppty] = v * sub_data['scaler'][j]
-                            else:
-                                print(sub_data['scaler'])
-                                values[ppty] = v * sub_data['scaler']
-                        elif isinstance(p, list):
-                            for alpha, ppt in enumerate(p):
-                                ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
-
-                                values[ppty] = v * sub_data['scaler'][alpha]
+                        if isinstance(v, tuple):
+                            v , scale = v
+                            if isinstance(p, str):
+                                ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
+                                values[ppty] = v * scale
+                            elif isinstance(p, list):
+                                for alpha, ppt in enumerate(p):
+                                    ppty = f'realar{PROFILE_VALIDATION[t].index(ppt) + 1}'
+                                    values[ppty] = v * scale
                         j += 1
-                    print(values.values())
+
                     isEmpty = [0 if not vx else 1 for vx in values.values()]
                     if sum(isEmpty) != 0:
                         self.sim.update_object(t, b, i, values)
