@@ -56,7 +56,9 @@ class AbstractMode:
                     'brndt2': ['RX', 'ISHNT', 'JSHNT', 'RXZ', 'ISHNTZ', 'JSHNTZ', 'LOSSES', 'O_LOSSES', 'RX'],
                     'brnmsc': ['MVA', 'AMPS', 'PUCUR', 'CURANG', 'P', 'O_P', 'Q', 'O_Q', 'PLOS', 'O_PLOS', 'QLOS', 'O_QLOS', 'PCTRTA'],
                     'brnint' : ['STATUS', 'METER', 'NMETR', 'OWNERS', 'OWN1', 'OWN2', 'OWN3', 'OWN4', 'STATION_I', 'STATION_J', 'SECTION_I', 'SECTION_J', 'NODE_I', 'NODE_J', 'SCTYPE'],
-                    'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM', 'FROMAREANUMBER', 'TOAREANUMBER'] 
+                    'brnnofunc' : ['FROMBUSNUM', 'TOBUSNUM', 'FROMBUSNAME', 'TOBUSNAME', 'CIRCUIT', 'SUBNUMBERTO', 'SUBNUMBERFROM', 'NOMKVFROM', 'NOMKVTO', "BY"],
+
+
                 }, 
                 'Induction_generators': {
                     'inddt1': ["MBASE", "RATEKV", "PSET", "RA", "XA", "R1", "X1", "R2", "X2", "X3", "E1", "SE1", "E2",
@@ -199,7 +201,7 @@ class AbstractMode:
         for b in subsystem_buses:
             irr, val = self.PSSE.busint(int(b), 'STATION')
             if val==sub_number:
-                irr, val = self.PSSE.busdat(int(b), "KV")
+                irr, val = self.PSSE.busdat(int(b), "BASE")
                 nom_kvs.append(val)
         return list(set(nom_kvs))
 
@@ -531,10 +533,19 @@ class AbstractMode:
                                                     sub_dict = {'SUBNUMBERFROM': int(b), 'SUBNUMBERTO': int(b1)}
                                                     ierr, val = self.PSSE.busint(sub_dict[v], 'STATION')
                                                     results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
-                                            
-                                                elif v in ['FROMAREANUMBER', 'TOAREANUMBER']:
-                                                    bus_dict = {'FROMAREANUMBER': int(b), 'TOAREANUMBER': int(b1)}
-                                                    irr, val = self.PSSE.busint(bus_dict[v], 'AREA')
+                                                elif v == 'NOMKVFROM': 
+                                                    irr, val = self.PSSE.busdat(int(b), "BASE")
+                                                    results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
+                                                elif v == 'NOMKVTO':
+                                                    irr, val = self.PSSE.busdat(int(b1), "BASE")
+                                                    results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
+                                                elif v == "BY":
+                                                    irr, vali = self.PSSE.brndt2(int(b), int(b1), 'ISHNT', v)
+                                                    irr, valj = self.PSSE.brndt2(int(b), int(b1), 'JSHNT', v)
+                                                    if isinstance(vali, complex) and isinstance(valj, complex):
+                                                        val = 0.5*vali.imag + 0.5*valj.imag
+                                                    else:
+                                                        val = None
                                                     results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
 
                                             else:

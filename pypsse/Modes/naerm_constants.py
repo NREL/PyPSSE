@@ -63,7 +63,7 @@ NAERM_TO_PYPSSE  ={
         'LimitMVAB' : ['RATEB'],
         'LimitMVAC' : ['RATEC'],
         'Status' : ['STATUS'],
-        'B' : ['RX', 'IMAG'],
+        'B' : ['BY'], # BY for susceptance using Star model
         'BusNameFrom' : ['FROMBUSNAME'],
         'BusNumFrom' : ['FROMBUSNUM'],
         'BusNameTo' : ['TOBUSNAME'],
@@ -76,8 +76,11 @@ NAERM_TO_PYPSSE  ={
         'LineCircuit': ['CIRCUIT'],
         'LineStatus': ['STATUS'],
         'LineMaxPercentAmp': ['PCTRTA'],
-        'FromAreaNumber': ['FROMAREANUMBER'],
-        'ToAreaNumber': ['TOAREANUMBER']
+        'NomkVFrom' : ['NOMKVFROM'],
+        'NomKVTo': ['NOMKVTO'],
+        "R": ["RX", "REAL"],
+        "X": ["RX", "IMAG"]
+
     },
 
     'Machines' : {
@@ -125,8 +128,14 @@ NAERM_TO_PYPSSE  ={
     "Loads" : {
         "LoadMW" : ["MVA", "REAL"],
         "LoadID": ['LOADID'],
-        "MW": ["MVA", "REAL"],
-        "Mvar": ["MVA", "IMAG"],
+        "MW": ["TOTAL", "REAL"],
+        "Mvar": ["TOTAL", "IMAG"],
+        "SMW": ["MVA", "REAL"],
+        "SMvar": ["MVA", "IMAG"],
+        "ZMW": ["YL", "REAL"],
+        "ZMvar": ["YL", "IMAG"],
+        "IMW": ["IL", "REAL"],
+        "IMvar": ["IL", "IMAG"],
         "ID": ["LOADID"],
         "BusNum": ["BUSNUM"],
         "Status": ["STATUS"],
