@@ -40,20 +40,16 @@ class Snap(AbstractMode):
 
         self.channel_map = {}
         self.chnl_idx = 1
-
-        self.setup_bus_channels(
-            [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121],
-            ["voltage_and_angle", "frequency"])
-        self.setup_load_channels([
-            ('AP', 14303), ('AP', 14352), ('SR', 15108), ('1', 15561), ('AE', 17604),
-            ('AE', 17605), ('1', 37102), ('1', 37124), ('1', 37121)
-        ])
-        self.setup_machine_channels(
-            machines=[
-                ('1', 15140), ('1', 15252), ('7', 17189), ('1', 37102), ('1', 37121), ('1', 37124)
-            ],
-            properties=["PELEC", "QELEC", "SPEED"]
-        )
+        for method_type, settings in self.export_settings["channel_setup"].items():
+            for setting in settings:
+                if method_type == "buses":
+                    self.setup_bus_channels(setting["list"], setting["properties"])
+                elif method_type == "loads":
+                    load_list = [[x, int(y)] for x, y in setting["list"]]
+                    self.setup_load_channels(load_list)
+                elif method_type == "machines":
+                    machine_list = [[x, int(y)] for x, y in setting["list"]]
+                    self.setup_machine_channels(machine_list, setting["properties"])
 
         self.logger.debug('pyPSSE initialization complete!')
         self.initialization_complete = True
