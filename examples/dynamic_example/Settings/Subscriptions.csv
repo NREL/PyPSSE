@@ -1,0 +1,5 @@
+bus_subsystem_id,bus,element_type,element_id,property,sub_tag,scaler
+0,153,Load,1,['PL'],CYME1.Source.SUB650WYE-S2.KWTOT..helper,[0.10080645161290322]
+0,153,Load,1,['QL'],CYME1.Source.SUB650WYE-S2.KVARTOT..helper,[0.06605019815059446]
+0,154,Load,1,['PL'],CYME2.Source.SUB650WYE-S2.KWTOT..helper,[0.3024193548387097]
+0,154,Load,1,['QL'],CYME2.Source.SUB650WYE-S2.KVARTOT..helper,[0.29722589167767505]

@@ -1,11 +1,13 @@
 from pypsse.ProfileManager.common import PROFILE_VALIDATION
 import pandas as pd
 import helics as h
+import time
 import ast
 import os
 
 class helics_interface:
 
+    dynamic_iter_const = 1000.0
     n_states = 5
     init_state = 1
 
@@ -43,15 +45,18 @@ class helics_interface:
         if self.settings['HELICS']['Broker port']:
             h.helicsFederateInfoSetBrokerPort(self.fedinfo, self.settings['HELICS']['Broker port'])
 
-        h.helicsFederateInfoSetTimeProperty(
-            self.fedinfo,
-            h.helics_property_time_delta,
-            self.settings["Simulation"]["Step resolution (sec)"] / 1000.0
-        )
-
-        # h.helicsFederateInfoSetIntegerProperty(self.fedinfo, h.helics_property_int_log_level,
-        #                                        self.settings["HELICS"]['Helics logging level'])
-
+        if self.settings['HELICS']["Iterative Mode"]:
+            h.helicsFederateInfoSetTimeProperty(
+                self.fedinfo,
+                h.helics_property_time_delta,
+                self.settings["Simulation"]["Step resolution (sec)"] / self.dynamic_iter_const
+            )
+        else:
+            h.helicsFederateInfoSetTimeProperty(
+                self.fedinfo,
+                h.helics_property_time_delta,
+                self.settings["Simulation"]["Step resolution (sec)"]
+            )
         self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
         return
 
@@ -59,7 +64,7 @@ class helics_interface:
         self.publications = {}
         self.pub_struc = []
         for publicationDict in self.settings['HELICS']["Publications"]:
-
+            print(publicationDict)
             bus_subsystem_ids = publicationDict["bus_subsystems"]
             if not set(bus_subsystem_ids).issubset(self.bus_subsystems):
                 raise Exception(f"One or more invalid bus subsystem ID pass in {bus_subsystem_ids}."
@@ -92,6 +97,7 @@ class helics_interface:
                             Name,
                             pName
                         )
+                        print(pub_tag)
                         dtype_matched = True
                         if isinstance(val, float):
                             self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
@@ -192,20 +198,23 @@ class helics_interface:
             return True, self.c_seconds
         else:
             error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])
-            self.c_seconds, iteration_state = h.helicsFederateRequestTimeIterative(
-                self.PSSEfederate,
-                r_seconds,
-                h.helics_iteration_request_iterate_if_needed
-            )
+            if self.itr == 0:
+                while self.c_seconds < r_seconds:
+                    self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
+            else:
+                self.c_seconds, iteration_state = h.helicsFederateRequestTimeIterative(
+                    self.PSSEfederate,
+                    r_seconds,
+                    h.helics_iteration_request_force_iteration
+                )
             self.logger.info('Time requested: {} - time granted: {} error: {} it: {}'.format(
                 r_seconds, self.c_seconds, error, self.itr))
             # self._co_convergance_error_tolerance
-            if error > -1 and self.itr < self._co_convergance_max_iterations:
+            if error > -1 and self.itr < self._co_convergance_max_iterations - 1:   #self._co_convergance_error_tolerance 
                 self.itr += 1
                 return False, self.c_seconds
             else:
                 self.itr = 0
-                self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
                 return True, self.c_seconds
 
     def get_restructured_results(self, results):

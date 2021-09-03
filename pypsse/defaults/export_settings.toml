@@ -1,5 +1,5 @@
 "Export results using channels" = false
-"Defined bus subsystems only" = false
+"Defined bus subsystems only" = true
 "Write format" = "h5"
 
 [Buses]
@@ -56,12 +56,20 @@
 "NDI" = false
 
 [Loads]
-"MVA" = false 
+"MVA" = true
 "IL" = false 
 "YL" = false 
 "TOTAL" = false 
 "YNEG" = false 
 "YZERO" = false
+"FmA" = true
+"FmB" = true
+"FmC" = false
+"FmD" = false
+"Fwl" = false
+"PFel" = false
+"TD" = false
+"TC" = false
 
 [Fixed_shunts]
 "ACT" = false 
@@ -231,37 +239,57 @@
 "ZGRND"= false
 
 [Channels]
-"ANGLE = false machine relative rotor angle (degrees)." = false
-"PELEC = false machine electrical power (pu on SBASE)." = false
+"ANGLE = false machine relative rotor angle [degrees]." = false
+"PELEC = false machine electrical power [pu on SBASE]." = false
 "QELEC = false machine reactive power." = false
-"ETERM = false machine terminal voltage (pu)." = false
-"EFD = false generator main field voltage (pu)." = false
-"PMECH = false turbine mechanical power (pu on MBASE)." = false
-"SPEED = false machine speed deviation from nominal (pu)." = false
-"XADIFD = false machine field current (pu)." = false
-"ECOMP = false voltage regulator compensated voltage (pu)." = false
-"VOTHSG = false stabilizer output signal (pu)." = false
-"VREF = false voltage regulator voltage setpoint (pu)." = false
+"ETERM = false machine terminal voltage [pu]." = false
+"EFD = false generator main field voltage [pu]." = false
+"PMECH = false turbine mechanical power [pu on MBASE]." = false
+"SPEED = false machine speed deviation from nominal [pu]." = false
+"XADIFD = false machine field current [pu]." = false
+"ECOMP = false voltage regulator compensated voltage [pu]." = false
+"VOTHSG = false stabilizer output signal [pu]." = false
+"VREF = false voltage regulator voltage setpoint [pu]." = false
 "BSFREQ = false bus pu frequency deviations." = false
-"VOLT = false bus pu voltages (complex)." = false
+"VOLT = false bus pu voltages [complex]." = false
 "voltage and angle." = true
-"flow (P)." = false
-"flow (P and Q)." = true
-"flow (MVA)." = false
-"apparent impedance (R and X)." = false
+"flow [P]." = false
+"flow [P and Q]." = true
+"flow [MVA]." = false
+"apparent impedance [R and X]." = false
 "ITERM." = false
 "machine apparent impedance." = false
-"VUEL = false minimum excitation limiter output signal (pu)." = false
-"VOEL = false maximum excitation limiter output signal (pu)." = false
+"VUEL = false minimum excitation limiter output signal [pu]." = false
+"VOEL = false maximum excitation limiter output signal [pu]." = false
 "PLOAD." = false
 "QLOAD." = false
 "GREF = false turbine governor reference." = false
 "LCREF = false turbine load control reference." = false
-"WVLCTY = false wind velocity (m/s)." = false
-"WTRBSP = false wind turbine rotor speed deviation (pu)." = false
-"WPITCH = false pitch angle (degrees)." = false
-"WAEROT = false aerodynamic torque (pu on MBASE)." = false
-"WROTRV = false rotor voltage (pu on MBASE)." = false
-"WROTRI = false rotor current (pu on MBASE)." = false
-"WPCMND = false active power command from wind control (pu on MBASE)." = false
-"WQCMND = false reactive power command from wind control (pu on MBASE)." = false
+"WVLCTY = false wind velocity [m/s]." = false
+"WTRBSP = false wind turbine rotor speed deviation [pu]." = false
+"WPITCH = false pitch angle [degrees]." = false
+"WAEROT = false aerodynamic torque [pu on MBASE]." = false
+"WROTRV = false rotor voltage [pu on MBASE]." = false
+"WROTRI = false rotor current [pu on MBASE]." = false
+"WPCMND = false active power command from wind control [pu on MBASE]." = false
+"WQCMND = false reactive power command from wind control [pu on MBASE]." = false
+
+[[channel_setup.buses]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [153, 154, 203, 205, 3005, 3007, 3008]
+properties = ["voltage_and_angle", "frequency"]
+[[channel_setup.buses]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [206, 3018]
+properties = ["voltage_and_angle"]
+[[channel_setup.loads]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [["1", "153"], ["2", "154"], ["1", "203"], ["1", "205"], ["1", "3005"], ["1", "3007"], ["1", "3008"]]
+[[channel_setup.machines]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [["1", "101"], ["1", "102"], ["1", "206"], ["1", "211"], ["1", "3011"], ["1", "3018"]]
+properties = ["PELEC", "QELEC", "SPEED"]

@@ -288,7 +288,6 @@ class AbstractMode:
 
     @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
-        print(quantities)
         results = {}
         area_numbers = self.get_area_numbers(subsystem_buses)
         zone_numbers = self.get_zone_numbers(subsystem_buses)
@@ -383,9 +382,10 @@ class AbstractMode:
                                                     results = self.add_result(results, q, 0, int(b))
                                         
                                         if func_name in ["busdat",  "busint"]:
-                                            if v == 'FREQ':
-                                                irr, val = getattr(self.PSSE, func_name)(int(b), v)
-                                                results =self.add_result(results, q, val, b)
+                                            #if v == 'FREQ':
+                                            irr, val = getattr(self.PSSE, func_name)(int(b), v)
+                                            results =self.add_result(results, q, val, b)
+
                                         
                                         elif func_name == "busdt2":
                                             string2 = 'ACT'
@@ -600,7 +600,6 @@ class AbstractMode:
                                                         irr,val = self.PSSE.notona(int(b1))
                                                         results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
                                             ierr, b1, b2, ickt = self.PSSE.nxtbrn3(int(b))
-        print(results)
         return results
 
     def add_result(self, results_dict, class_name, value, label):

@@ -298,6 +298,5 @@ class Dynamic(AbstractMode):
                                                 results[res_base][obj_name] = value
             else:
                 self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
-        print(results)
         return results
 
