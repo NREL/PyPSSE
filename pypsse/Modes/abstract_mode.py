@@ -97,7 +97,27 @@ class AbstractMode:
                         'FROMBUSNAME_3WDG','FROMBUSNAME_2WDG','TOBUSNAME_3WDG','TOBUSNAME_2WDG', 'TOBUS2NAME_3WDG','CIRCUIT_2WDG', 'CIRCUIT_3WDG']
                 }
             }
+        self.disable_load_models_for_coupled_buses()
         self.initialization_complete = False
+
+    def disable_load_models_for_coupled_buses(self):
+        if self.settings['HELICS']['Cosimulation mode']:
+            sub_data = pd.read_csv(
+            os.path.join(
+                self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
+            )
+        )
+        
+        sub_data = sub_data[sub_data['element_type'] == 'Load']
+
+        self.psse_dict = {}
+        for ix, row in sub_data.iterrows():
+            bus = row['bus']
+            load = row['element_id']
+            ierr = self.PSSE.ldmod_status(0,int(bus),str(load),1,0)
+            self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
+
+
 
     def init(self, bus_subsystems):
         self.export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
