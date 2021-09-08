@@ -1,6 +1,7 @@
 from pypsse.Modes.naerm_constants import naerm_decorator, DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.Modes.abstract_mode import AbstractMode
 from pypsse.common import MACHINE_CHANNELS
+import pandas as pd
 import numpy as np
 import datetime
 import os
@@ -13,15 +14,12 @@ class Dynamic(AbstractMode):
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self.init({})
         return
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
         self.iter_const = 100.0
-        # if len(self.settings["Simulation"]["Setup files"]):
-        #     ierr = None
-
-
 
         if len(self.settings["Simulation"]["Rwm file"]):
             self.PSSE.mcre([1, 0], self.rwn_file)
@@ -90,6 +88,8 @@ class Dynamic(AbstractMode):
         else:
             self.logger.debug('Dynamic file {} sucessfully loaded'.format(self.dyr_path))
 
+        self.disable_load_models_for_coupled_buses()
+
         if self.export_settings["Export results using channels"]:
             self.setup_channels()
 
@@ -146,6 +146,24 @@ class Dynamic(AbstractMode):
         self.xTime = 0
 
         return self.initialization_complete
+
+    def disable_load_models_for_coupled_buses(self):
+        if self.settings['HELICS']['Cosimulation mode']:
+            sub_data = pd.read_csv(
+                os.path.join(
+                    self.settings["Simulation"]["Project Path"], 'Settings',
+                    self.settings["HELICS"]["Subscriptions file"]
+                )
+            )
+
+            sub_data = sub_data[sub_data['element_type'] == 'Load']
+
+            self.psse_dict = {}
+            for ix, row in sub_data.iterrows():
+                bus = row['bus']
+                load = row['element_id']
+                ierr = self.PSSE.ldmod_status(0, int(bus), str(load), 1, 0)
+                self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)

@@ -1,6 +1,7 @@
 from pypsse.Modes.naerm_constants import naerm_decorator, DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.Modes.abstract_mode import AbstractMode
 from pypsse.common import MACHINE_CHANNELS
+import pandas as pd
 import numpy as np
 import datetime
 import os
@@ -12,15 +13,22 @@ class Snap(AbstractMode):
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
+        self.init(subsystem_buses)
         return
 
     def init(self, bus_subsystems):
         super().init(bus_subsystems)
+
+        self.iter_const = 100.0
+        self.xTime = 0
+
         ierr = self.PSSE.case(self.study_case_path)
         assert ierr == 0, "error={}".format(ierr)
         ierr = self.PSSE.rstr(self.snp_file)
         assert ierr == 0, "error={}".format(ierr)
         ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
+
+        self.disable_load_models_for_coupled_buses()
 
         if ierr==1:
             self.PSSE.cong(0)
@@ -29,12 +37,20 @@ class Snap(AbstractMode):
         
         elif ierr >1:
             raise Exception("Error starting simulation")
-            
 
-        # for i, bus in enumerate(self.sub_buses):
-        #     self.bus_freq_channels[bus] = i+1
-        #     self.PSSE.bus_frequency_channel([i+1, int(bus)], "")
-        #     self.logger.info(f"Frequency for bus {bus} added to channel {i+1}")
+        if self.settings["HELICS"]["Cosimulation mode"]:
+            if self.settings["HELICS"]["Iterative Mode"]:
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"] / self.iter_const
+            else:
+                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+        else:
+            sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+
+        self.PSSE.dynamics_solution_param_2(
+            [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
+            [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
+        )
+
 
         self.PSSE.delete_all_plot_channels()
 
@@ -54,6 +70,24 @@ class Snap(AbstractMode):
         self.logger.debug('pyPSSE initialization complete!')
         self.initialization_complete = True
         return self.initialization_complete
+
+    def disable_load_models_for_coupled_buses(self):
+        if self.settings['HELICS']['Cosimulation mode']:
+            sub_data = pd.read_csv(
+                os.path.join(
+                    self.settings["Simulation"]["Project Path"], 'Settings',
+                    self.settings["HELICS"]["Subscriptions file"]
+                )
+            )
+
+            sub_data = sub_data[sub_data['element_type'] == 'Load']
+
+            self.psse_dict = {}
+            for ix, row in sub_data.iterrows():
+                bus = row['bus']
+                load = row['element_id']
+                ierr = self.PSSE.ldmod_status(0, int(bus), str(load), 1, 0)
+                self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
     def setup_machine_channels(self, machines, properties):
         for i, qty in enumerate(properties):
@@ -124,7 +158,7 @@ class Snap(AbstractMode):
 
     def resolveStep(self, t):
         self.xTime += 1
-        return self.PSSE.run(0, t + self.xTime * self.incTime / 1000.0, 1, 1, 1)
+        return self.PSSE.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
 
 
     def get_load_indices(self, bus_subsystems):
