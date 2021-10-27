@@ -30,40 +30,40 @@ DYNAMIC_ONLY_PPTY = {
     }
 }
 
-NAERM_TO_PYPSSE  ={
+NAERM_TO_PYPSSE = {
     'Buses' : {
-            'Number' : ['NUMBER'],
-            'BusNum': ['NUMBER'],
-            'NomkV' : ['BASE'],
-            'kV' : ['KV'],
-            'Vpu' : ['PU'],
-            'Vangle' : ['ANGLE'], # not sure whether degree or radian is expected in NAERM
-            'AreaNumber' : ['AREA'],
-            'ZoneNumber' : ['ZONE'],
-            'AreaName' : ['AREANAME'],
-            'SubLongitude' : ['LONG'], 
-            'SubLatitude': ['LATI'],
-            'LoadMW' : ['TOTAL', 'REAL'],
-            'LoadMvar' : ['TOTAL', 'IMAG'],
-            'NomB' : ['YS', 'IMAG', 'NOM'],
-            'NomG' : ['YS', 'REAL', 'NOM'],
-            'GenMW' : ['GENPOWER', 'REAL'],
-            'GenMvar': ['GENPOWER', 'IMAG'],
-            'SubNumber': ['STATION'],
-            'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
-            'Name' : ['NAME'],
-            'Status' : ['STATUS'],
-            'IsFeederEligible':['ISLOADBUS'],
-            'BusName': ['NAME'],
-            'BusNomVolt': ['BASE'],
-            'BusPUVolt': ['PU']
+        'Number' : ['NUMBER'],
+        'BusNum': ['NUMBER'],
+        'NomkV' : ['BASE'],
+        'kV' : ['KV'],
+        'Vpu' : ['PU'],
+        'Vangle' : ['ANGLE'], # not sure whether degree or radian is expected in NAERM
+        'AreaNumber' : ['AREA'],
+        'ZoneNumber' : ['ZONE'],
+        'AreaName' : ['AREANAME'],
+        'SubLongitude' : ['LONG'],
+        'SubLatitude': ['LATI'],
+        'LoadMW' : ['TOTAL', 'REAL'],
+        'LoadMvar' : ['TOTAL', 'IMAG'],
+        'NomB' : ['YS', 'IMAG', 'NOM'],
+        'NomG' : ['YS', 'REAL', 'NOM'],
+        'GenMW' : ['GENPOWER', 'REAL'],
+        'GenMvar': ['GENPOWER', 'IMAG'],
+        'SubNumber': ['STATION'],
+        'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
+        'Name' : ['NAME'],
+        'Status' : ['STATUS'],
+        'IsFeederEligible':['ISLOADBUS'],
+        'BusName': ['NAME'],
+        'BusNomVolt': ['BASE'],
+        'BusPUVolt': ['PU']
     },
     'Branches' : {
         'LimitMVAA' : ['RATEA'],
         'LimitMVAB' : ['RATEB'],
         'LimitMVAC' : ['RATEC'],
         'Status' : ['STATUS'],
-        'B' : ['RX', 'IMAG'],
+        'B' : ['BY'], # BY for susceptance using Star model
         'BusNameFrom' : ['FROMBUSNAME'],
         'BusNumFrom' : ['FROMBUSNUM'],
         'BusNameTo' : ['TOBUSNAME'],
@@ -76,8 +76,11 @@ NAERM_TO_PYPSSE  ={
         'LineCircuit': ['CIRCUIT'],
         'LineStatus': ['STATUS'],
         'LineMaxPercentAmp': ['PCTRTA'],
-        'FromAreaNumber': ['FROMAREANUMBER'],
-        'ToAreaNumber': ['TOAREANUMBER']
+        'NomkVFrom' : ['NOMKVFROM'],
+        'NomKVTo': ['NOMKVTO'],
+        "R": ["RX", "REAL"],
+        "X": ["RX", "IMAG"]
+
     },
 
     'Machines' : {
@@ -125,8 +128,14 @@ NAERM_TO_PYPSSE  ={
     "Loads" : {
         "LoadMW" : ["MVA", "REAL"],
         "LoadID": ['LOADID'],
-        "MW": ["MVA", "REAL", "NOM"],
-        "Mvar": ["MVA", "IMAG", "NOM"],
+        "MW": ["TOTAL", "REAL"],
+        "Mvar": ["TOTAL", "IMAG"],
+        "SMW": ["MVA", "REAL"],
+        "SMvar": ["MVA", "IMAG"],
+        "ZMW": ["YL", "REAL"],
+        "ZMvar": ["YL", "IMAG"],
+        "IMW": ["IL", "REAL"],
+        "IMvar": ["IL", "IMAG"],
         "ID": ["LOADID"],
         "BusNum": ["BUSNUM"],
         "Status": ["STATUS"],

@@ -1,14 +1,15 @@
 [Simulation]
-"Simulation time (sec)" = 25
-"Step resolution (sec)" = 1
+"Simulation time (sec)" = 1.0
+"Step resolution (sec)" = 0.004166667
+"PSSE solver timestep (sec)" = 0.004166667
 "Start time" = "01/01/2020 00:00:00"
-"Simulation mode" = "Dynamic"
+"Simulation mode" = "Dynamic" # Dynamic, Snap
 "Use profile manager" = false
 PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = "C:/Users/KDUWADI/Desktop/NREL_Projects/NAERM-DOE/DEE_BES_cosim/PyPSSE/examples/dynamic_example"
+"Project Path" = "C:/Users/alatif/Desktop/CodeBases/pypsse/examples/dynamic_example"
 "Case study" = "savnw.sav"
 "Raw file" = "savnw.raw"
-"Snp file" = ""
+"Snp file" = "Test_export.snp"
 "Dyr file" = "savnw.dyr"
 "GIC file" = ""
 "Rwm file" = ""
@@ -17,9 +18,9 @@ PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
 "Setup files" = []
 
 [HELICS]
-"Cosimulation mode" = false
+"Cosimulation mode" = true
 "Federate name" = "psse"
-"Time delta" = 0.004166667
+"Time delta" = 0.00041666669999999997
 "Core type" = "zmq"
 Uninterruptible = true
 "Helics logging level" = 5
@@ -27,11 +28,13 @@ Uninterruptible = true
 "Iterative Mode" = false
 "Error tolerance" = 1e-5
 "Max co-iterations" = 15
-[HELICS.Publications.bus_subsystems]
-from_file = false
-bus_file = ""
-bus_subsystem_list = [[101, 102, 204, 205 , 3001]]
-publish_subsystems = [ 0,]
+Broker = "127.0.0.1"
+"Broker port" = 23404
+
+[[HELICS.Publications]]
+bus_subsystems = [ 0,]
+class = "Buses"
+properties = [ "PU",]
 
 [Export_settings]
 "Outx file" = "Results.outx"
@@ -61,14 +64,14 @@ columns = 2
 [bus_subsystems]
 from_file = false
 bus_file = ""
-bus_subsystem_list = [[101, 102, 204, 205 , 3001]]
+bus_subsystem_list = [ [ 153, 154, 203, 205, 3005, 3007, 3008,],]
 publish_subsystems = [ 0,]
-
-[Loads]
-Convert = false
 
 [Generators]
 "Missing machine model" = 1
+
+[Loads]
+Convert = false
 
 [Loads.active_load]
 "% constant current" = 50.0
@@ -77,3 +80,11 @@ Convert = false
 [Loads.reactive_load]
 "% constant current" = 50.0
 "% constant admittance" = 50.0
+
+[contingencies.bus_fault.bf_1]
+time = 0.4
+bus_id = 102
+duration = 0.1
+bus_trip = false
+trip_delay = 0.05
+fault_impedance = [ 0.001, 0.001,]
