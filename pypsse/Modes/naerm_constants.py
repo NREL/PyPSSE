@@ -30,33 +30,33 @@ DYNAMIC_ONLY_PPTY = {
     }
 }
 
-NAERM_TO_PYPSSE  ={
+NAERM_TO_PYPSSE = {
     'Buses' : {
-            'Number' : ['NUMBER'],
-            'BusNum': ['NUMBER'],
-            'NomkV' : ['BASE'],
-            'kV' : ['KV'],
-            'Vpu' : ['PU'],
-            'Vangle' : ['ANGLE'], # not sure whether degree or radian is expected in NAERM
-            'AreaNumber' : ['AREA'],
-            'ZoneNumber' : ['ZONE'],
-            'AreaName' : ['AREANAME'],
-            'SubLongitude' : ['LONG'], 
-            'SubLatitude': ['LATI'],
-            'LoadMW' : ['TOTAL', 'REAL'],
-            'LoadMvar' : ['TOTAL', 'IMAG'],
-            'NomB' : ['YS', 'IMAG', 'NOM'],
-            'NomG' : ['YS', 'REAL', 'NOM'],
-            'GenMW' : ['GENPOWER', 'REAL'],
-            'GenMvar': ['GENPOWER', 'IMAG'],
-            'SubNumber': ['STATION'],
-            'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
-            'Name' : ['NAME'],
-            'Status' : ['STATUS'],
-            'IsFeederEligible':['ISLOADBUS'],
-            'BusName': ['NAME'],
-            'BusNomVolt': ['BASE'],
-            'BusPUVolt': ['PU']
+        'Number' : ['NUMBER'],
+        'BusNum': ['NUMBER'],
+        'NomkV' : ['BASE'],
+        'kV' : ['KV'],
+        'Vpu' : ['PU'],
+        'Vangle' : ['ANGLE'], # not sure whether degree or radian is expected in NAERM
+        'AreaNumber' : ['AREA'],
+        'ZoneNumber' : ['ZONE'],
+        'AreaName' : ['AREANAME'],
+        'SubLongitude' : ['LONG'],
+        'SubLatitude': ['LATI'],
+        'LoadMW' : ['TOTAL', 'REAL'],
+        'LoadMvar' : ['TOTAL', 'IMAG'],
+        'NomB' : ['YS', 'IMAG', 'NOM'],
+        'NomG' : ['YS', 'REAL', 'NOM'],
+        'GenMW' : ['GENPOWER', 'REAL'],
+        'GenMvar': ['GENPOWER', 'IMAG'],
+        'SubNumber': ['STATION'],
+        'ShuntMVAR': ['YS', 'IMAG', 'ACT'],
+        'Name' : ['NAME'],
+        'Status' : ['STATUS'],
+        'IsFeederEligible':['ISLOADBUS'],
+        'BusName': ['NAME'],
+        'BusNomVolt': ['BASE'],
+        'BusPUVolt': ['PU']
     },
     'Branches' : {
         'LimitMVAA' : ['RATEA'],
@@ -153,9 +153,15 @@ NAERM_TO_PYPSSE  ={
         "TransCircuit": ["CIRCUIT_3WDG"]
     },
     "DCtransmissionlines": {
-        "BusNum": ["RECT"],
-        "BusNum:1": ["INV"],
-        "DCLID": ["DCLINENAME"]
+        "name": ["DCLINENAME"],
+        "BusNumRect": ["RECT"],
+        "BusNumInv": ["INV"],
+        "BusNameRect": ["BUSNAMERECT"],
+        "BusNameInv": ["BUSNAMEINV"],
+        "Status": ["STATUS"],
+        "R": ["RDC"],
+        "SetpointVolt": ["VSCHD"],
+        "Circuit": ["CIRCUIT"]
     }
 }
 
@@ -216,7 +222,8 @@ def naerm_decorator(func):
             status_translation = {1: 'connected', 0: 'notconnected'}
             if param.lower() == 'status':
                 for key, value in sub_dict.items():
-                    sub_dict[key] = status_translation[value]
+                    print(key, value, type(key), type(value))
+                    sub_dict[key] = status_translation[value] if value in status_translation else status_translation[0]
              
             if class_name in complex_conversion_dict:
                 conv_dict = complex_conversion_dict[class_name]

@@ -239,6 +239,7 @@ class Snap(AbstractMode):
                                                     results[res_base] = {}
                                                 obj_name = f"{bus}_{ld_id}"
                                                 results[res_base][obj_name] = value
+
             else:
                 self.logger.warning("Extend function 'read_subsystems' in the Snap class (Snap.py)")
         print(results)
