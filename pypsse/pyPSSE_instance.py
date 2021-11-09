@@ -444,24 +444,24 @@ if __name__ == '__main__':
     #
     # print(curr)
 
-    x = pyPSSE_instance(r'C:\Users\alatif\Desktop\PYPSSE\examples\dynamic_example\Settings\pyPSSE_settings.toml')
+    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\PyPSSE\examples\dynamic_example\Settings\pyPSSE_settings.toml')
     x.init()
     for i in range(10):
         t = i / 240.0
         res = x.step(t)
         print(res)
-        res = x.get_results({
-            'Buses': [
-                'PU', 'FREQ'
-            ],
-            "DCtransmissionlines": {
-                "name": True,
-                "BusNumRect": True,
-                "BusNumInv": True,
-                "BusNameRect": True,
-                "BusNameInv": True,
-                "Status": True,
-                "R": True,
-                "SetpointVolt": True,
-                "Circuit": True
+        # res = x.get_results({
+        #     'Buses': [
+        #         'PU', 'FREQ'
+        #     ],
+        #     "DCtransmissionlines": {
+        #         "name": True,
+        #         "BusNumRect": True,
+        #         "BusNumInv": True,
+        #         "BusNameRect": True,
+        #         "BusNameInv": True,
+        #         "Status": True,
+        #         "R": True,
+        #         "SetpointVolt": True,
+        #         "Circuit": True
 
