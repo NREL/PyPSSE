@@ -137,12 +137,6 @@ class Dynamic(AbstractMode):
 
         self.logger.debug('pyPSSE initialization complete!')
 
-
-        for i, bus in enumerate(self.sub_buses):
-            self.bus_freq_channels[bus] = i + 1
-            self.PSSE.bus_frequency_channel([i + 1, int(bus)], "")
-            self.logger.info(f"Frequency for bus {bus} added to channel {i + 1}")
-
         self.xTime = 0
 
         return self.initialization_complete

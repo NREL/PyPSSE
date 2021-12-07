@@ -32,7 +32,7 @@ def run(project_path, options=None, simulations_file=None):
     path = os.path.join(project_path, "Settings", simulations_file)
     if os.path.exists(path):
         x = pyPSSE_instance(path)
-        x.init()
+        #x.init()
         x.run()
     else:
         raise Exception (f"'{path}' is not a valid path.")

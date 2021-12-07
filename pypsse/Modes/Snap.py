@@ -79,7 +79,7 @@ class Snap(AbstractMode):
                     self.settings["HELICS"]["Subscriptions file"]
                 )
             )
-
+            print(sub_data)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
 
             self.psse_dict = {}

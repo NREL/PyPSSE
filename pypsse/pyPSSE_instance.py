@@ -114,11 +114,6 @@ class pyPSSE_instance:
         self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
         self.raw_data = rd.Reader(self.PSSE, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
-        if self.export_settings['Defined bus subsystems only']:
-            validBuses = self.all_subsysten_buses
-        else:
-            validBuses = self.raw_data.buses
-        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
 
         if self.export_settings['Defined bus subsystems only']:
             validBuses = self.all_subsysten_buses
@@ -126,7 +121,6 @@ class pyPSSE_instance:
             validBuses = self.raw_data.buses
 
         self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
-
 
         self.contingencies = self.build_contingencies()
 
