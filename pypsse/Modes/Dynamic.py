@@ -8,8 +8,8 @@ import os
 
 class Dynamic(AbstractMode):
 
-    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
-        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]

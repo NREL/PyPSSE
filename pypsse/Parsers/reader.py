@@ -44,4 +44,5 @@ class Reader:
         self.logger.info(f"{func_name} count - {len(array_1)}")
         if len(array_list) == 1:
             return array_list[0]
+
         return list(zip(*array_list))

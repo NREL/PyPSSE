@@ -6,9 +6,9 @@ import numpy as np
 
 class AbstractMode:
 
-    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses):
+    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
         self.PSSE = psse
-
+        self.raw_data = raw_data
         self.bus_freq_channels = {}
 
         from psspy import _i,_f,_s,_o

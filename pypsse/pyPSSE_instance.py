@@ -67,6 +67,7 @@ class pyPSSE_instance:
             if settinigs_toml_path != '':
                 self.read_allsettings(settinigs_toml_path)
                 self.start_simulation()
+                self.init()
         except:
             raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
@@ -120,7 +121,7 @@ class pyPSSE_instance:
         else:
             validBuses = self.raw_data.buses
 
-        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses)
+        self.sim = sc.sim_controller(self.PSSE, self.dyntools, self.settings, self.export_settings, self.logger, validBuses, self.raw_data)
 
         self.contingencies = self.build_contingencies()
 
@@ -141,6 +142,12 @@ class pyPSSE_instance:
         self.exp_vars = self.results.get_export_variables()
         self.inc_time = True
 
+        return
+
+    def disable_generation_for_coupled_buses(self):
+        if self.settings['HELICS']['Cosimulation mode'] and self.settings['HELICS'][
+            "Disable_generation_on_coupled_buses"]:
+            pass
         return
 
     def initialize_loads(self):

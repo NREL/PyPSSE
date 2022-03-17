@@ -8,8 +8,8 @@ import os
 
 class Snap(AbstractMode):
 
-    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses):
-        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses)
+    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
+        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
@@ -29,6 +29,8 @@ class Snap(AbstractMode):
         ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
 
         self.disable_load_models_for_coupled_buses()
+        self.disable_generation_for_coupled_buses()
+
 
         if ierr==1:
             self.PSSE.cong(0)
@@ -71,6 +73,37 @@ class Snap(AbstractMode):
         self.initialization_complete = True
         return self.initialization_complete
 
+    def disable_generation_for_coupled_buses(self):
+        print(self.raw_data.generators)
+        if self.settings['HELICS']['Cosimulation mode'] and self.settings['HELICS']["Disable_generation_on_coupled_buses"]:
+            sub_data = pd.read_csv(
+                os.path.join(
+                    self.settings["Simulation"]["Project Path"], 'Settings',
+                    self.settings["HELICS"]["Subscriptions file"]
+                )
+            )
+            print(sub_data)
+            sub_data = sub_data[sub_data['element_type'] == 'Load']
+            generators = {}
+            for ix, row in sub_data.iterrows():
+                bus = row['bus']
+                for gen_bus, gen_id in self.raw_data.generators:
+                    if gen_bus not in generators:
+                        generators[bus] = [gen_id]
+                    else:
+                        generators[bus].append(gen_id)
+
+            for bus_id, machines in generators.items():
+                for machine in machines:
+                    intgar = [0, self._i, self._i, self._i, self._i, self._i]
+                    realar = [
+                        self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f,
+                        self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f
+                    ]
+                    self.PSSE.machine_chng_2(bus_id, machine, intgar, realar)
+                    self.logger.info(f"Machine disabled: {bus_id}_{machine}")
+        return
+
     def disable_load_models_for_coupled_buses(self):
         if self.settings['HELICS']['Cosimulation mode']:
             sub_data = pd.read_csv(
@@ -79,7 +112,6 @@ class Snap(AbstractMode):
                     self.settings["HELICS"]["Subscriptions file"]
                 )
             )
-            print(sub_data)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
 
             self.psse_dict = {}
