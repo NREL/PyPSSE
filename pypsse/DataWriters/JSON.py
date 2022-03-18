@@ -53,11 +53,11 @@ class jsonWriter:
                     self.dfs[obj_type][currenttime] = Data
             if self.step % self.chunkRows == self.chunkRows - 1:
                 try:
-                    json.dump(self.dfs[obj_type], self.handles[obj_type] )
+                    json.dump(self.dfs[obj_type], self.handles[obj_type], indent=4)
                     self.handles[obj_type].flush()
                     self.dfs[obj_type] = None
                 except Exception as E:
-                    logger.warning(f"Unable to write property {obj_type} to file: {str(e)}" )
+                    logger.warning(f"Unable to write property {obj_type} to file: {str(E)}" )
 
                 
         self.step += 1
