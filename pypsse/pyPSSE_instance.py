@@ -405,6 +405,10 @@ class pyPSSE_instance:
         print("external settings : ", temp , flush=True)
         contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
         self.contingencies.update(contingencies)
+    
+    def __del__(self):
+        if hasattr(self, "PSSE"):
+            self.PSSE.pssehalt_2()
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')

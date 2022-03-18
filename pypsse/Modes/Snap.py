@@ -74,7 +74,6 @@ class Snap(AbstractMode):
         return self.initialization_complete
 
     def disable_generation_for_coupled_buses(self):
-        print(self.raw_data.generators)
         if self.settings['HELICS']['Cosimulation mode'] and self.settings['HELICS']["Disable_generation_on_coupled_buses"]:
             sub_data = pd.read_csv(
                 os.path.join(
@@ -82,7 +81,6 @@ class Snap(AbstractMode):
                     self.settings["HELICS"]["Subscriptions file"]
                 )
             )
-            print(sub_data)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
             generators = {}
             for ix, row in sub_data.iterrows():
@@ -273,6 +271,5 @@ class Snap(AbstractMode):
                                                 results[res_base][obj_name] = value
             else:
                 self.logger.warning("Extend function 'read_subsystems' in the Snap class (Snap.py)")
-        print(results)
 
         return results

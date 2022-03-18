@@ -48,14 +48,15 @@ class hdf5Writer:
         # Iterate through each object type
         for obj_type in powerflow_output:
             Data = pd.DataFrame(powerflow_output[obj_type], index=[self.step])
+            Data = Data.fillna(0)
+            
             if obj_type not in self.row:
                 self.row[obj_type] = 0
                 self.store_groups[obj_type] = self.store.create_group(obj_type)
                 self.store_datasets[obj_type] = {}
                 for colName in powerflow_output[obj_type].keys():
-                    print( Data[colName], )
                     self.store_datasets[obj_type][colName] = self.store_groups[obj_type].create_dataset(
-                        str(colName),
+                        str(colName) + "_test",
                         shape=(self.columnLength, ),
                         maxshape=(None, ),
                         chunks=True,
@@ -64,6 +65,7 @@ class hdf5Writer:
                         shuffle=True,
                         dtype=Data[colName].dtype
                     )
+            
             if obj_type not in self.dfs:
                 self.dfs[obj_type] = Data
             else:
@@ -80,6 +82,7 @@ class hdf5Writer:
                 self.dfs[obj_type] = None
             self.Timestamp[self.step-1] = np.string_(str(currenttime))
             # Add object status data to a DataFrame
+            self.store.flush()
         self.step += 1
 
     def __del__(self):
