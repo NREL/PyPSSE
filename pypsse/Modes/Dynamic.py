@@ -14,7 +14,7 @@ class Dynamic(AbstractMode):
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
-        self.init({})
+        # self.init({})
         return
 
     def init(self, bus_subsystems):

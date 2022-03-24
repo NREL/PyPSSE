@@ -327,7 +327,6 @@ class AbstractMode:
                                 if class_name in mapping_dict:
                                     new_v = mapping_dict[class_name][id_]
                                     q = "{}_{}".format(class_name, new_v)
-        
                             if class_name == 'Areas':
                                 for arr_num in area_numbers:
                                     if func_name in ['arenofunc']:
@@ -384,6 +383,7 @@ class AbstractMode:
 
                             else:
                                 for b in subsystem_buses:
+                                    
                                     if func_name in ['busdat', 'busdt2', 'busint','arenam', 'notona', 'busexs', 'gendat','busnofunc', 'frequency']:
                                         if func_name == 'busnofunc':
                                             if v == 'NUMBER':
@@ -456,6 +456,7 @@ class AbstractMode:
                                             ierr, id = self.PSSE.nxtind(int(b))
 
                                     elif func_name in ["loddt2", "lodnofunc", "lodint"]:
+                                        
                                         ierr = self.PSSE.inilod(int(b))
                                         ierr, id = self.PSSE.nxtlod(int(b))
                                         while id != None:
@@ -472,7 +473,7 @@ class AbstractMode:
                                             elif func_name == "lodint":
                                                 irr, val = getattr(self.PSSE, func_name)(int(b), id, v)
                                                 results = self.add_result(results, q, val, '{}_{}'.format(id, b))
-
+                                            
                                             ierr, id = self.PSSE.nxtlod(int(b))
                                     
                                     elif func_name in ["macdat", 'macdt2','macnofunc', 'macint']:
@@ -621,6 +622,7 @@ class AbstractMode:
                                                         irr,val = self.PSSE.notona(int(b1))
                                                         results = self.add_result(results, q, val, "{}_{}_{}".format(str(b),str(b1),ickt_string))
                                             ierr, b1, b2, ickt = self.PSSE.nxtbrn3(int(b))
+
         return results
 
     def add_result(self, results_dict, class_name, value, label):

@@ -312,6 +312,7 @@ class pyPSSE_instance:
 
     def get_results(self, params):
         self.exp_vars = self.results.update_export_variables(params)
+        
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
@@ -368,6 +369,8 @@ class pyPSSE_instance:
                             to_bus2.append(k.split("_")[2])
                     else:
                         Bus_ID.append(k)
+
+                
                 Data.append(list(vdict.values()))
         return pNames, Bus_ID, Id, to_bus, to_bus2, ckt_id, Data
 
@@ -401,13 +404,18 @@ class pyPSSE_instance:
 
 if __name__ == '__main__':
     #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    x = pyPSSE_instance(r'C:\Users\alatif\Desktop\PYPSSE\examples\dynamic_example\Settings\pyPSSE_settings.toml')
+    x = pyPSSE_instance(r'C:\Users\KDUWADI\Desktop\NREL_Projects\NAERM-DOE\psse_service\src\tmp\9e816d8d-ea81-4897-82eb-9d1da1f08211_wecc_federate\Settings\pyPSSE_settings.toml')
     x.init()
-    for i in range(10):
+    for i in range(2):
         t = i / 240.0
         res = x.step(t)
-        print(res)
-        res = x.get_results({'Buses': ['PU', 'FREQ']})
+        # print('+++++++++++++++++++++', res)
+        print('I am here')
+        res1, res2 = x.get_results({'Loads': {"LoadID": True, "BusNum":True, "MW": True, "Mvar": True, "FmD": True}})
+        pNames, Bus_ID, Id, to_bus, to_bus2, ckt_id, Data = res2
+        print(pNames, [len(v) for v in Data] )
+        quit()
+        print('I am here ....')
 
     # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]
     # for s in scenarios:
