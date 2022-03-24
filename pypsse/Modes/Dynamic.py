@@ -275,7 +275,7 @@ class Dynamic(AbstractMode):
                 self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
                 self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
 
-    @naerm_decorator
+    # @naerm_decorator
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
         results = super(Dynamic, self).read_subsystems(
             quantities,
@@ -299,15 +299,21 @@ class Dynamic(AbstractMode):
                                         ierr, ld_id = self.PSSE.nxtlod(int(bus))
                                         if ld_id is not None:
                                             irr, con_index = getattr(self.PSSE, funcName)(int(bus), ld_id, 'CHARAC', 'CON')
+                                            
+                                            res_base = f"{class_name}_{v}"
+                                            if res_base not in results:
+                                                results[res_base] = {}
+                                            obj_name = f"{bus}_{ld_id}"
+
                                             if con_index is not None:
                                                 act_con_index = con_index + con_ind
                                                 irr, value = self.PSSE.dsrval('CON', act_con_index)
                                                 # print(class_name, funcName, bus, ld_id, con_index, con_num, v, value)
-                                                res_base = f"{class_name}_{v}"
-                                                if res_base not in results:
-                                                    results[res_base] = {}
-                                                obj_name = f"{bus}_{ld_id}"
                                                 results[res_base][obj_name] = value
+                                            else:
+                                                results[res_base][obj_name] = None
+
+                                            ierr, ld_id = self.PSSE.nxtlod(int(bus))
             else:
                 self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
         return results
