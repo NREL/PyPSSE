@@ -1,3 +1,4 @@
+from pypsse.Modes.naerm_constants import DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.ProfileManager.common import PROFILE_VALIDATION
 import pandas as pd
 import helics as h
@@ -23,23 +24,31 @@ class helics_interface:
         self.c_seconds = 0
         self.c_seconds_old = -1
 
+        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+            self.create_replica_model_for_coupled_loads()
+
         self._co_convergance_error_tolerance = settings['HELICS']['Error tolerance']
         self._co_convergance_max_iterations = settings['HELICS']['Max co-iterations']
         self.create_federate()
         self.subsystem_info = []
         self.publications = {}
         self.subscriptions = {}
-        
-        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
-            if self.settings["HELICS"]["Cosimulation mode"]:
-                self.create_replica_model_for_coupled_loads()
-        
+       
         return
     
-    def create_replica_model_for_coupled_loads(self):
+    def create_replica_model_for_coupled_loads(self, components_to_replace):
         loads = self.get_coupled_loads()
-        self.replicate_coupled_load(loads)
+        loads = self.get_load_static_data(loads)
+        loads = self.get_load_dynamic_data(loads)
+        self.replicate_coupled_load(loads, components_to_replace)
         return 
+
+    def replicate_coupled_load(self, loads, components_to_replace):
+        for load in laods:
+            pass
+        
+        return
+
 
     def get_coupled_loads(self):
         sub_data = pd.read_csv(
@@ -59,10 +68,29 @@ class helics_interface:
                 )
         return load
     
-    def replicate_coupled_load(self, loads):
+
+    def get_load_static_data(self, loads):
+        values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
-            
-        return
+            for v in values:
+                ierr, cmpval = loddt2(load["bus"], load["name"] ,v, "ACT")
+                load[v] = cmpval
+            all_loads.append(ld)
+        return loads
+       
+    def get_load_dynamic_data(self, loads):
+        values = dyn_only_options["Loads"]["lmodind"]
+        for load in loads:
+            for v, con_ind in values.items():
+                ierr = self.PSSE.inilod(int(bus))
+                ierr, ld_id = self.PSSE.nxtlod(int(bus))
+                if ld_id is not None:
+                    irr, con_index = self.PSSE.lmodind(int(bus), ld_id, 'CHARAC', 'CON')
+                    if con_index is not None:
+                        act_con_index = con_index + con_ind
+                        irr, value = self.PSSE.dsrval('CON', act_con_index)
+                        load[obj_name] = value
+        return loads
 
     def enter_execution_mode(self):
         h.helicsFederateEnterExecutingMode(self.PSSEfederate)
