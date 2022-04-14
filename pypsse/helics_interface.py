@@ -29,6 +29,39 @@ class helics_interface:
         self.subsystem_info = []
         self.publications = {}
         self.subscriptions = {}
+        
+        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+            if self.settings["HELICS"]["Cosimulation mode"]:
+                self.create_replica_model_for_coupled_loads()
+        
+        return
+    
+    def create_replica_model_for_coupled_loads(self):
+        loads = self.get_coupled_loads()
+        self.replicate_coupled_load(loads)
+        return 
+
+    def get_coupled_loads(self):
+        sub_data = pd.read_csv(
+            os.path.join(
+                self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
+            )
+        )
+        load = {}
+        for ix, row in sub_data.iterrows():
+            if row["element_type"] == "Load":
+                load.append(
+                    {
+                        "type":  row["element_type"],
+                        "name":  row["element_id"],
+                        "bus":  row["bus"],
+                    }
+                )
+        return load
+    
+    def replicate_coupled_load(self, loads):
+        for load in loads:
+            
         return
 
     def enter_execution_mode(self):
