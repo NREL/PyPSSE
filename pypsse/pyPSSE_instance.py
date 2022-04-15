@@ -50,7 +50,7 @@ class pyPSSE_instance:
         
         try:
             nBus = 200000
-            import psse34
+            import psse35
             import psspy
             import dyntools
 
