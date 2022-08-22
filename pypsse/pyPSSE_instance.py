@@ -126,6 +126,8 @@ class pyPSSE_instance:
         self.contingencies = self.build_contingencies()
 
         if self.settings["HELICS"]["Cosimulation mode"]:
+            if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+                self.sim.break_loads()
             self.hi = helics_interface(
                 self.PSSE, self.sim, self.settings, self.export_settings, self.bus_subsystems, self.logger
             )
@@ -405,6 +407,24 @@ class pyPSSE_instance:
         print("external settings : ", temp , flush=True)
         contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
         self.contingencies.update(contingencies)
+    
+    def save_model(self):
+        
+        export_path = os.path.join( self.settings["Simulation"]["Project Path"], 'Case_study' )
+        i = 0
+        while os.path.exists(f"modified_steady_state_{i}.sav") and os.path.exists(f"modified_dynamic_{i}.snp"):
+            i += 1
+        
+        savfile = os.path.join(export_path, f"modified_steady_state_{i}.sav")
+        self.PSSE.save(savfile)    
+                 
+        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+            snpfile = os.path.join(export_path, f"modified_dynamic_{i}.snp")
+            self.PSSE.snap([-1,-1,-1,-1,-1], snpfile)
+            return savfile, snpfile
+    
+        else:
+            return savfile, None
     
     def __del__(self):
         if hasattr(self, "PSSE"):
