@@ -1,12 +1,13 @@
 from pypsse.Modes.naerm_constants import naerm_decorator, DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.Modes.abstract_mode import AbstractMode
+from pypsse.utils.dynamic_utils import DynamicUtils
 from pypsse.common import MACHINE_CHANNELS
 import pandas as pd
 import numpy as np
 import datetime
 import os
 
-class Snap(AbstractMode):
+class Snap(AbstractMode, DynamicUtils):
 
     def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
