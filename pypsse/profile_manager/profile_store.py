@@ -179,7 +179,7 @@ if __name__ == '__main__':
         def update_object(self, dType, bus, id, value):
             pass
 
-    settings = toml.load(r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Settings\pyPSSE_settings.toml")
+    settings = toml.load(r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Settings\simulation_settings.toml")
     solver = Solver()
     a = ProfileManager(None, solver, settings)
     # a.setup_profiles()

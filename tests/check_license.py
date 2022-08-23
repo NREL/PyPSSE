@@ -17,7 +17,7 @@ if __name__ == '__main__':
         example_path = sys.argv[1]
     else:
         example_path = "./examples/static_example"
-    toml_path = os.path.join(example_path, "Settings", "pyPSSE_settings.toml")
+    toml_path = os.path.join(example_path, "Settings", "simulation_settings.toml")
     export_path = os.path.join(example_path, "Exports")
     empty_folder(export_path)
     x = pyPSSE_instance(toml_path)

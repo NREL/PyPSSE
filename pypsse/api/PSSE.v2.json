@@ -15,7 +15,7 @@
                                 "Example 1": {
                                     "value": {
                                         "parameters": {
-                                            "filename": "C:/Users/alatif/Desktop/pypsse-code/examples/static_example/Settings/pyPSSE_settings.toml"
+                                            "filename": "C:/Users/alatif/Desktop/pypsse-code/examples/static_example/Settings/simulation_settings.toml"
                                         }
                                     }
                                 }

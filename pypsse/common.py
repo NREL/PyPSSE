@@ -1,5 +1,5 @@
 
-SIMULATION_SETTINGS_FILENAME = "pyPSSE_settings.toml"
+SIMULATION_SETTINGS_FILENAME = "simulation_settings.toml"
 EXPORTS_SETTINGS_FILENAME = "export_settings.toml"
 DEFAULT_SUBSCRIPTION_FILENAMES = "Subscriptions.csv"
 DEFAULT_PROFILE_MAPPING_FILENAME = "Profile_mapping.toml"

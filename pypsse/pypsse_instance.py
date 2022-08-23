@@ -5,11 +5,7 @@
 @time:2/4/2020
 """
 
-#
-# import csv
-# import win32api
-#
-# import time
+
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.helics_interface import helics_interface
 from pypsse.result_container import container
@@ -22,9 +18,9 @@ import pandas as pd
 import numpy as np
 import subprocess
 import os, sys
+import shutil
 import toml
 import time
-import shutil
 
 USING_NAERM = 0
 
@@ -50,7 +46,12 @@ class pyPSSE_instance:
         
         try:
             nBus = 200000
-            import psse35
+            if "psse34" in self.settings["Simulation"]["PSSE_path"].lower():
+                import psse34
+            elif "psse35" in self.settings["Simulation"]["PSSE_path"].lower():
+                import psse35
+            else:
+                import psse36
             import psspy
             import dyntools
 
@@ -431,8 +432,8 @@ class pyPSSE_instance:
             self.PSSE.pssehalt_2()
 
 if __name__ == '__main__':
-    #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\pyPSSE_settings.toml')
-    x = pyPSSE_instance(r'C:\Users\alatif\Desktop\PYPSSE\examples\dynamic_example\Settings\pyPSSE_settings.toml')
+    #x = pyPSSE_instance(r'C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model\Settings\simulation_settings.toml')
+    x = pyPSSE_instance(r'C:\Users\alatif\Desktop\PYPSSE\examples\dynamic_example\Settings\simulation_settings.toml')
     x.init()
     for i in range(10):
         t = i / 240.0

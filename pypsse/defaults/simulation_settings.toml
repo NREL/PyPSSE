@@ -1,6 +1,7 @@
 [Simulation]
 "Simulation time (sec)" = 25
-"Step resolution (sec)" = 1 #0.00416667
+"Step resolution (sec)" = 0.004166667
+"PSSE solver timestep (sec)" = 0.004166667
 "Start time" = "01/01/2020 00:00:00"
 "Simulation mode" = "Steady-state"
 "Use profile manager" = true
