@@ -1,5 +1,5 @@
 # Standard imports
-from pypsse.pyPSSE_instance import pyPSSE_instance
+from pypsse.pypsse_instance import pyPSSE_instance
 from multiprocessing import current_process
 from aiohttp import web, WSMsgType
 from queue import Empty
@@ -13,6 +13,8 @@ import os
 logger = logging.getLogger(__name__)
 # Make sure to change the PSSE path 
 PSSE_PATH = r"C:\Program Files (x86)\PTI\PSSE34\PSSPY37"
+
+dynamic_params = ['FmA', 'FmB', 'FmC', 'FmD', 'Fel']
 
 class PSSE:
     def __init__(self, shutdown_event=None, to_psse_queue=None, from_psse_queue=None, params=None):
@@ -157,44 +159,129 @@ class PSSE:
             return False
         else:
             return rval
+        
 
     def close_case(self):
         self.psse_obj.PSSE.pssehalt_2()
         del self.psse_obj
         logger.info(f'PSSE case {self.uuid} closed.')
 
-    # def inject_contingency(self,contingency_data):
-    #     """
-    #     function to inject contingencies into PyPSSE object.
-    #     """
-    #     for k in contingency_data.keys():
-    #         globals()[k]= contingency_data[k]
-    #     # print("INJECT CONTINGENCY {}",fault_type,  flush=True)
-    #     if (fault_type == "line_fault"):
-    #         data_struct = {'contingencies': {fault_type: {
-    #             asset_name: {"time": time, asset_type: asset_ids, "duration": duration,
-    #                          "fault_impedance": fault_impedance}}}}
-    #     elif (fault_type == "line_trip"):
-    #         data_struct = {'contingencies': {fault_type: {
-    #             asset_name: {"time": time, asset_type: asset_ids}}}}
-    #
-    #     elif (fault_type == "bus_trip"):
-    #         data_struct = {'contingencies': {fault_type: {
-    #             asset_name: {"time": time, asset_type: asset_ids}}}}
-    #
-    #     elif (fault_type == "bus_fault"):
-    #         data_struct = {'contingencies': {fault_type: {
-    #             asset_name: {"time": time, asset_type: asset_ids, "duration": duration,
-    #                          "fault_impedance": fault_impedance, "bus_trip" : bus_trip, "trip_delay" : trip_delay}}}}
-    #     elif (fault_type == "machine_trip"):
-    #         data_struct = {'contingencies': {fault_type: {
-    #             asset_name: {"time": time, asset_type: asset_ids, "machine_id": machine_id}}}}
-    #     # print(" inject data : {} ".format(data_struct))
-    #     try:
-    #         self.psse_obj.inject_contingencies_external(data_struct)
-    #     except Exception as e:
-    #         print("Exception as ",e, flush=True)
+    
+    
 
+    def break_load_models(self, components_to_replace=['FmD']):
+        components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
+        loads = self._get_coupled_loads()
+        loads = self._get_load_static_data(loads)
+        loads = self._get_load_dynamic_data(loads)
+        loads = self._replicate_coupled_load(loads, components_to_replace)
+        self._update_dynamic_parameters(loads, components_to_stay, components_to_replace)
+        return 
+    
+    
+    def _update_dynamic_parameters(self, loads, components_to_stay, components_to_replace):
+        new_percentages = {}
+        for load in loads:
+            count = 0
+            for comp in components_to_stay:
+                count += load[comp]
+            for comp in components_to_stay:
+                new_percentages[comp] = load[comp] / count
+            for comp in components_to_replace:
+                new_percentages[comp] = 0.0
+            
+            settings = self._get_load_dynamic_properties(load)
+            #
+            for k, v in new_percentages.items():
+                idx = dyn_only_options["Loads"]["lmodind"][k]
+                settings[idx] =  v
+
+            values = list(settings.values())
+            self.psse_obj.add_load_model(load['bus'], 'XX', 0, 1, r"""CMLDBLU2""", 2, [0,0], ["",""], 133, values)
+            logger.info(f"Dynamic model parameters for load {load['name']} at bus 'XX' changed.")
+
+    def _get_load_dynamic_properties(self, load):
+        settings = {}
+        for i in range(133):
+            irr, con_index = self.psse_obj.lmodind(load["bus"], load['name'], 'CHARAC', 'CON')
+            if con_index is not None:
+                act_con_index = con_index + i
+                irr, value = self.psse_obj.dsrval('CON', act_con_index)
+                settings[i] = value
+        return settings
+
+    def _replicate_coupled_load(self, loads, components_to_replace):
+        for load in loads:
+            dynamic_percentage = (load['FmA'] + load['FmB'] + load['FmC'] + load['FmD'] + load['Fel']) 
+            static_percentage = 1.0 - dynamic_percentage
+            for comp in components_to_replace:
+                static_percentage += load[comp]
+            remaining_load = 1 - static_percentage
+            total_load = load['MVA'] 
+            total_distribution_load = total_load * static_percentage
+            total_transmission_load = total_load * remaining_load
+            #ceate new load
+            self.psse_obj.load_data_5(
+                load['bus'], "XX", 
+                realar=[total_transmission_load.real, total_transmission_load.imag, 0.0, 0.0, 0.0, 0.0],
+                lodtyp='replica'
+                )
+            #modify old load     
+            self.psse_obj.load_data_5(
+                load['bus'], load['name'], 
+                realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
+                lodtyp='original'
+                )      
+            logger.info(f"Original load {load['name']} @ bus {load['bus']}: {total_load}")
+            logger.info(f"New load 'XX' @ bus {load['bus']} created successfully: {total_transmission_load}")
+            logger.info(f"Load {load['name']} @ bus {load['bus']} updated : {total_distribution_load}")
+            load["distribution"] = total_distribution_load
+            load["transmission"] = total_transmission_load
+        return loads
+
+    def _get_coupled_loads(self):
+        sub_data = pd.read_csv(
+            os.path.join(
+                self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
+            )
+        )
+        load = []
+        for ix, row in sub_data.iterrows():
+            if row["element_type"] == "Load":
+                load.append(
+                    {
+                        "type":  row["element_type"],
+                        "name":  row["element_id"],
+                        "bus":  row["bus"],
+                    }
+                )
+        return load
+    
+    def _get_load_static_data(self, loads):
+        values = ["MVA", "IL", "YL", "TOTAL"]
+        for load in loads:
+            for v in values:
+                ierr, cmpval = self.psse_obj.loddt2(load["bus"], load["name"] ,v, "ACT")
+                load[v] = cmpval
+        return loads
+       
+    def _get_load_dynamic_data(self, loads):
+        values = dyn_only_options["Loads"]["lmodind"]
+        for load in loads:
+            for v, con_ind in values.items():
+                ierr = self.psse_obj.inilod(load["bus"])
+                ierr, ld_id = self.psse_obj.nxtlod(load["bus"])
+                if ld_id is not None:
+                    irr, con_index = self.psse_obj.lmodind(load["bus"], ld_id, 'CHARAC', 'CON')
+                    if con_index is not None:
+                        act_con_index = con_index + con_ind
+                        irr, value = self.psse_obj.dsrval('CON', act_con_index)
+                        load[v] = value
+        return loads
+    
+    
+    
+    
 if __name__ == '__main__':
 
     FORMAT = '%(asctime)s - %(levelname)s - %(message)s'

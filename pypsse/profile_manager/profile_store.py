@@ -1,5 +1,5 @@
-from pypsse.ProfileManager.common import PROFILE_TYPES, PROFILE_VALIDATION
-from pypsse.ProfileManager.Profile import Profile as TSP
+from pypsse.profile_manager.common import PROFILE_TYPES, PROFILE_VALIDATION
+from pypsse.profile_manager.profile import Profile as TSP
 from pypsse.exceptions import InvalidParameter
 from datetime import datetime as dt
 from pypsse.common import *

@@ -30,7 +30,7 @@ DYNAMIC_ONLY_PPTY = {
     }
 }
 
-NAERM_TO_PYPSSE  ={
+STANDARD_FORMAT  ={
     'Buses' : {
             'Number' : ['NUMBER'],
             'BusNum': ['NUMBER'],
@@ -161,7 +161,7 @@ NAERM_TO_PYPSSE  ={
 
 import copy
 
-def naerm_decorator(func):
+def converter(func):
     def wrapper(*args, **kwargs):
 
         new_args = [ag for ag in args]
@@ -173,11 +173,11 @@ def naerm_decorator(func):
         mapping_dict = copy.deepcopy(quantities)
         for class_name, vars in quantities.items():
             
-            if class_name in NAERM_TO_PYPSSE:
+            if class_name in STANDARD_FORMAT:
                 new_vars = copy.deepcopy(vars)
                 for v in vars:
-                    if v in NAERM_TO_PYPSSE[class_name]:
-                        naerm_element_array = NAERM_TO_PYPSSE[class_name][v]
+                    if v in STANDARD_FORMAT[class_name]:
+                        naerm_element_array = STANDARD_FORMAT[class_name][v]
                         new_vars = [naerm_element_array[0] if el == v else el for el in new_vars]
                         
                         if len(naerm_element_array) == 3:
@@ -207,7 +207,7 @@ def naerm_decorator(func):
 
         for class_name_, sub_dict in result_dict.items():
             class_name, param = class_name_.split('_')[0], class_name_.split('_')[1]
-            class_name_with_ = [keys for keys in NAERM_TO_PYPSSE.keys() if '_' in keys and keys in class_name_]
+            class_name_with_ = [keys for keys in STANDARD_FORMAT.keys() if '_' in keys and keys in class_name_]
             if len(class_name_with_)!=0:
                 class_name = class_name_with_[0]
                 param = class_name_.split('_')[-1]

@@ -1,6 +1,6 @@
-from pypsse.DataWriters.HDF5 import hdf5Writer
-from pypsse.DataWriters.CSV import csvWriter
-from pypsse.DataWriters.JSON import jsonWriter
+from pypsse.data_writers.hdf5 import hdf5Writer
+from pypsse.data_writers.csv import csvWriter
+from pypsse.data_writers.json import jsonWriter
 
 
 class dummyWriter:

@@ -1,4 +1,4 @@
-from pypsse.Modes.naerm_constants import dyn_only_options
+from pypsse.modes.constants import dyn_only_options
 import pandas as pd
 import os
 

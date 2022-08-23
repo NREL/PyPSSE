@@ -5,7 +5,7 @@ CLI to run a PyDSS project
 
 import os
 import click
-from pypsse.pyPSSE_instance import pyPSSE_instance
+from pypsse.pypsse_instance import pyPSSE_instance
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
 
 @click.argument(

@@ -1,4 +1,4 @@
-from pypsse.ProfileManager.common import PROFILE_VALIDATION
+from pypsse.profile_manager.common import PROFILE_VALIDATION
 import numpy as np
 import datetime
 import copy

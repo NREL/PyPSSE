@@ -1,4 +1,4 @@
-from pypsse.DataWriters.DataWriter import DataWriter
+from pypsse.data_writers.data_writer import DataWriter
 import pandas as pd
 import os
 class container:

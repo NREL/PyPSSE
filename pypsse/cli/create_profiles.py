@@ -9,8 +9,8 @@ import click
 import logging
 import datetime as dt
 from pypsse.common import *
-from pypsse.ProfileManager.ProfileStore import ProfileManager
-from pypsse.ProfileManager.common import DEFAULT_PROFILE_NAME, DEFAULT_START_TIME, PROFILE_VALIDATION, \
+from pypsse.profile_manager.profile_store import ProfileManager
+from pypsse.profile_manager.common import DEFAULT_PROFILE_NAME, DEFAULT_START_TIME, PROFILE_VALIDATION, \
     DEFAULT_PROFILE_TYPE, DEFAULT_PROFILE_RESOLUTION
 
 @click.argument(

@@ -1,6 +1,6 @@
-from pypsse.Modes.Dynamic import Dynamic
-from pypsse.Modes.Static import Static
-from pypsse.Modes.Snap import Snap
+from pypsse.modes.dynamic import Dynamic
+from pypsse.modes.static import Static
+from pypsse.modes.snap import Snap
 import numpy as np
 import os
 

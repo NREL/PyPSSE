@@ -1,4 +1,4 @@
-from pypsse.pyPSSE_instance import pyPSSE_instance
+from pypsse.pypsse_instance import pyPSSE_instance
 import shutil
 import sys
 import os
