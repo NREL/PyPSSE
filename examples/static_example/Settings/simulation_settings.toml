@@ -5,7 +5,7 @@
 "Simulation mode" = "Steady-state"
 "Use profile manager" = true
 PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = "C:/Users/alatif/Desktop/CodeBases/pypsse/examples/static_example"
+"Project Path" = "C:/Users/alatif/Desktop/PyPSSE/examples/static_example"
 "Case study" = "savnw.sav"
 "Raw file" = "savnw.raw"
 "Snp file" = ""
@@ -16,7 +16,7 @@ PSSE_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
 "Setup files" = []
 
 [HELICS]
-"Cosimulation mode" = true
+"Cosimulation mode" = false
 "Federate name" = "psse"
 "Time delta" = 0.004166667
 "Core type" = "zmq"
