@@ -1,0 +1,295 @@
+"Export results using channels" = false
+"Defined bus subsystems only" = true
+"Write format" = "h5"
+
+[Buses]
+"BASE" = false
+"FREQ" = true
+"PU" = true
+"KV" = false
+"ANGLE" = false
+"ANGLED" = false
+"NVLMHI" = false
+"NVLMLO" = false
+"EVLMHI" = false
+"EVLMLO" = false
+
+[Areas]
+"LOAD" = false
+"LOADID" = false
+"LGDN" = false
+"LDGNLD" = false
+"GEN" = false
+"AREANAME" = false
+"AREANUMBER" = false
+
+[Zones]
+"LOAD" = false
+"LOADID" = false
+"LGDN" = false
+"LDGNLD" = false
+"GEN" = false
+"ZONENAME" = false
+"ZONENUMBER" = false
+
+[Stations]
+"SUBNAME" = false
+"SUBNUMBER" = false
+"BUSES"= false
+"GENERATORS"=false
+"TRANSFORMERS"=false 
+"NOMKV"=false
+"LOADMW"=false
+"GENMW"=false
+
+[DCtransmissionlines]
+"DCLINENAME" = false
+"MDC" = false
+"RECT" = false
+"INV" = false
+"METER" = false
+"NBR" = false
+"NBI" = false
+"ICR" = false
+"ICI" = false
+"NDR" = false
+"NDI" = false
+
+[Loads]
+"MVA" = true
+"IL" = false 
+"YL" = false 
+"TOTAL" = false 
+"YNEG" = false 
+"YZERO" = false
+"FmA" = true
+"FmB" = true
+"FmC" = false
+"FmD" = false
+"Fwl" = false
+"PFel" = false
+"TD" = false
+"TC" = false
+
+[Fixed_shunts]
+"ACT" = false 
+"O_ACT" = false 
+"NOM" = false 
+"O_NOM" = false 
+"PQZERO" = false 
+"PQZ" = false
+"O_PQZ" = false
+
+[Switched_shunts]
+"VSWHI" = false 
+"VSWLO" = false 
+"RMPCT" = false 
+"BINIT" = false 
+"O_BINIT" = false 
+
+[Transformers]
+"RATIO" = false 
+"RATIO2" = false 
+"ANGLE" = false 
+"RMAX" = false 
+"RMIN" = false 
+"VMAX" = false 
+"VMIN" = false 
+"STEP" = false 
+"CR" = false 
+"CX" = false 
+"CNXANG" = false
+"SBASE1" = false 
+"NOMV1" = false
+"NOMV2" = false 
+"GMAGNT" = false 
+"BMAGNT" = false 
+"RG1" = false 
+"XG1" = false 
+"R01" = false 
+"X01" = false 
+"RG2" = false
+"XG2" = false 
+"R02" = false 
+"X02" = false 
+"RNUTRL" = false 
+"XNUTRL" = false 
+"RX1-2" = false 
+"RX2-3" = false 
+"RX3-1" = false 
+"YMAGNT" = false 
+"ZG1" = false 
+"Z01" = false 
+"ZG2" = false 
+"Z02" = false 
+"ZG3" = false 
+"Z03" = false 
+"ZNUTRL" = false 
+
+[Branches]
+"RATEn" = false 
+"RATEA" = false 
+"RATEB" = false 
+"RATEC" = false 
+"RATE" = false 
+"LENGTH" = false 
+"CHARG" = false 
+"CHARGZ" = false 
+"FRACT1" = false 
+"FRACT2" = false
+"FRACT3" = false 
+"FRACT4" = false 
+"RX" = false 
+"ISHNT" = false 
+"JSHNT" = false 
+"RXZ" = false 
+"ISHNTZ" = false 
+"JSHNTZ" = false 
+"LOSSES" = false 
+"O_LOSSES" = false 
+"MVA" = false 
+"AMPS" = false 
+"PUCUR" = false 
+"CURANG" = false 
+"P" = false 
+"O_P" = false 
+"Q" = false 
+"O_Q" = false 
+"PLOS" = false 
+"O_PLOS" = false 
+"QLOS" = false 
+"O_QLOS" = false 
+
+[Induction_generators]
+"MBASE" = false 
+"RATEKV" = false 
+"PSET" = false 
+"RA" = false 
+"XA" = false 
+"R1" = false 
+"X1" = false 
+"R2" = false 
+"X2" = false 
+"X3" = false 
+"E1" = false 
+"SE1" = false 
+"E2" = false 
+"SE2" = false 
+"IA1" = false 
+"IA2" = false 
+"XAMULT" = false 
+"TRQA" = false 
+"TRQB" = false 
+"TRQD" = false 
+"TRQE" = false 
+"H" = false 
+"IRATIO" = false 
+"ROVERX" = false 
+"RZERO" = false 
+"XZERO" = false 
+"RGRND" = false 
+"XGRND" = false 
+"P" = false 
+"O_P" = false 
+"Q" = false 
+"O_Q" = false 
+"MVA" = false 
+"O_MVA" = false
+"SLIP" = false  
+"ZA" = false 
+"Z1" = false 
+"Z2" = false 
+"ZZERO" = false 
+"ZGRND" = false 
+"PQ" = false
+"O_PQ" = false  
+
+[Machines]
+"QMAX" = false 
+"O_QMAX" = false 
+"QMIN" = false 
+"O_QMIN" = false 
+"PMAX" = false 
+"O_PMAX" = false 
+"PMIN" = false
+"O_PMIN" = false
+"MBASE" = false 
+"MVA" = false 
+"O_MVA" = false 
+"P" = false 
+"O_P" = false 
+"Q" = false 
+"O_Q" = false
+"PERCENT" = false
+"GENTAP" = false 
+"VSCHED" = false 
+"WPF" = false 
+"RMPCT" = false 
+"RPOS" = false
+"XSUBTR" = false
+"XTRANS"= false
+"XSYNCH" = false
+"PQ" = false
+"O_PQ" = false 
+"ZSORCE" = false 
+"XTRAN" = false 
+"ZPOS" = false 
+"ZNEG" = false
+"ZZERO" = false
+"ZGRND"= false
+
+[Channels]
+"ANGLE = false machine relative rotor angle [degrees]." = false
+"PELEC = false machine electrical power [pu on SBASE]." = false
+"QELEC = false machine reactive power." = false
+"ETERM = false machine terminal voltage [pu]." = false
+"EFD = false generator main field voltage [pu]." = false
+"PMECH = false turbine mechanical power [pu on MBASE]." = false
+"SPEED = false machine speed deviation from nominal [pu]." = false
+"XADIFD = false machine field current [pu]." = false
+"ECOMP = false voltage regulator compensated voltage [pu]." = false
+"VOTHSG = false stabilizer output signal [pu]." = false
+"VREF = false voltage regulator voltage setpoint [pu]." = false
+"BSFREQ = false bus pu frequency deviations." = false
+"VOLT = false bus pu voltages [complex]." = false
+"voltage and angle." = true
+"flow [P]." = false
+"flow [P and Q]." = true
+"flow [MVA]." = false
+"apparent impedance [R and X]." = false
+"ITERM." = false
+"machine apparent impedance." = false
+"VUEL = false minimum excitation limiter output signal [pu]." = false
+"VOEL = false maximum excitation limiter output signal [pu]." = false
+"PLOAD." = false
+"QLOAD." = false
+"GREF = false turbine governor reference." = false
+"LCREF = false turbine load control reference." = false
+"WVLCTY = false wind velocity [m/s]." = false
+"WTRBSP = false wind turbine rotor speed deviation [pu]." = false
+"WPITCH = false pitch angle [degrees]." = false
+"WAEROT = false aerodynamic torque [pu on MBASE]." = false
+"WROTRV = false rotor voltage [pu on MBASE]." = false
+"WROTRI = false rotor current [pu on MBASE]." = false
+"WPCMND = false active power command from wind control [pu on MBASE]." = false
+"WQCMND = false reactive power command from wind control [pu on MBASE]." = false
+
+[[channel_setup.buses]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [153, 154, 203, 205, 3005, 3007, 3008]
+properties = ["voltage_and_angle", "frequency"]
+[[channel_setup.buses]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [206, 3018]
+properties = ["voltage_and_angle"]
+[[channel_setup.loads]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [["1", "153"], ["2", "154"], ["1", "203"], ["1", "205"], ["1", "3005"], ["1", "3007"], ["1", "3008"]]
+[[channel_setup.machines]]
+use = "list" # "regex", "list", "all"
+regex = ""
+list = [["1", "101"], ["1", "102"], ["1", "206"], ["1", "211"], ["1", "3011"], ["1", "3018"]]
+properties = ["PELEC", "QELEC", "SPEED"]
