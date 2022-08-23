@@ -1,0 +1,7 @@
+      SUBROUTINE CONEC
+C
+      INCLUDE 'COMON4.INS'
+C
+C
+      RETURN
+      END
