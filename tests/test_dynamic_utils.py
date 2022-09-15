@@ -25,7 +25,17 @@ base_path = os.getcwd()
 dynamic_project_path = os.path.join(os.path.dirname(base_path), "examples", "dynamic_example")
 
 
-def test_run_sim_dynamic():
+def test_run_sim_dynamic_save_model():
+    path = os.path.join(dynamic_project_path, "Settings", SIMULATION_SETTINGS_FILENAME)
+    if os.path.exists(path):
+        x = pyPSSE_instance(path)
+        x.init()
+        x.save_model()
+        x.run()
+    else:
+        raise Exception(f"'{path}' is not a valid path.")
+
+def test_run_sim_dynamic_break_model():
     path = os.path.join(dynamic_project_path, "Settings", SIMULATION_SETTINGS_FILENAME)
     if os.path.exists(path):
         x = pyPSSE_instance(path)
@@ -33,9 +43,8 @@ def test_run_sim_dynamic():
         x.sim.break_loads([
             {"bus": 153, "id": '1'},
             ])
-        x.save_model()
         x.run()
     else:
         raise Exception(f"'{path}' is not a valid path.")
     
-test_run_sim_dynamic()
+# test_run_sim_dynamic()
