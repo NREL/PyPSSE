@@ -2,6 +2,9 @@
 import io
 import os
 import re
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 try:
     from setuptools import setup, find_packages
@@ -30,6 +33,8 @@ def find_version(*file_paths):
 setup(name='pssepy',
       version=find_version("pypsse", "__init__.py"),
       description='A high-level python interface for PSS/E',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       author='Aadil Latif',
       author_email='Aadil.Latif@nrel.gov',
       url='http://www.github.com/nrel/pypsse',
