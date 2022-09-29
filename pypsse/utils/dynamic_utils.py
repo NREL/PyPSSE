@@ -58,14 +58,14 @@ class DynamicUtils:
             total_distribution_load = total_load * static_percentage
             total_transmission_load = total_load * remaining_load
             #ceate new load
-            self.PSSE.load_data_6(
+            self.PSSE.load_data_5(
                 load['bus'], "XX", 
                 realar=[total_transmission_load.real, total_transmission_load.imag, 0.0, 0.0, 0.0, 0.0],
                 lodtyp='replica'
                 )
             #ierr, cmpval = self.PSSE.loddt2(load["bus"], "XX" ,"MVA" , "ACT")
             #modify old load     
-            self.PSSE.load_data_6(
+            self.PSSE.load_data_5(
                 load['bus'], load['id'], 
                 realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
                 lodtyp='original'

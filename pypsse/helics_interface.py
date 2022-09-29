@@ -9,6 +9,9 @@ import os
 
 class helics_interface:
 
+    all_sub_results = {}
+    all_pub_results = {}
+    
     dynamic_iter_const = 1000.0
     n_states = 5
     init_state = 1
@@ -22,7 +25,6 @@ class helics_interface:
         self.export_settings = export_settings
         self.bus_subsystems = bus_subsystems
         self.sim = sim
-        self.itr = 0
         self.c_seconds = 0
         self.c_seconds_old = -1
 
@@ -40,7 +42,7 @@ class helics_interface:
     
     def create_replica_model_for_coupled_loads(self, components_to_replace):
         components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
-        loads = self.get_coupled_loads()
+        loads = self._get_coupled_loads()
         loads = self._get_load_static_data(loads)
         loads = self._get_load_dynamic_data(loads)
         loads = self._replicate_coupled_load(loads, components_to_replace)
@@ -69,8 +71,6 @@ class helics_interface:
             self.logger.info(f"Dynamic model parameters for load {load['name']} at bus 'XX' changed.")
 
     def _get_load_dynamic_properties(self, load):
-        print("Load name: ", load['name'])
-        print("Load bus: ", load['bus'])
         settings = {}
         for i in range(133):
             irr, con_index = self.PSSE.lmodind(load["bus"], load['name'], 'CHARAC', 'CON')
@@ -152,7 +152,17 @@ class helics_interface:
         return loads
 
     def enter_execution_mode(self):
-        h.helicsFederateEnterExecutingMode(self.PSSEfederate)
+        itr = 0
+        itr_flag = h.helics_iteration_request_iterate_if_needed
+        while True:
+            itr_status = h.helicsFederateEnterExecutingModeIterative(
+                self.PSSEfederate, 
+                itr_flag
+                ) 
+            self.logger.debug(f"--- Iter {itr}: Iteration Status = {itr_status}, Passed Iteration Requestion = {itr_flag}")
+            if itr_status == h.helics_iteration_result_next_step:
+                break
+        
         return
 
     def create_federate(self):
@@ -184,7 +194,6 @@ class helics_interface:
         self.publications = {}
         self.pub_struc = []
         for publicationDict in self.settings['HELICS']["Publications"]:
-            print(publicationDict)
             bus_subsystem_ids = publicationDict["bus_subsystems"]
             if not set(bus_subsystem_ids).issubset(self.bus_subsystems):
                 raise Exception(f"One or more invalid bus subsystem ID pass in {bus_subsystem_ids}."
@@ -310,31 +319,59 @@ class helics_interface:
 
     def request_time(self, t):
         r_seconds = self.sim.GetTotalSeconds()  # - self._dss_solver.GetStepResolutionSeconds()
+        if self.sim.getTime() not in self.all_sub_results:
+            self.all_sub_results[self.sim.getTime()] = {}
+            self.all_pub_results[self.sim.getTime()] = {}
+        
         if not self.settings['HELICS']['Iterative Mode']:
             while self.c_seconds < r_seconds:
                 self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
             self.logger.info('Time requested: {} - time granted: {} '.format(r_seconds, self.c_seconds))
             return True, self.c_seconds
         else:
-            error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])
-            if self.itr == 0:
-                while self.c_seconds < r_seconds:
-                    self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
-            else:
-                self.c_seconds, iteration_state = h.helicsFederateRequestTimeIterative(
+            itr = 0
+            epsilon = 1e-6
+            while True:
+                
+                self.c_seconds, itr_state = h.helicsFederateRequestTimeIterative(
                     self.PSSEfederate,
                     r_seconds,
-                    h.helics_iteration_request_force_iteration
+                    h.helics_iteration_request_iterate_if_needed
                 )
-            self.logger.info('Time requested: {} - time granted: {} error: {} it: {}'.format(
-                r_seconds, self.c_seconds, error, self.itr))
-            # self._co_convergance_error_tolerance
-            if error > -1 and self.itr < self._co_convergance_max_iterations - 1:   #self._co_convergance_error_tolerance 
-                self.itr += 1
-                return False, self.c_seconds
-            else:
-                self.itr = 0
-                return True, self.c_seconds
+                if (itr_state == h.helics_iteration_result_next_step):
+                    self.logger.debug("\tIteration complete!")
+                    break
+                
+                error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])                
+                
+                subscriptions = self.subscribe() 
+                for sub_name, sub_value in subscriptions.items():
+                    if sub_name not in self.all_sub_results[self.sim.getTime()]:
+                        self.all_sub_results[self.sim.getTime()][sub_name] = []
+                    self.all_sub_results[self.sim.getTime()][sub_name].append(sub_value)
+             
+                self.sim.resolveStep(r_seconds)       
+                
+                publications = self.publish()
+                for pub_name, pub_value in publications.items():
+                    if pub_name not in self.all_pub_results[self.sim.getTime()]:
+                        self.all_pub_results[self.sim.getTime()][pub_name] = []
+                    self.all_pub_results[self.sim.getTime()][pub_name].append(pub_value)
+                
+                itr += 1
+                self.logger.debug(f"\titr = {itr}")
+                
+                if itr > self.settings['HELICS']['Max co-iterations']:
+                    self.c_seconds, itr_state = h.helicsFederateRequestTimeIterative(
+                        self.PSSEfederate,
+                        r_seconds,
+                        h.helics_iteration_request_no_iteration
+                    )
+                else:
+                    pass
+                
+            return True, self.c_seconds
+
 
     def get_restructured_results(self, results):
         results_dict = {}
@@ -350,6 +387,7 @@ class helics_interface:
         return results_dict
 
     def publish(self):
+        pub_results = {}
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
             temp_res = self.get_restructured_results(temp_res)
@@ -357,8 +395,10 @@ class helics_interface:
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
                         pub_tag = "{}.{}.{}.{}".format(self.settings["HELICS"]['Federate name'], cName, Name, pName)
+                        pub_tag_reduced = f"{cName}.{Name}.{pName}" 
                         pub = self.publications[pub_tag]
                         dtype_matched = True
+                        pub_results[pub_tag_reduced] = val
                         if isinstance(val, float):
                             h.helicsPublicationPublishDouble(pub, val)
                         elif isinstance(val, complex):
@@ -374,7 +414,7 @@ class helics_interface:
                             self.logger.warning(f"Publication {pub_tag} not updated")
                         if dtype_matched:
                             self.logger.debug(f"Publication {pub_tag} published: {val}")
-        return
+        return pub_results
 
     def subscribe(self):
         for sub_tag, sub_data in self.subscriptions.items():
@@ -387,14 +427,13 @@ class helics_interface:
                     for i, p in enumerate(sub_data["property"]):
                         self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = (sub_data['value'][i], sub_data['scaler'][i])
 
-
             self.logger.debug('Data received {} for tag {}'.format(sub_data['value'], sub_tag))
             if self.settings['HELICS']['Iterative Mode']:
                 if self.c_seconds != self.c_seconds_old:
                     sub_data['dStates'] = [self.init_state] * self.n_states
                 else:
                     sub_data['dStates'].insert(0, sub_data['dStates'].pop())
-
+        all_values = {}
         for b, bInfo in self.psse_dict.items():
             for t, tInfo in bInfo.items():
                 for i, vDict in tInfo.items():
@@ -403,6 +442,7 @@ class helics_interface:
                     for p, v in vDict.items():
                         if isinstance(v, tuple):
                             v , scale = v
+                            all_values[f'{t}.{b}.{i}.{p}'] = v
                             if isinstance(p, str):
                                 ppty = f'realar{PROFILE_VALIDATION[t].index(p) + 1}'
                                 values[ppty] = v * scale
@@ -415,10 +455,13 @@ class helics_interface:
                     isEmpty = [0 if not vx else 1 for vx in values.values()]
                     if sum(isEmpty) != 0:
                         self.sim.update_object(t, b, i, values)
-
+                        self.logger.debug(f'{t}.{b}.{i} = {values}')
+                        
+                    else:
+                        self.logger.debug('write failed')
 
         self.c_seconds_old = self.c_seconds
-        return self.subscriptions
+        return all_values
 
     def fill_missing_values(self, value):
         idx = [f'realar{PROFILE_VALIDATION[self.dType].index(c) + 1}' for c in self.Columns]

@@ -263,7 +263,14 @@ class pyPSSE_instance:
             if not self.export_settings["Export results using channels"]:
                 self.results.export_results()
             else:
+                
                 self.sim.export()
+            
+            export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
+            sub_convergence = pd.DataFrame(self.hi.all_sub_results).T
+            sub_convergence.to_csv( os.path.join(export_path, "sub_convergence.csv"))
+            pub_convergence = pd.DataFrame(self.hi.all_pub_results).T
+            pub_convergence.to_csv(os.path.join(export_path, "pub_convergence.csv"))
 
             if bokeh_server_proc != None:
                 bokeh_server_proc.terminate()
