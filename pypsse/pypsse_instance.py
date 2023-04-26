@@ -153,20 +153,6 @@ class pyPSSE_instance:
             pass
         return
 
-    def initialize_loads(self):
-        #         data = pd.read_csv(r'C:\NAERM-global\init_Conditions_3_new.csv', header=0, index_col=None)
-        # data = data.values
-        # r, c = data.shape
-        # for i in range(r):
-        #     bus_data = data[i, :]
-        #     bus_id = bus_data[0]
-        #     P = bus_data[3]
-        #     Q = bus_data[4]
-        #
-        #     ierr = self.PSSE.load_chng_5(ibus=int(bus_id), id='1', realar=[P, Q, 0, 0, 0, 0, 0, 0])
-        #     if ierr:
-        #         self.logger.debug('ERROR: Load not updated')
-        return
 
     def init(self):
         sucess = self.sim.init(self.bus_subsystems)
@@ -244,7 +230,7 @@ class pyPSSE_instance:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
             else:
                 bokeh_server_proc = None
-            self.initialize_loads()
+            #self.initialize_loads()
             self.logger.debug('Running dynamic simulation for time {} sec'.format(
                 self.settings["Simulation"]["Simulation time (sec)"])
             )

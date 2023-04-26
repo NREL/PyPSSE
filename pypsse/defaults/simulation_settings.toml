@@ -73,6 +73,9 @@
 [Generators]
 "Missing machine model" = 1 # 0: treat as a fatal error 1: replace with net machine power
 
+[MDAO]
+"use_microservices" = false
+
 # [contingencies.bus_fault.bf_1]
 # "time" = 1.0
 # "bus_id" = 25048#25824, 25059

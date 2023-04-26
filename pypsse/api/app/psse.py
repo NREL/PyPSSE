@@ -94,7 +94,6 @@ class PSSE:
     def init(self):
         self.time_counter = 0
         self.psse_obj.init()
-        self.psse_obj.initialize_loads()
 
     def update_settings(self, new_dict: dict):
         for key, value in new_dict.items():
