@@ -453,7 +453,7 @@ class helics_interface:
                         j += 1
 
                     isEmpty = [0 if not vx else 1 for vx in values.values()]
-                    if sum(isEmpty) != 0:
+                    if sum(isEmpty) != 0 and sum(values.values()) < 1e6 and sum(values.values()) > -1e6:
                         self.sim.update_object(t, b, i, values)
                         self.logger.debug(f'{t}.{b}.{i} = {values}')
                         

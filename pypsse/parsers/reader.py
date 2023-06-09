@@ -18,9 +18,10 @@ class Reader:
         self.logger = logger
         self.buses = self.get_data('abus', tails=['int'], strings=["NUMBER"], flags=[2])
         self.loads = self.get_data('aload', tails=['int','char'], strings=["NUMBER","ID"], flags=[4,4])
+        self.loads = self.get_data('aload', tails=['int','char'], strings=["NUMBER","ID"], flags=[4,4])
         self.fixed_stunts = self.get_data('afxshunt',tails=['int','char'], strings=["NUMBER","ID"], flags=[4,4])
         self.generators = self.get_data('amach',tails=['int','char'], strings=["NUMBER","ID"], flags=[4,4])
-        self.branches = self.get_data('abrn',tails=['int','int'], strings=["FROMNUMBER","TONUMBER"], flags=[2,2])
+        self.branches = self.get_data('abrn',tails=['int','int','char'], strings=["FROMNUMBER","TONUMBER", "ID"], flags=[2,2,2])
         self.transformers = self.get_data('atr3',tails=['int','int','int'], strings=["WIND1NUMBER","WIND2NUMBER","WIND3NUMBER"], flags=[2,2,2])
         self.Area = self.get_data('aarea',tails=['int','char'], strings=["NUMBER","AREANAME"], flags=[2,2])  # Talk to Aadil
         self.DC_branch = self.get_data('a2trmdc',tails=['int','int'], strings=["FROMNUMBER","TONUMBER"], flags=[2,2])  # three terminal dc lines not implemented

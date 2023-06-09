@@ -32,6 +32,7 @@ class Snap(AbstractMode, DynamicUtils):
         self.disable_load_models_for_coupled_buses()
         self.disable_generation_for_coupled_buses()
 
+        #self.save_model()
 
         if ierr==1:
             self.PSSE.cong(0)
@@ -236,7 +237,7 @@ class Snap(AbstractMode, DynamicUtils):
 
     @converter
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):
-        #print(ext_string2_info, mapping_dict)
+
         results = super(Snap, self).read_subsystems(
             quantities,
             subsystem_buses,
@@ -264,7 +265,7 @@ class Snap(AbstractMode, DynamicUtils):
                                             if con_index is not None:
                                                 act_con_index = con_index + con_ind
                                                 irr, value = self.PSSE.dsrval('CON', act_con_index)
-                                                # print(class_name, funcName, bus, ld_id, con_index, con_num, v, value)
+
                                                 res_base = f"{class_name}_{v}"
                                                 if res_base not in results:
                                                     results[res_base] = {}

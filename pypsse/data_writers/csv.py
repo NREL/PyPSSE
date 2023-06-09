@@ -44,9 +44,7 @@ class csvWriter:
 
             if self.step % self.chunkRows == self.chunkRows - 1:
                 fpath = os.path.join(self.log_dir, f'{obj_type}.csv')
-                print(fpath)
                 self.dfs[obj_type] =  pd.DataFrame(self.dfs[obj_type], index=self.timestamps)
-                print(self.dfs[obj_type])
                 self.dfs[obj_type].to_csv(fpath, mode='a')
                 
                 self.dfs[obj_type] = None

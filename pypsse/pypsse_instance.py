@@ -27,23 +27,22 @@ USING_NAERM = 0
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path='', psse_path=''):
-      
+        
+        self.settings = self.read_settings(settinigs_toml_path)
         if psse_path != '':
+            self.settings["Simulation"]["PSSE_path"] = psse_path.lower()
             sys.path.append(psse_path)
             os.environ['PATH'] += ';' + psse_path
 
         else:
-        
-            self.settings = self.read_settings(settinigs_toml_path)
+            self.settings["Simulation"]["PSSE_path"]
             if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
                 assert self.settings["Simulation"]["Use profile manager"] == False,\
                     "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
 
-
             sys.path.append(self.settings["Simulation"]["PSSE_path"])
             os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
-
-        
+       
         try:
             nBus = 200000
             if "psse34" in self.settings["Simulation"]["PSSE_path"].lower():
@@ -54,7 +53,6 @@ class pyPSSE_instance:
                 import psse36
             import psspy
             import dyntools
-
 
             self.dyntools = dyntools
             self.PSSE = psspy
@@ -253,10 +251,10 @@ class pyPSSE_instance:
                 self.sim.export()
             
             export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
-            sub_convergence = pd.DataFrame(self.hi.all_sub_results).T
-            sub_convergence.to_csv( os.path.join(export_path, "sub_convergence.csv"))
-            pub_convergence = pd.DataFrame(self.hi.all_pub_results).T
-            pub_convergence.to_csv(os.path.join(export_path, "pub_convergence.csv"))
+            # sub_convergence = pd.DataFrame(self.hi.all_sub_results).T
+            # sub_convergence.to_csv( os.path.join(export_path, "sub_convergence.csv"))
+            # pub_convergence = pd.DataFrame(self.hi.all_pub_results).T
+            # pub_convergence.to_csv(os.path.join(export_path, "pub_convergence.csv"))
 
             if bokeh_server_proc != None:
                 bokeh_server_proc.terminate()
@@ -283,7 +281,7 @@ class pyPSSE_instance:
                 self.logger.debug('Time granted: {}'.format(helics_time))
 
         if self.inc_time:
-            self.sim.step(t)
+            a = self.sim.step(t)
         else:
             self.sim.resolveStep(t)
 
@@ -402,24 +400,7 @@ class pyPSSE_instance:
         contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
         self.contingencies.update(contingencies)
     
-    def save_model(self):
-        
-        export_path = os.path.join( self.settings["Simulation"]["Project Path"], 'Case_study' )
-        i = 0
-        while os.path.exists(f"modified_steady_state_{i}.sav") and os.path.exists(f"modified_dynamic_{i}.snp"):
-            i += 1
-        
-        savfile = os.path.join(export_path, f"modified_steady_state_{i}.sav")
-        self.PSSE.save(savfile)    
-                 
-        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
-            snpfile = os.path.join(export_path, f"modified_dynamic_{i}.snp")
-            self.PSSE.snap([-1,-1,-1,-1,-1], snpfile)
-            return savfile, snpfile
-    
-        else:
-            return savfile, None
-    
+   
     def __del__(self):
         if hasattr(self, "PSSE"):
             self.PSSE.pssehalt_2()
@@ -431,7 +412,6 @@ if __name__ == '__main__':
     for i in range(10):
         t = i / 240.0
         res = x.step(t)
-        print(res)
         res = x.get_results({'Buses': ['PU', 'FREQ']})
 
     # scenarios = [14203, 14303, 14352, 15108, 15561, 17604, 17605, 37102, 37124, 37121]

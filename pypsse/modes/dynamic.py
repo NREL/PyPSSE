@@ -163,7 +163,6 @@ class Dynamic(AbstractMode, DynamicUtils):
     def step(self, t):
         self.time = self.time + datetime.timedelta(seconds=self.incTime)
         self.xTime = 0
-        print(t)
         return self.PSSE.run(0, t, 1, 1, 1)
 
     def setup_machine_channels(self, machines, properties):
@@ -245,8 +244,6 @@ class Dynamic(AbstractMode, DynamicUtils):
         return all_bus_ids
 
     def resolveStep(self, t):
-        print(t)
-        print(self.xTime * self.incTime / self.iter_const)
         err = self.PSSE.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
         self.xTime += 1
         return err

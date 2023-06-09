@@ -55,15 +55,19 @@ class hdf5Writer:
                 self.store_groups[obj_type] = self.store.create_group(obj_type)
                 self.store_datasets[obj_type] = {}
                 for colName in powerflow_output[obj_type].keys():
+                    dtype = Data[colName].dtype
+                    if dtype == object:
+                        dtype = "S30"
+            
                     self.store_datasets[obj_type][colName] = self.store_groups[obj_type].create_dataset(
-                        str(colName) + "_test",
+                        str(colName) ,
                         shape=(self.columnLength, ),
                         maxshape=(None, ),
                         chunks=True,
                         compression="gzip",
                         compression_opts=4,
                         shuffle=True,
-                        dtype=Data[colName].dtype
+                        dtype=dtype
                     )
             
             if obj_type not in self.dfs:

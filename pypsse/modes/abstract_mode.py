@@ -98,7 +98,8 @@ class AbstractMode:
                         'FROMBUSNAME_3WDG','FROMBUSNAME_2WDG','TOBUSNAME_3WDG','TOBUSNAME_2WDG', 'TOBUS2NAME_3WDG','CIRCUIT_2WDG', 'CIRCUIT_3WDG']
                 }
             }
-        #self.disable_load_models_for_coupled_buses()
+        #self.
+        # ()
         self.initialization_complete = False
 
     # def disable_load_models_for_coupled_buses(self):
@@ -118,7 +119,25 @@ class AbstractMode:
     #         ierr = self.PSSE.ldmod_status(0,int(bus),str(load),1,0)
     #         self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
-
+    def save_model(self):
+        
+        export_path = os.path.join( self.settings["Simulation"]["Project Path"], 'Case_study' )
+        i = 0
+        while os.path.exists(os.path.join(export_path, f"modified_steady_state_{i}.sav")):
+            i += 1
+        
+        savfile = os.path.join(export_path, f"modified_steady_state_{i}.sav")
+        rawfile = os.path.join(export_path, f"modified_steady_state_{i}.raw")
+        #self.PSSE.save(savfile)    
+        self.PSSE.rawd_2(0,1,[1,1,1,0,0,0,0], 0, rawfile)         
+        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+            snpfile = os.path.join(export_path, f"modified_dynamic_{i}.snp")
+            self.PSSE.snap([-1,-1,-1,-1,-1], snpfile)
+            return savfile, snpfile
+    
+        else:
+            return savfile, None
+    
 
     def init(self, bus_subsystems):
         self.export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
@@ -639,6 +658,13 @@ class AbstractMode:
         val = sum([x for x in values.values()])
         if val > -1000000.0 and val < 100000.0:
             if dType == "Load":
+                # print(dType, bus, id, values)
+                # import math
+                # pf = 0.9
+                # s = values['realar1'] / pf
+                # a = math.sin(math.acos(pf)) 
+                # q = s * a
+                # #values['realar2'] = q
                 ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
             elif dType == "Induction_machine":
                 ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)
