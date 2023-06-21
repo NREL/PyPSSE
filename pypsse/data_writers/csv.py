@@ -40,7 +40,7 @@ class csvWriter:
                 if self.dfs[obj_type] is None:
                     self.dfs[obj_type] = [Data]
                 else:
-                    self.dfs[obj_type].appenf(Data)
+                    self.dfs[obj_type].append(Data)
 
             if self.step % self.chunkRows == self.chunkRows - 1:
                 fpath = os.path.join(self.log_dir, f'{obj_type}.csv')

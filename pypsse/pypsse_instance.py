@@ -27,7 +27,6 @@ USING_NAERM = 0
 class pyPSSE_instance:
 
     def __init__(self, settinigs_toml_path='', psse_path=''):
-        
         self.settings = self.read_settings(settinigs_toml_path)
         if psse_path != '':
             self.settings["Simulation"]["PSSE_path"] = psse_path.lower()
@@ -251,10 +250,6 @@ class pyPSSE_instance:
                 self.sim.export()
             
             export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
-            # sub_convergence = pd.DataFrame(self.hi.all_sub_results).T
-            # sub_convergence.to_csv( os.path.join(export_path, "sub_convergence.csv"))
-            # pub_convergence = pd.DataFrame(self.hi.all_pub_results).T
-            # pub_convergence.to_csv(os.path.join(export_path, "pub_convergence.csv"))
 
             if bokeh_server_proc != None:
                 bokeh_server_proc.terminate()

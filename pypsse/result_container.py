@@ -58,9 +58,10 @@ class container:
                 if not isinstance(self.results['{}'.format(variable_name)], pd.DataFrame):
                     self.results['{}'.format(variable_name)] = pd.DataFrame(bus_data[variable_name], index=[0])
                 else:
-
-                    self.results['{}'.format(variable_name)] = self.results['{}'.format(variable_name)].append(
-                        bus_data[variable_name], ignore_index=True)
+                    df1 = self.results['{}'.format(variable_name)]
+                    df2 = pd.DataFrame.from_dict([bus_data[variable_name]]) 
+                    concatenated = pd.concat([df1, df2])
+                    self.results['{}'.format(variable_name)] = concatenated
         return
 
     def export_results(self):
@@ -72,7 +73,8 @@ class container:
                     '{}.{}'.format(df_name, self.export_settings["Write format"])
                 )
                 if self.export_settings["Write format"] == 'csv':
-                    df.to_csv(export_path)
+                    if isinstance(df, pd.DataFrame):
+                        df.to_csv(export_path)
                 elif self.export_settings["Write format"] == "pkl":
                     df.to_pickle(export_path)
         return
