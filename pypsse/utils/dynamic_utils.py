@@ -40,7 +40,7 @@ class DynamicUtils:
     def _get_load_dynamic_properties(self, load):
         settings = {}
         for i in range(133):
-            irr, con_index = self.PSSE.lmodind(load["bus"], load['id'], 'CHARAC', 'CON')
+            irr, con_index = self.PSSE.lmodind(load["bus"], str(load['id']), 'CHARAC', 'CON')
             if con_index is not None:
                 act_con_index = con_index + i
                 irr, value = self.PSSE.dsrval('CON', act_con_index)
@@ -66,7 +66,7 @@ class DynamicUtils:
             #ierr, cmpval = self.PSSE.loddt2(load["bus"], "XX" ,"MVA" , "ACT")
             #modify old load     
             self.PSSE.load_data_5(
-                load['bus'], load['id'], 
+                load['bus'], str(load['id']), 
                 realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
                 lodtyp='original'
                 )   
@@ -100,7 +100,7 @@ class DynamicUtils:
         values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
             for v in values:
-                ierr, cmpval = self.PSSE.loddt2(load["bus"], load["id"] ,v, "ACT")
+                ierr, cmpval = self.PSSE.loddt2(load["bus"], str(load["id"]) ,v, "ACT")
                 load[v] = cmpval
         return loads
        

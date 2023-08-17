@@ -73,7 +73,7 @@ class helics_interface:
     def _get_load_dynamic_properties(self, load):
         settings = {}
         for i in range(133):
-            irr, con_index = self.PSSE.lmodind(load["bus"], load['name'], 'CHARAC', 'CON')
+            irr, con_index = self.PSSE.lmodind(load["bus"], str(load['name']), 'CHARAC', 'CON')
             if con_index is not None:
                 act_con_index = con_index + i
                 irr, value = self.PSSE.dsrval('CON', act_con_index)
@@ -99,7 +99,7 @@ class helics_interface:
             #ierr, cmpval = self.PSSE.loddt2(load["bus"], "XX" ,"MVA" , "ACT")
             #modify old load     
             self.PSSE.load_data_5(
-                load['bus'], load['name'], 
+                load['bus'], str(load['name']), 
                 realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
                 lodtyp='original'
                 )   
@@ -133,7 +133,7 @@ class helics_interface:
         values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
             for v in values:
-                ierr, cmpval = self.PSSE.loddt2(load["bus"], load["name"] ,v, "ACT")
+                ierr, cmpval = self.PSSE.loddt2(load["bus"], str(load["name"]) ,v, "ACT")
                 load[v] = cmpval
         return loads
        
