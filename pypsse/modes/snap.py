@@ -6,14 +6,15 @@ import pandas as pd
 import numpy as np
 import datetime
 import os
+from pypsse.models import SimulationSettings, ExportSettings
 
 class Snap(AbstractMode, DynamicUtils):
 
-    def __init__(self,psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
+    def __init__(self,psse, dyntools, settings:SimulationSettings, export_settings:ExportSettings, logger, subsystem_buses, raw_data):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
-        self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
-        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
-        self.incTime = settings["Simulation"]["Step resolution (sec)"]
+        self.time = settings.simulation.start_time
+        self._StartTime = settings.simulation.start_time
+        self.incTime = settings.simulation.simulation_step_resolution 
         self.init(subsystem_buses)
         return
 
@@ -23,38 +24,43 @@ class Snap(AbstractMode, DynamicUtils):
         self.iter_const = 100.0
         self.xTime = 0
 
-        ierr = self.PSSE.case(self.study_case_path)
+        ierr = self.PSSE.case(str(self.settings.simulation.case_study))
         assert ierr == 0, "error={}".format(ierr)
-        ierr = self.PSSE.rstr(self.snp_file)
+        ierr = self.PSSE.rstr(str(self.settings.simulation.snp_file))
         assert ierr == 0, "error={}".format(ierr)
-        ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
+        ierr = self.PSSE.strt_2([0, 1],  str(self.settings.export.outx_file))
 
-        self.disable_load_models_for_coupled_buses()
-        self.disable_generation_for_coupled_buses()
+        #self.disable_load_models_for_coupled_buses()
+        #self.disable_generation_for_coupled_buses()
 
         #self.save_model()
 
         if ierr==1:
             self.PSSE.cong(0)
-            ierr = self.PSSE.strt_2([0, 1],  self.outx_path)
+            ierr = self.PSSE.strt_2([0, 1], str(self.settings.export.outx_file))
             assert ierr == 0, "error={}".format(ierr)
         
         elif ierr >1:
             raise Exception("Error starting simulation")
 
-        if self.settings["HELICS"]["Cosimulation mode"]:
-            if self.settings["HELICS"]["Iterative Mode"]:
-                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"] / self.iter_const
+        if self.settings.helics.cosimulation_mode:
+            if self.settings.helics.iterative_mode:
+                sim_step = self.settings.simulation.psse_solver_timestep.total_seconds() / self.iter_const
             else:
-                sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+                sim_step = self.settings.simulation.psse_solver_timestep.total_seconds()
         else:
-            sim_step = self.settings["Simulation"]["PSSE solver timestep (sec)"]
+            sim_step = self.settings.simulation.psse_solver_timestep.total_seconds() 
+
+        self.load_setup_files()
+        self.convert_load()
+        self.load_user_defined_models()
 
         self.PSSE.dynamics_solution_param_2(
             [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
             [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
         )
 
+        
 
         self.PSSE.delete_all_plot_channels()
 
@@ -76,13 +82,8 @@ class Snap(AbstractMode, DynamicUtils):
         return self.initialization_complete
 
     def disable_generation_for_coupled_buses(self):
-        if self.settings['HELICS']['Cosimulation mode'] and self.settings['HELICS']["Disable_generation_on_coupled_buses"]:
-            sub_data = pd.read_csv(
-                os.path.join(
-                    self.settings["Simulation"]["Project Path"], 'Settings',
-                    self.settings["HELICS"]["Subscriptions file"]
-                )
-            )
+        if self.settings.helics.cosimulation_mode and self.settings.helics.disable_generation_on_coupled_buses:
+            sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
             generators = {}
             for ix, row in sub_data.iterrows():
@@ -105,13 +106,8 @@ class Snap(AbstractMode, DynamicUtils):
         return
 
     def disable_load_models_for_coupled_buses(self):
-        if self.settings['HELICS']['Cosimulation mode']:
-            sub_data = pd.read_csv(
-                os.path.join(
-                    self.settings["Simulation"]["Project Path"], 'Settings',
-                    self.settings["HELICS"]["Subscriptions file"]
-                )
-            )
+        if self.settings.helics.cosimulation_mode:
+            sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
 
             self.psse_dict = {}
@@ -165,7 +161,7 @@ class Snap(AbstractMode, DynamicUtils):
             self.chnl_idx += 2
 
     def step(self, t):
-        self.time = self.time + datetime.timedelta(seconds=self.incTime)
+        self.time = self.time + self.incTime
         self.xTime = 0
         return self.PSSE.run(0, t, 1, 1, 1)
 
@@ -217,23 +213,9 @@ class Snap(AbstractMode, DynamicUtils):
         return (self.time - self._StartTime).total_seconds()
 
     def GetStepSizeSec(self):
-        return self.settings["Simulation"]["Step resolution (sec)"]
+        return self.settings.simulation.simulation_step_resolution.total_seconds()
 
-    def convert_load(self, busSubsystem= None):
-        if self.settings['Loads']['Convert']:
-            P1 = self.settings['Loads']['active_load']["% constant current"]
-            P2 = self.settings['Loads']['active_load']["% constant admittance"]
-            Q1 = self.settings['Loads']['reactive_load']["% constant current"]
-            Q2 = self.settings['Loads']['reactive_load']["% constant admittance"]
-            if busSubsystem:
-                self.PSSE.conl(busSubsystem, 0, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
-                self.PSSE.conl(busSubsystem, 0, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
-                self.PSSE.conl(busSubsystem, 0, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
-            else:
-                self.PSSE.conl(0, 1, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
-                self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
-                self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
-
+    
 
     @converter
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):

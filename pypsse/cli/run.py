@@ -29,7 +29,7 @@ from pypsse.common import SIMULATION_SETTINGS_FILENAME
 
 def run(project_path, options=None, simulations_file=None):
     """Run a PyPSSE simulation."""
-    path = os.path.join(project_path, "Settings", simulations_file)
+    path = os.path.join(project_path,  simulations_file)
     if os.path.exists(path):
         x = pyPSSE_instance(path)
         #x.init()

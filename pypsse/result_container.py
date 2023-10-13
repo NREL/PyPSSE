@@ -1,15 +1,17 @@
 from pypsse.data_writers.data_writer import DataWriter
+from pypsse.common import EXPORTS_FOLDER
 import pandas as pd
 import os
+
+from pypsse.models import SimulationSettings, ModelTypes, BulkWriteModes, StreamedWriteModes
 class container:
 
-    BULK_WRITE_MODES = ["csv", "pkl"]
-    STREAMED_WRITE_MODES = ["h5"]
-    def __init__(self, settings, export_settings):
-        export__list = ['Buses', 'Branches', 'Loads', 'Induction_generators', 'Machines', 'Fixed_shunts',
-                        'Switched_shunts', 'Transformers',"Areas", "Zones", "DCtransmissionlines", "Stations"]
+    BULK_WRITE_MODES = [m.value for m in BulkWriteModes]
+    STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
+    def __init__(self, settings: SimulationSettings, export_settings):
+        export__list = [m.value for m in ModelTypes]
         export__dict = export_settings
-        self.export_path = os.path.join(settings["Simulation"]["Project Path"], 'Exports')
+        self.export_path = settings.simulation.project_path / EXPORTS_FOLDER 
         self.export_settings = export_settings
         self.settings = settings
         self.results = {}
@@ -24,15 +26,14 @@ class container:
                             self.export_vars[class_name] = []
                         self.export_vars[class_name].append(variable_name)
 
-        timeSteps = int(self.settings["Simulation"]["Simulation time (sec)"] /
-                        self.settings["Simulation"]["Step resolution (sec)"])
+        timeSteps = int(self.settings.simulation.simulation_time.total_seconds() /
+                        self.settings.simulation.simulation_step_resolution.total_seconds())
         if self.export_settings["Write format"] not in self.BULK_WRITE_MODES:
             self.dataWriter = DataWriter(self.export_path, export_settings["Write format"], timeSteps)
         return
 
     def update_export_variables(self, params):
-        export__list = ['Buses', 'Branches', 'Loads', 'Induction_generators', 'Machines', 'Fixed_shunts',
-                        'Switched_shunts', 'Transformers', "Areas", "Zones", "DCtransmissionlines", "Stations"]
+        export__list = [m.value for m in ModelTypes]
         self.results = {}
         self.export_vars = {}
         for class_name in export__list:
@@ -52,7 +53,11 @@ class container:
 
     def Update(self, bus_data, line_data, index, time):
         if self.export_settings["Write format"] not in self.BULK_WRITE_MODES:
-            self.dataWriter.write(self.settings["HELICS"]["Federate name"], time, bus_data, index)
+            if self.settings.helics:
+                file_name  = self.settings.helics.federate_name
+            else:
+                file_name = "psse_results"
+            self.dataWriter.write(file_name, time, bus_data, index)
         else:
             for variable_name, bus_dict in bus_data.items():
                 if not isinstance(self.results['{}'.format(variable_name)], pd.DataFrame):
@@ -67,11 +72,7 @@ class container:
     def export_results(self):
         if self.export_settings["Write format"] in self.BULK_WRITE_MODES:
             for df_name, df in self.results.items():
-                export_path = os.path.join(
-                    self.settings["Simulation"]["Project Path"],
-                    'Exports',
-                    '{}.{}'.format(df_name, self.export_settings["Write format"])
-                )
+                export_path = self.settings.simulation.project_path / EXPORTS_FOLDER / f'{df_name}.{self.export_settings["Write format"]}'
                 if self.export_settings["Write format"] == 'csv':
                     if isinstance(df, pd.DataFrame):
                         df.to_csv(export_path)

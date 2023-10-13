@@ -1,6 +1,7 @@
 from re import I
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, dyn_only_options
 from pypsse.profile_manager.common import PROFILE_VALIDATION
+from pypsse.models import SimulationSettings, ExportSettings, SimulationModes
 import pandas as pd
 import helics as h
 import time
@@ -17,7 +18,7 @@ class helics_interface:
     init_state = 1
     dynamic_params = ['FmA', 'FmB', 'FmC', 'FmD', 'Fel']
 
-    def __init__(self, PSSE, sim, settings, export_settings, bus_subsystems, logger):
+    def __init__(self, PSSE, sim, settings:SimulationSettings, export_settings:ExportSettings, bus_subsystems, logger):
         self.bus_pubs = ['bus_id', 'bus_Vmag', 'bus_Vang', 'bus_dev']
         self.PSSE = PSSE
         self.logger = logger
@@ -28,11 +29,11 @@ class helics_interface:
         self.c_seconds = 0
         self.c_seconds_old = -1
 
-        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+        if settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
             self.create_replica_model_for_coupled_loads(['FmD'])
             
-        self._co_convergance_error_tolerance = settings['HELICS']['Error tolerance']
-        self._co_convergance_max_iterations = settings['HELICS']['Max co-iterations']
+        self._co_convergance_error_tolerance = settings.helics.error_tolerance
+        self._co_convergance_max_iterations = settings.helics.max_coiterations
         self.create_federate()
         self.subsystem_info = []
         self.publications = {}
@@ -112,11 +113,7 @@ class helics_interface:
         return loads
 
     def _get_coupled_loads(self):
-        sub_data = pd.read_csv(
-            os.path.join(
-                self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
-            )
-        )
+        sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
         load = []
         for ix, row in sub_data.iterrows():
             if row["element_type"] == "Load":
@@ -167,44 +164,44 @@ class helics_interface:
 
     def create_federate(self):
         self.fedinfo = h.helicsCreateFederateInfo()
-        h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings["HELICS"]['Federate name'])
-        h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings["HELICS"]['Core type'])
+        h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings.helics.federate_name)
+        h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings.helics.core_type.value)
         h.helicsFederateInfoSetCoreInitString(self.fedinfo, "--federates=1")
-        if self.settings['HELICS']['Broker']:
-            h.helicsFederateInfoSetBroker(self.fedinfo, self.settings['HELICS']['Broker'])
-        if self.settings['HELICS']['Broker port']:
-            h.helicsFederateInfoSetBrokerPort(self.fedinfo, self.settings['HELICS']['Broker port'])
+        h.helicsFederateInfoSetBroker(self.fedinfo, str(self.settings.helics.broker_ip))
+        h.helicsFederateInfoSetBrokerPort(self.fedinfo, self.settings.helics.broker_port)
 
-        if self.settings['HELICS']["Iterative Mode"]:
+        if self.settings.helics.iterative_mode:
             h.helicsFederateInfoSetTimeProperty(
                 self.fedinfo,
                 h.helics_property_time_delta,
-                self.settings["Simulation"]["Step resolution (sec)"] / self.dynamic_iter_const
+                self.settings.simulation.simulation_step_resolution.total_seconds() / self.dynamic_iter_const
             )
         else:
             h.helicsFederateInfoSetTimeProperty(
                 self.fedinfo,
                 h.helics_property_time_delta,
-                self.settings["Simulation"]["Step resolution (sec)"]
+                self.settings.simulation.simulation_step_resolution.total_seconds()
             )
-        self.PSSEfederate = h.helicsCreateValueFederate(self.settings["HELICS"]['Federate name'], self.fedinfo)
+        self.PSSEfederate = h.helicsCreateValueFederate(self.settings.helics.federate_name, self.fedinfo)
         return
 
     def register_publications(self, bus_subsystems):
+        print(bus_subsystems)
         self.publications = {}
         self.pub_struc = []
-        for publicationDict in self.settings['HELICS']["Publications"]:
-            bus_subsystem_ids = publicationDict["bus_subsystems"]
+        for publicationDict in self.settings.helics.publications:
+            print(publicationDict)
+            bus_subsystem_ids = publicationDict.bus_subsystems
             if not set(bus_subsystem_ids).issubset(self.bus_subsystems):
                 raise Exception(f"One or more invalid bus subsystem ID pass in {bus_subsystem_ids}."
                                 f"Valid subsystem IDs are  '{list(self.bus_subsystems.keys())}'.")
 
-            elmClass = publicationDict["class"]
+            elmClass = publicationDict.model_type.value
             if elmClass not in self.export_settings:
                 raise Exception(f"'{elmClass}' is not a valid class of elements. "
                                 f"Valid fields are: {list(self.export_settings.keys())}")
 
-            properties = publicationDict["properties"]
+            properties = [p.value for p in publicationDict.model_properties]
             if not set(properties).issubset(self.export_settings[elmClass]):
                 raise Exception(
                     f"One or more publication property defined for class '{elmClass}' is invalid. "
@@ -221,7 +218,7 @@ class helics_interface:
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
                         pub_tag = "{}.{}.{}.{}".format(
-                            self.settings["HELICS"]['Federate name'],
+                            self.settings.helics.federate_name,
                             cName,
                             Name,
                             pName
@@ -252,14 +249,10 @@ class helics_interface:
 
     def register_subscriptions(self, bus_subsystem_dict):
         self.subscriptions = {}
-        sub_data = pd.read_csv(
-            os.path.join(
-                self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
-            )
-        )
+        assert self.settings.simulation.subscriptions_file, "HELICS co-simulations requires a subscriptions_file property populated"
+        sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
         self.psse_dict = {}
         for ix, row in sub_data.iterrows():
-
             try:
                 row['property'] = ast.literal_eval(row['property'])
             except:
@@ -323,7 +316,7 @@ class helics_interface:
             self.all_sub_results[self.sim.getTime()] = {}
             self.all_pub_results[self.sim.getTime()] = {}
         
-        if not self.settings['HELICS']['Iterative Mode']:
+        if not self.settings.helics.iterative_mode:
             while self.c_seconds < r_seconds:
                 self.c_seconds = h.helicsFederateRequestTime(self.PSSEfederate, r_seconds)
             self.logger.info('Time requested: {} - time granted: {} '.format(r_seconds, self.c_seconds))
@@ -361,7 +354,7 @@ class helics_interface:
                 itr += 1
                 self.logger.debug(f"\titr = {itr}")
                 
-                if itr > self.settings['HELICS']['Max co-iterations']:
+                if itr > self.settings.helics.max_coiterations:
                     self.c_seconds, itr_state = h.helicsFederateRequestTimeIterative(
                         self.PSSEfederate,
                         r_seconds,
@@ -394,7 +387,7 @@ class helics_interface:
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
-                        pub_tag = "{}.{}.{}.{}".format(self.settings["HELICS"]['Federate name'], cName, Name, pName)
+                        pub_tag = "{}.{}.{}.{}".format(self.settings.helics.federate_name, cName, Name, pName)
                         pub_tag_reduced = f"{cName}.{Name}.{pName}" 
                         pub = self.publications[pub_tag]
                         dtype_matched = True
@@ -428,7 +421,7 @@ class helics_interface:
                         self.psse_dict[sub_data['bus']][sub_data['element_type']][sub_data['element_id']][p] = (sub_data['value'][i], sub_data['scaler'][i])
 
             self.logger.debug('Data received {} for tag {}'.format(sub_data['value'], sub_tag))
-            if self.settings['HELICS']['Iterative Mode']:
+            if self.settings.helics.iterative_mode:
                 if self.c_seconds != self.c_seconds_old:
                     sub_data['dStates'] = [self.init_state] * self.n_states
                 else:

@@ -1,4 +1,11 @@
 
+
+CASESTUDY_FOLDER = "case_study"
+SETTINGS_FOLDER = "settings"
+EXPORTS_FOLDER = "exports"
+LOGS_FOLDER = "logs"
+PROFILES_FOLDER = "profiles"
+
 SIMULATION_SETTINGS_FILENAME = "simulation_settings.toml"
 EXPORTS_SETTINGS_FILENAME = "export_settings.toml"
 DEFAULT_SUBSCRIPTION_FILENAMES = "Subscriptions.csv"
@@ -10,6 +17,8 @@ REQUIRED_DYNAMIC = ["Dyr file"]
 REQUIRED_NETWORKX = ["GIC file"]
 REQUIRED_HELICS = ["Subscriptions file"]
 SUBSCRIPTION_FIELDS = {"bus_subsystem_id", "bus_id", "load_id",	"load_type", "sub_tag"}
+
+
 
 
 MACHINE_CHANNELS = {

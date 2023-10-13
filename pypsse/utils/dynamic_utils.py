@@ -6,6 +6,19 @@ class DynamicUtils:
     
     dynamic_params = ['FmA', 'FmB', 'FmC', 'FmD', 'Fel']
     
+    def disable_load_models_for_coupled_buses(self):
+        if self.settings.helics and self.settings.cosimulation_mode:
+            assert self.settings.simulation.subscriptions_file and self.settings.simulation.subscriptions_file.exists()
+            sub_data = pd.read_csv(str(self.settings.simulation.subscriptions_file))
+            sub_data = sub_data[sub_data['element_type'] == 'Load']
+            self.psse_dict = {}
+            for ix, row in sub_data.iterrows():
+                bus = row['bus']
+                load = row['element_id']
+                ierr = self.PSSE.ldmod_status(0, int(bus), str(load), 1, 0)
+                self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
+
+    
     def break_loads(self, loads=None, components_to_replace=["FmD"]):
         components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
         if loads is None:

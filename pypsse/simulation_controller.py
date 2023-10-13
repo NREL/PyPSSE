@@ -5,19 +5,17 @@ from pypsse.modes.snap import Snap
 import numpy as np
 import os
 
+from pypsse.models import SimulationSettings
 
-def sim_controller(psse, dyntools, settings, export_settings, logger , subsystem_buses, raw_data):
+def sim_controller(psse, dyntools, settings: SimulationSettings, export_settings, logger , subsystem_buses, raw_data):
     sim_modes = {
         'Dynamic': Dynamic,
         'Steady-state': Static,
         'Snap': Snap,
         'ProductionCostModel': ProductionCostModel
     }
-    sim_mode = settings["Simulation"]["Simulation mode"]
-    assert (sim_mode in sim_modes), ("Invalid 'Simulation mode' entered. Possible values are: {}".format(
-        ','.join(sim_modes.keys())
-    ))
-    sim = sim_modes[settings["Simulation"]["Simulation mode"]](psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
+
+    sim = sim_modes[settings.simulation.simulation_mode.value](psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
     return sim
 
 

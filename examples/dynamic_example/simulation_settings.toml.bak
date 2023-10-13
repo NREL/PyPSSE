@@ -1,0 +1,56 @@
+[simulation]
+simulation_time = 1.0
+simulation_step_resolution = 0.004166667
+psse_solver_timestep = 0.004166667
+start_time = "2020-01-01 00:00:00.0"
+simulation_mode = "Dynamic" # Dynamic, Snap
+use_profile_manager = false
+psse_path = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
+project_path = "./examples/dynamic_example"
+case_study = "savnw.sav"
+raw_file = "savnw.raw"
+dyr_file = "savnw.dyr"
+
+[export]
+outx_file = "Results.outx"
+out_file = "Results.out"
+excel_file = "Results.xls"
+log_file = "Results.log"
+coordinate_file = "Coordinates.csv"
+networkx_graph_file = "Graph.gpickle"
+
+[log]
+disable_psse_logging = true
+logging_level = 10
+log_to_external_file = false
+display_on_screen = true
+clear_old_log_file = true
+pre_configured_logging = false
+
+[bus_subsystems]
+from_file = false
+bus_file = ""
+bus_subsystem_list = [ [ 153, 154, 203, 205, 3005, 3007, 3008,],]
+publish_subsystems = [ 0,]
+
+[generators]
+missing_machine_model = 1
+
+[loads]
+convert = false
+
+[loads.active_load]
+constant_current_percentage = 50.0
+constant_admittance_percentage = 50.0
+
+[loads.reactive_load]
+constant_current_percentage = 50.0
+constant_admittance_percentage = 50.0
+
+[[contingencies]]
+time = 0.4
+bus_id = 102
+duration = 0.1
+bus_trip = false
+trip_delay = 0.05
+fault_impedance = [ 0.001, 0.001,]

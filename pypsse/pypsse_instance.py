@@ -5,15 +5,18 @@
 @time:2/4/2020
 """
 
-
+from pypsse.common import SETTINGS_FOLDER, EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.helics_interface import helics_interface
 from pypsse.result_container import container
+from pypsse.models import SimulationSettings
 from pypsse.parsers import gic_parser as gp
 import pypsse.simulation_controller as sc
 from pypsse.parsers import reader as rd
 import pypsse.pypsse_logger as Logger
 import pypsse.contingencies as c
+
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import subprocess
@@ -22,31 +25,35 @@ import shutil
 import toml
 import time
 
+from pypsse.models import SimulationModes, HelicsCoreTypes, ModelTypes, ModelProperties, LoggingLevels
+
+
 USING_NAERM = 0
 
 class pyPSSE_instance:
 
-    def __init__(self, settinigs_toml_path='', psse_path=''):
-        self.settings = self.read_settings(settinigs_toml_path)
-        if psse_path != '':
-            self.settings["Simulation"]["PSSE_path"] = psse_path.lower()
+    def __init__(self, settings_toml_path='', psse_path=''):
+          
+        settings = self.read_settings(settings_toml_path)
+        self.settings = SimulationSettings.validate(settings)
+        
+        log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
+        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings.log)
+        self.logger.debug('Starting PSSE instance')
+
+        if psse_path != '' and Path(psse_path).exists():
+            self.settings.simulation.psse_path = Path(psse_path)           
             sys.path.append(psse_path)
             os.environ['PATH'] += ';' + psse_path
-
         else:
-            self.settings["Simulation"]["PSSE_path"]
-            if self.settings["Simulation"]["Simulation mode"] == "Dynamic":
-                assert self.settings["Simulation"]["Use profile manager"] == False,\
-                    "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
-
-            sys.path.append(self.settings["Simulation"]["PSSE_path"])
-            os.environ['PATH'] += ';' + self.settings["Simulation"]["PSSE_path"]
+            sys.path.append(str(self.settings.simulation.psse_path))
+            os.environ['PATH'] += ';' + str(self.settings.simulation.psse_path)
        
         try:
             nBus = 200000
-            if "psse34" in self.settings["Simulation"]["PSSE_path"].lower():
+            if "psse34" in str(self.settings.simulation.psse_path).lower():
                 import psse34
-            elif "psse35" in self.settings["Simulation"]["PSSE_path"].lower():
+            elif "psse35" in str(self.settings.simulation.psse_path).lower():
                 import psse35
             else:
                 import psse36
@@ -62,10 +69,11 @@ class pyPSSE_instance:
             self.initComplete = True
             self.message = 'success'
 
-            if settinigs_toml_path != '':
-                self.read_allsettings(settinigs_toml_path)
-                self.start_simulation()
-                self.init()
+            export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
+            assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
+            self.export_settings = self.read_settings(export_settings_path)
+            self.start_simulation()
+            self.init()
         except:
             raise Exception("A valid PSS/E license not found. License may currently be in use.")
 
@@ -75,42 +83,21 @@ class pyPSSE_instance:
         export_toml_file = os.path.join(os.path.dirname(__file__), 'defaults', 'export_settings.toml' )
         shutil.copy(setting_toml_file, dest_dir)
         shutil.copy(export_toml_file, dest_dir)
-    
-    def read_allsettings(self,settinigs_toml_path):
-
-        self.settings = self.read_settings(settinigs_toml_path)
-        export_settings_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Settings', 'export_settings.toml'
-        )
-        self.export_settings = self.read_settings(export_settings_path)
 
     def start_simulation(self):
         self.hi = None
         self.simStartTime = time.time()
 
-        log_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Logs')
-        self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings["Logging"])
-        self.logger.debug('Starting PSSE instance')
-
         #** Initialize PSSE modules
 
-        if self.settings["Simulation"]["Case study"]:
-            self.PSSE.case(
-                os.path.join(self.settings["Simulation"]["Project Path"],
-                             "Case_study",
-                             self.settings["Simulation"]["Case study"])
-            )
-        elif self.settings["Simulation"]["Raw file"] != "":
-            self.PSSE.read(0,
-                           os.path.join(self.settings["Simulation"]["Project Path"],
-                                        "Case_study",
-                                        self.settings["Simulation"]["Raw file"]
-                                        )
-                           )
+        if self.settings.simulation.case_study.exists():
+            self.PSSE.case(str(self.settings.simulation.case_study))
+        elif self.settings.simulation.raw_file.exists():
+            self.PSSE.read(0, str(self.settings.simulation.raw_file))
         else:
             raise Exception("Please pass a RAW or SAV file in the settings dictionary")
 
-        self.logger.info(f"Trying to read a file >>{os.path.join(self.settings['Simulation']['Project Path'],'Case_study',self.settings['Simulation']['Case study'])}")
+        self.logger.info(f"Trying to read a file >>{self.settings.simulation.case_study}")
         self.raw_data = rd.Reader(self.PSSE, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
 
@@ -123,16 +110,17 @@ class pyPSSE_instance:
 
         self.contingencies = self.build_contingencies()
 
-        if self.settings["HELICS"]["Cosimulation mode"]:
-            if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
+        if self.settings.helics and self.settings.helics.cosimulation_mode:
+            if self.settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
                 self.sim.break_loads()
             self.hi = helics_interface(
                 self.PSSE, self.sim, self.settings, self.export_settings, self.bus_subsystems, self.logger
             )
             self.publications = self.hi.register_publications(self.bus_subsystems)
-            if self.settings["HELICS"]["Create subscriptions"]:
+            if self.settings.helics.create_subscriptions:
                 self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
-        if self.settings["Simulation"]["GIC file"]:
+        
+        if self.settings.simulation.gic_file:
             self.network_graph = self.parse_GIC_file()
             self.bus_ids = self.network_graph.nodes.keys()
         else:
@@ -144,13 +132,6 @@ class pyPSSE_instance:
 
         return
 
-    def disable_generation_for_coupled_buses(self):
-        if self.settings['HELICS']['Cosimulation mode'] and self.settings['HELICS'][
-            "Disable_generation_on_coupled_buses"]:
-            pass
-        return
-
-
     def init(self):
         sucess = self.sim.init(self.bus_subsystems)
         # if sucess:
@@ -158,10 +139,10 @@ class pyPSSE_instance:
         # else:
         #     self.load_info = None
 
-        if self.settings["Simulation"]["Use profile manager"]:
+        if self.settings.simulation.use_profile_manager:
             self.pm = ProfileManager(None, self.sim, self.settings, self.logger)
             self.pm.setup_profiles()
-        if self.settings["HELICS"]["Cosimulation mode"]:
+        if self.settings.helics and self.settings.helics.cosimulation_mode:
             print("trying helics execution")
             self.hi.enter_execution_mode()
             print(" helics execution ended")
@@ -197,9 +178,8 @@ class pyPSSE_instance:
         return bus_subsystems_dict, all_subsysten_buses
 
     def get_bus_indices(self):
-        if self.settings['bus_subsystems']["from_file"]:
-            bus_file = os.path.join(self.settings["Project Path"], 'Case_study',
-                                    self.settings['bus_subsystems']["bus_file"])
+        if self.settings.bus_subsystems.from_file:
+            bus_file = self.settings.bus_subsystems.bus_file
             bus_info = pd.read_csv(bus_file, index_col=None)
             bus_info = bus_info.values
             r, c =  bus_info.shape
@@ -208,12 +188,12 @@ class pyPSSE_instance:
                 data = [int(x) for x in bus_info[:,col] if not np.isnan(x)]
                 bus_data.append(data)
         else:
-            bus_data = self.settings['bus_subsystems']["bus_subsystem_list"]
+            bus_data = self.settings.bus_subsystems.bus_subsystem_list
         return bus_data
 
-    def read_settings(self, settinigs_toml_path):
+    def read_settings(self, settings_toml_path):
         settings_text = ''
-        f = open(settinigs_toml_path, "r")
+        f = open(settings_toml_path, "r")
         text = settings_text.join(f.readlines())
         toml_data = toml.loads(text)
         toml_data = {str(k): (str(v) if isinstance(v, str) else v) for k, v in toml_data.items()}
@@ -223,22 +203,20 @@ class pyPSSE_instance:
     def run(self):
       
         if self.sim.initialization_complete:
-            if self.settings['Plotting']["Enable dynamic plots"]:
+            if self.settings.plots and self.settings.plots.enable_dynamic_plots:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
             else:
                 bokeh_server_proc = None
             #self.initialize_loads()
             self.logger.debug('Running dynamic simulation for time {} sec'.format(
-                self.settings["Simulation"]["Simulation time (sec)"])
+                self.settings.simulation.simulation_time.total_seconds())
             )
-            self.logger.debug(
-                'Simulation time step {} sec'.format(self.settings["Simulation"]["Step resolution (sec)"]))
-            T = self.settings["Simulation"]["Simulation time (sec)"]
+            T = self.settings.simulation.simulation_time.total_seconds()
             t = 0
             while True:
                 self.step(t)
                 if self.inc_time:
-                    t += self.settings["Simulation"]["Step resolution (sec)"]
+                    t += self.settings.simulation.simulation_step_resolution.total_seconds()
                 if t >= T:
                     break
 
@@ -248,9 +226,7 @@ class pyPSSE_instance:
             else:
                 
                 self.sim.export()
-            
-            export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
-
+  
             if bokeh_server_proc != None:
                 bokeh_server_proc.terminate()
         else:
@@ -264,12 +240,12 @@ class pyPSSE_instance:
 
     def step(self, t):
         self.update_contingencies(t)
-        if self.settings["Simulation"]["Use profile manager"]:
+        if self.settings.simulation.use_profile_manager:
             self.pm.update()
         ctime = time.time() - self.simStartTime
         self.logger.debug(f'Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}')
-        if self.settings["HELICS"]["Cosimulation mode"]:
-            if self.settings["HELICS"]["Create subscriptions"]:
+        if self.settings.helics and self.settings.helics.cosimulation_mode:
+            if self.settings.helics.create_subscriptions:
                 self.update_subscriptions()
                 self.logger.debug('Time requested: {}'.format(t))
                 self.inc_time, helics_time = self.update_federate_time(t)
@@ -280,7 +256,7 @@ class pyPSSE_instance:
         else:
             self.sim.resolveStep(t)
 
-        if self.settings["HELICS"]["Cosimulation mode"]:
+        if self.settings.helics and self.settings.helics.cosimulation_mode:
             self.publish_data()
         if self.export_settings['Defined bus subsystems only']:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
@@ -387,7 +363,7 @@ class pyPSSE_instance:
         return contingencies
 
     def update_contingencies(self, t):
-        for c_name, c in self.contingencies.items():
+        for c in self.contingencies:
             c.update(t)
 
     def inject_contingencies_external(self,temp):

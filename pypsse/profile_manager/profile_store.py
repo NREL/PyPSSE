@@ -1,6 +1,9 @@
 from pypsse.profile_manager.common import PROFILE_TYPES, PROFILE_VALIDATION
 from pypsse.profile_manager.profile import Profile as TSP
 from pypsse.exceptions import InvalidParameter
+
+from pypsse.common import PROFILES_FOLDER, DEFAULT_PROFILE_STORE_FILENAME, DEFAULT_PROFILE_MAPPING_FILENAME
+
 from datetime import datetime as dt
 from pypsse.common import *
 import pandas as pd
@@ -10,16 +13,18 @@ import toml
 import h5py
 import os
 
+from pypsse.models import SimulationSettings
 class ProfileManager:
 
-    def __init__(self,  pypsseObjects, Solver, settings, logger, mode="r+"):
+    def __init__(self,  pypsseObjects, Solver, settings:SimulationSettings, logger, mode="r+"):
         self._logger = logger
         self.Solver = Solver
         self.Objects = pypsseObjects
         self.settings = settings
-        filePath = os.path.join(settings["Simulation"]["Project Path"], "Profiles", "Profiles.hdf5")
-
-        if os.path.exists(filePath):
+        
+        filePath = settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_STORE_FILENAME
+        
+        if filePath.exists():
             self._logger.info("Loading existing h5 store")
             self.store = h5py.File(filePath, mode)
         else:
@@ -30,15 +35,12 @@ class ProfileManager:
         return
 
     def load_data(self, filePath):
-        if os.path.exists(filePath):
-            tomlDict = toml.load(filePath)
-        else:
-            raise Exception(f'{filePath}: the path does not exist')
+        tomlDict = toml.load(filePath)
         return tomlDict
 
     def setup_profiles(self):
-        mappingPath = os.path.join(self.settings["Simulation"]["Project Path"], "Profiles", "Profile_mapping.toml")
-        if os.path.exists(mappingPath):
+        mappingPath = self.settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_MAPPING_FILENAME
+        if mappingPath.exists():
             self.profileMapping = self.load_data(mappingPath)
             self.Profiles = {}
             for group, profileMap in self.profileMapping.items():

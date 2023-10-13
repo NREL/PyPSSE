@@ -41,12 +41,15 @@ class Profile:
             dT = (self.Time - self.sTime).total_seconds()
             n = int(dT / self.attrs["resTime"])
             value = np.array(list(self.profile[n]))
+            try:
+                valuen1 = np.array(list(self.profile[n+1]))
+            except:
+                valuen1 = value
 
             dT2 = (self.Time - (self.sTime + datetime.timedelta(seconds=int(n * self.attrs["resTime"])))).total_seconds()
-            value1 = np.array(list(self.profile[n])) + (
-                    np.array(list(self.profile[n+1])) - np.array(list(self.profile[n]))
-            ) * dT2 / self.attrs["resTime"]
-
+            value1 = value + (valuen1 - value) * dT2 / self.attrs["resTime"]
+            
+            
         if updateObjectProperties:
             for objName in self.valueSettings:
                 bus, id = objName.split("__")

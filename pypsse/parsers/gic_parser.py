@@ -2,17 +2,17 @@ import networkx as nx
 import pandas as pd
 import os
 
+from pypsse.models import SimulationSettings
+
 class gic_parser:
     valid_verions = ['3']
-    def __init__(self, settings , logger=None):
+    def __init__(self, settings:SimulationSettings , logger=None):
 
         self.logger = logger
         self.logger.debug('Starting RAW parser')
 
         self.settings = settings
-        self.filepath = os.path.join(
-            settings["Simulation"]["Project Path"], "Case_study", settings["Simulation"]["GIC file"]
-        )
+        self.filepath = str(settings.simulation.gic_file)
 
         self.filehandle = open(self.filepath, 'r')
         verion = self.filehandle.readline()
