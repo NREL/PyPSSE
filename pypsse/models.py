@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from pydantic.networks import IPvAnyAddress
 from datetime import datetime, timedelta
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict
 from enum import Enum, IntEnum
 from pathlib import Path
 
@@ -25,18 +25,18 @@ class HelicsCoreTypes(Enum):
     ZMQ = "zmq"
 
 class ModelTypes(Enum):
-    BUSES = "Buses"
-    BRANCHES = 'Branches'
-    LOADS = 'Loads'
-    GENERATORS = 'Induction_generators'
-    MACHINES = 'Machines'
-    FIXED_SHUNTS = 'Fixed_shunts'
-    SWITCHED_SHUNTS = 'Switched_shunts'
-    TRANSFORMERS = 'Transformers'
-    AREAS = "Areas"
-    ZONES = "Zones"
-    DC_LINES = "DCtransmissionlines"
-    STATIONS = "Stations"
+    BUSES = "buses"
+    BRANCHES = 'branches'
+    LOADS = 'loads'
+    GENERATORS = 'induction_generators'
+    MACHINES = 'machines'
+    FIXED_SHUNTS = 'fixed_shunts'
+    SWITCHED_SHUNTS = 'switched_shunts'
+    TRANSFORMERS = 'transformers'
+    AREAS = "areas"
+    ZONES = "zones"
+    DC_LINES = "dc_transmission_lines"
+    STATIONS = "stations"
 
 class ModelProperties(Enum):
     FREQ = "FREQ"
@@ -254,3 +254,331 @@ class SimulationSettings(BaseModel):
         if v.coordinate_file:
             v.coordinate_file = base_project_path / EXPORTS_FOLDER / v.coordinate_file
         return v
+    
+    
+class BusProperties(Enum):
+    BASE = "BASE"
+    FREQ = "FREQ"
+    PU = "PU"
+    KV = "KV"
+    ANGLE = "ANGLE"
+    ANGLED = "ANGLED"
+    NVLMHI = "NVLMHI"
+    NVLMLO = "NVLMLO"
+    EVLMHI = "EVLMHI"
+    EVLMLO = "EVLMLO"
+    
+class AreaProperties(Enum):
+    LOAD = "LOAD"
+    LOADID = "LOADID"
+    LGDN = "LGDN"
+    LDGNLD = "LDGNLD"
+    GEN = "GEN"
+    AREANAME = "AREANAME"
+    AREANUMBER = "AREANUMBER"
+    
+class ZoneProperties(Enum):
+    LOAD = "LOAD"
+    LOADID = "LOADID"
+    LGDN = "LGDN"
+    LDGNLD = "LDGNLD"
+    GEN = "GEN"
+    ZONENAME = "ZONENAME"
+    ZONENUMBER = "ZONENUMBER"
+    
+class StationProperties(Enum):
+    SUBNAME = "SUBNAME"
+    SUBNUMBER = "SUBNUMBER"
+    BUSES = "BUSES"
+    GENERATORS = "GENERATORS"
+    TRANSFORMERS = "TRANSFORMERS"
+    NOMKV = "NOMKV"
+    LOADMW = "LOADMW"
+    GENMW = "GENMW"
+    
+class DCLineProperties(Enum):
+    DCLINENAME = "DCLINENAME"
+    MDC = "MDC"
+    RECT = "RECT"
+    INV = "INV"
+    METER = "METER"
+    NBR = "NBR"
+    NBI = "NBI"
+    ICR = "ICR"
+    ICI = "ICI"
+    NDR = "NDR"
+    NDI = "NDI"
+    
+class LoadProperties(Enum):
+    MVA = "MVA"
+    IL = "IL"
+    YL  = "YL"
+    TOTAL = "TOTAL" 
+    YNEG  = "YNEG" 
+    YZERO = "YZERO"
+    FmA  = "FmA"
+    FmB = "FmB"
+    FmC = "FmC"
+    FmD = "FmD"
+    Fel = "Fel"
+    PFel = "PFel"
+    TD = "TD"
+    TC = "TC"
+    
+class FixedShuntProperties(Enum):
+    ACT = "ACT"
+    O_ACT = "O_ACT" 
+    NOM = "NOM"
+    O_NOM = "O_NOM"
+    PQZERO = "PQZERO"
+    PQZ = "PQZ"
+    O_PQZ = "O_PQZ"
+
+class SwitchedShuntProperties(Enum):
+    VSWHI = "VSWHI" 
+    VSWLO = "VSWLO"
+    RMPCT = "RMPCT" 
+    BINIT = "BINIT" 
+    O_BINIT = "O_BINIT" 
+    
+class TransformerProperties(Enum):
+    RATIO = "RATIO"
+    RATIO2 = "RATIO2" 
+    ANGLE = "ANGLE" 
+    RMAX = "RMAX" 
+    RMIN = "RMIN" 
+    VMAX = "VMAX" 
+    VMIN = "VMIN" 
+    STEP =  "STEP" 
+    CR = "CR" 
+    CX = "CX" 
+    CNXANG = "CNXANG"
+    SBASE1 = "SBASE1" 
+    NOMV1 = "NOMV1"
+    NOMV2 = "NOMV2" 
+    GMAGNT = "GMAGNT" 
+    BMAGNT = "BMAGNT" 
+    RG1 = "RG1" 
+    XG1 = "XG1" 
+    R01 = "R01" 
+    X01 = "X01" 
+    RG2 = "RG2"
+    XG2 = "XG2" 
+    R02 = "R02" 
+    X02 = "X02" 
+    RNUTRL = "RNUTRL" 
+    XNUTRL = "XNUTRL"  
+    RX1_2 = "RX1-2"  
+    RX2_3 = "RX2-3"  
+    RX3_1 = "RX3-1"  
+    YMAGNT = "YMAGNT" 
+    ZG1 =  "ZG1"
+    Z01 = "Z01" 
+    ZG2 = "ZG2"
+    Z02 = "Z02" 
+    ZG3 = "ZG3"  
+    Z03 = "Z03" 
+    ZNUTRL = "ZNUTRL" 
+
+class BranchProperties(Enum):
+    RATEn = "RATEn" 
+    RATEA = "RATEA" 
+    RATEB = "RATEB" 
+    RATEC = "RATEC" 
+    RATE = "RATE" 
+    LENGTH = "LENGTH" 
+    CHARG =  "CHARG" 
+    CHARGZ = "CHARGZ" 
+    FRACT1 = "FRACT1" 
+    FRACT2 = "FRACT2"
+    FRACT3 = "FRACT3"
+    FRACT4 = "FRACT4" 
+    RX = "RX" 
+    ISHNT = "ISHNT" 
+    JSHNT = "JSHNT" 
+    RXZ = "RXZ"  
+    ISHNTZ = "ISHNTZ" 
+    JSHNTZ = "JSHNTZ" 
+    LOSSES = "LOSSES" 
+    O_LOSSES = "O_LOSSES" 
+    MVA = "MVA" 
+    AMPS = "AMPS" 
+    PUCUR = "PUCUR" 
+    CURANG = "CURANG" 
+    P = "P" 
+    O_P = "O_P" 
+    Q = "Q" 
+    O_Q = "O_Q" 
+    PLOS = "PLOS" 
+    O_PLOS = "O_PLOS" 
+    QLOS = "QLOS" 
+    O_QLOS = "O_QLOS" 
+
+class InductionGeneratorProperties(Enum):
+    MBASE = "MBASE" 
+    RATEKV = "RATEKV" 
+    PSET =  "PSET" 
+    RA =  "RA" 
+    XA = "XA" 
+    R1 = "R1" 
+    X1 = "X1" 
+    R2 = "R2" 
+    X2 = "X2" 
+    X3 = "X3" 
+    E1 = "E1" 
+    SE1 = "SE1" 
+    E2 = "E2"
+    SE2 = "SE2" 
+    IA1 = "IA1" 
+    IA2 = "IA2" 
+    XAMULT = "XAMULT" 
+    TRQA = "TRQA" 
+    TRQB = "TRQB" 
+    TRQD = "TRQD" 
+    TRQE = "TRQE" 
+    H = "H" 
+    IRATIO = "IRATIO" 
+    ROVERX = "ROVERX" 
+    RZERO = "RZERO" 
+    XZERO = "XZERO" 
+    RGRND = "RGRND" 
+    XGRND = "XGRND" 
+    P = "P" 
+    O_P = "O_P" 
+    Q = "Q" 
+    O_Q = "O_Q" 
+    MVA = "MVA" 
+    O_MVA = "O_MVA"
+    SLIP = "SLIP"   
+    ZA = "ZA" 
+    Z1 = "Z1" 
+    Z2 = "Z2" 
+    ZZERO = "ZZERO" 
+    ZGRND =  "ZGRND" 
+    PQ =  "PQ"
+    O_PQ = "O_PQ"  
+
+class MachinesProperties(Enum):
+    QMAX = "QMAX" 
+    O_QMAX = "O_QMAX" 
+    QMIN = "QMIN" 
+    O_QMIN =  "O_QMIN" 
+    PMAX = "PMAX" 
+    O_PMAX =  "O_PMAX" 
+    PMIN =  "PMIN"
+    O_PMIN = "O_PMIN"
+    MBASE = "MBASE" 
+    MVA = "MVA" 
+    O_MVA = "O_MVA" 
+    P = "P"  
+    O_P = "O_P" 
+    Q = "Q" 
+    O_Q = "O_Q"
+    PERCENT = "PERCENT"
+    GENTAP = "GENTAP" 
+    VSCHED = "VSCHED" 
+    WPF = "WPF"  
+    RMPCT = "RMPCT" 
+    RPOS = "RPOS"
+    XSUBTR = "XSUBTR"
+    XTRANS = "XTRANS"
+    XSYNCH = "XSYNCH"
+    PQ = "PQ"
+    O_PQ = "O_PQ" 
+    ZSORCE = "ZSORCE" 
+    XTRAN = "XTRAN"
+    ZPOS = "ZPOS" 
+    ZNEG = "ZNEG"
+    ZZERO = "ZZERO"
+    ZGRND = "ZGRND"
+
+Channels = {
+    "ANGLE = false machine relative rotor angle (degrees)." : False,
+    "PELEC = false machine electrical power (pu on SBASE)." : False,
+    "QELEC = false machine reactive power." : False,
+    "ETERM = false machine terminal voltage (pu)."  : False,
+    "EFD = false generator main field voltage (pu)."  : False,
+    "PMECH = false turbine mechanical power (pu on MBASE)." : False,
+    "SPEED = false machine speed deviation from nominal (pu)." : False,
+    "XADIFD = false machine field current (pu)." : False,
+    "ECOMP = false voltage regulator compensated voltage (pu)." : False,
+    "VOTHSG = false stabilizer output signal (pu)." : False,
+    "VREF = false voltage regulator voltage setpoint (pu)."  : False,
+    "BSFREQ = false bus pu frequency deviations." : False,
+    "VOLT = false bus pu voltages (complex)." : False,
+    "voltage and angle." : False,
+    "flow (P)."  : False,
+    "flow (P and Q)." : False,
+    "flow (MVA)." : False,
+    "apparent impedance (R and X)."  : False,
+    "ITERM." : False,
+    "machine apparent impedance." : False,
+    "VUEL = false minimum excitation limiter output signal (pu)."  : False,
+    "VOEL = false maximum excitation limiter output signal (pu)." : False,
+    "PLOAD." : False,
+    "QLOAD." : False,
+    "GREF = false turbine governor reference." : False,
+    "LCREF = false turbine load control reference." : False,
+    "WVLCTY = false wind velocity (m/s)." : False,
+    "WTRBSP = false wind turbine rotor speed deviation (pu)." : False,
+    "WPITCH = false pitch angle (degrees)." : False,
+    "WAEROT = false aerodynamic torque (pu on MBASE)."  : False,
+    "WROTRV = false rotor voltage (pu on MBASE)." : False,
+    "WROTRI = false rotor current (pu on MBASE)." : False,
+    "WPCMND = false active power command from wind control (pu on MBASE)." : False,
+    "WQCMND = false reactive power command from wind control (pu on MBASE)." : False,
+}
+
+class ChannelTypes(Enum):
+    BUSES = "buses"
+    LOADS = "loads"
+    MACHINES = "machines"
+
+class UseModes(Enum):
+    REGEX = "regex"
+    LIST = "list"
+    ALL = "all"
+
+class BusChannel(BaseModel):
+    type : ChannelTypes = ChannelTypes.BUSES
+    use : UseModes =  UseModes.LIST
+    regex : str = ""
+    list : List[int] = []
+    properties : List[str] = ["voltage_and_angle", "frequency"]
+    
+class LoadChannel(BaseModel):
+    type : ChannelTypes = ChannelTypes.LOADS
+    use : UseModes =  UseModes.LIST
+    regex : str = ""
+    list : List[List[str]] = [[]]
+    properties : List[str] = []
+    
+class MachineChannel(BaseModel):
+    type : ChannelTypes = ChannelTypes.MACHINES
+    use : UseModes = UseModes.LIST
+    regex : str = ""
+    list : List[List[str]] = [[]]
+    properties : List[str] = ["PELEC", "QELEC", "SPEED"]
+
+class ExportModes(Enum):
+    CSV = "csv"
+    H5 = "h5"
+  
+class ExportFileOptions(BaseModel):
+    export_results_using_channels : bool = False
+    defined_subsystems_only: bool = True
+    file_format : ExportModes = "h5"
+    buses : Optional[List[BusProperties]]
+    areas : Optional[List[AreaProperties]]
+    zones : Optional[List[ZoneProperties]]
+    stations : Optional[List[StationProperties]]
+    dc_transmission_lines : Optional[List[DCLineProperties]]
+    loads : Optional[List[LoadProperties]]
+    fixed_shunts : Optional[List[FixedShuntProperties]]
+    switched_shunts : Optional[List[SwitchedShuntProperties]]
+    transformers : Optional[List[TransformerProperties]]
+    branches : Optional[List[BranchProperties]]
+    induction_generators : Optional[List[InductionGeneratorProperties]]
+    machines : Optional[List[MachinesProperties]]
+    channels : Optional[List[str]]
+    channel_setup :  Optional[List[Union[BusChannel, LoadChannel, MachineChannel]]]

@@ -21,7 +21,7 @@ coordinate_file = "Coordinates.csv"
 networkx_graph_file = "Graph.gpickle"
 
 [helics]
-cosimulation_mode = true
+cosimulation_mode = false
 federate_name = "psse"
 time_delta = 0.00333333333
 core_type = "zmq"
@@ -37,7 +37,7 @@ broker_port = 23404
 disable_generation_on_coupled_buses = true
 [[helics.publications]]
 bus_subsystems = [ 0,]
-model_type = "Buses"
+model_type = "buses"
 model_properties = [ "FREQ", "PU",]
 
 [log]

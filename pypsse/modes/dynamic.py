@@ -1,5 +1,5 @@
 from pypsse.modes.constants import converter, DYNAMIC_ONLY_PPTY, dyn_only_options
-from pypsse.models import SimulationSettings, ExportSettings
+from pypsse.models import SimulationSettings, ExportFileOptions
 from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.common import MACHINE_CHANNELS
 from pypsse.utils.dynamic_utils import DynamicUtils
@@ -10,7 +10,7 @@ import os
 
 class Dynamic(AbstractMode, DynamicUtils):
 
-    def __init__(self,psse, dyntools, settings:SimulationSettings, export_settings:ExportSettings, logger, subsystem_buses, raw_data):
+    def __init__(self,psse, dyntools, settings:SimulationSettings, export_settings:ExportFileOptions, logger, subsystem_buses, raw_data):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
         self.time = settings.simulation.start_time
         self._StartTime = settings.simulation.start_time
@@ -67,26 +67,13 @@ class Dynamic(AbstractMode, DynamicUtils):
 
         self.disable_load_models_for_coupled_buses()
 
-        if self.export_settings["Export results using channels"]:
+        if self.export_settings.export_results_using_channels:
             self.setup_channels()
 
         self.PSSE.delete_all_plot_channels()
 
-        #print(self.export_settings["channel_setup"])
-        self.channel_map = {}
-        self.chnl_idx = 1
-        for method_type, settings in self.export_settings["channel_setup"].items():
-            for setting in settings:
-                if method_type == "buses":
-                    self.setup_bus_channels(setting["list"], setting["properties"])
-                elif method_type == "loads":
-                    load_list = [[x, int(y)] for x, y in setting["list"]]
-                    self.setup_load_channels(load_list)
-                elif method_type == "machines":
-                    machine_list = [[x, int(y)] for x, y in setting["list"]]
-                    self.setup_machine_channels(machine_list, setting["properties"]) 
-      
-
+        self.setup_all_channels()
+    
         # Load user defined models
         self.load_user_defined_models()
         
@@ -118,66 +105,7 @@ class Dynamic(AbstractMode, DynamicUtils):
         self.xTime = 0
         return self.PSSE.run(0, t, 1, 1, 1)
 
-    def setup_machine_channels(self, machines, properties):
-        for i, qty in enumerate(properties):
-            if qty not in self.channel_map:
-                nqty = f"MACHINE_{qty}"
-                self.channel_map[nqty] = {}
-            for mch, b in machines:
-                if qty in MACHINE_CHANNELS:
-                    self.channel_map[nqty][f"{b}_{mch}"] = [self.chnl_idx]
-                    chnl_id = MACHINE_CHANNELS[qty]
-                    self.logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
-                    self.PSSE.machine_array_channel([self.chnl_idx, chnl_id, int(b)], mch, "")
-                    self.chnl_idx += 1
-        return
-
-    def setup_load_channels(self, loads):
-        if "LOAD_P" not in self.channel_map:
-            self.channel_map["LOAD_P"] = {}
-            self.channel_map["LOAD_Q"] = {}
-
-        for ld, b in loads:
-            self.channel_map["LOAD_P"][f"{b}_{ld}"] = [self.chnl_idx]
-            self.channel_map["LOAD_Q"][f"{b}_{ld}"] = [self.chnl_idx + 1]
-            self.PSSE.load_array_channel([self.chnl_idx, 1, int(b)], ld, "")
-            self.PSSE.load_array_channel([self.chnl_idx + 1, 2, int(b)], ld, "")
-            self.logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
-            self.chnl_idx += 2
-
-    def setup_bus_channels(self, buses, properties):
-        for i, qty in enumerate(properties):
-            if qty not in self.channel_map:
-                self.channel_map[qty] = {}
-            for j, b in enumerate(buses):
-                if qty == "frequency":
-                    self.channel_map[qty][b] = [ self.chnl_idx]
-                    self.PSSE.bus_frequency_channel([ self.chnl_idx, int(b)], "")
-                    self.logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
-                    self.chnl_idx += 1
-                elif qty == "voltage_and_angle":
-                    self.channel_map[qty][b] = [ self.chnl_idx,  self.chnl_idx+1]
-                    self.PSSE.voltage_and_angle_channel([ self.chnl_idx, -1, -1, int(b)], "")
-                    self.logger.info(f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}")
-                    self.chnl_idx += 2
-
-    def poll_channels(self):
-        results = {}
-        for ppty , bDict in self.channel_map.items():
-            ppty_new = ppty.split("_and_")
-            for b, indices in bDict.items():
-                for n, idx in zip(ppty_new, indices):
-                    if "_" not in n:
-                        nName = f"BUS_{n}"
-                    else:
-                        nName = n
-                    if nName not in results:
-                        results[nName] = {}
-                    ierr, value = self.PSSE.chnval(idx)
-                    if value is None:
-                        value = -1
-                    results[nName][b] = value
-        return results
+    
 
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}

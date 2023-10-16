@@ -3,12 +3,28 @@ from pypsse.common import EXPORTS_FOLDER
 import pandas as pd
 import os
 
-from pypsse.models import SimulationSettings, ModelTypes, BulkWriteModes, StreamedWriteModes
+from pypsse.models import SimulationSettings, ModelTypes, BulkWriteModes, StreamedWriteModes, ExportFileOptions
 class container:
+
+    mapped_names = {
+        "buses" : "Buses",
+        "areas" : "Areas",
+        "zones" : "Zones",
+        "loads" : "Loads",
+        "branches" : "Branches",
+        "machines" : "Machines",
+        "stations" : "Stations",
+        "transformers" : "Transformers",
+        "fixed_shunts" : "Fixed_shunts",
+        "switched_shunts" : "Switched_shunts",
+        "induction_generators" : "Induction_generators",
+        "dc_transmission_lines" : "DCtransmissionlines",
+    }
 
     BULK_WRITE_MODES = [m.value for m in BulkWriteModes]
     STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
-    def __init__(self, settings: SimulationSettings, export_settings):
+    
+    def __init__(self, settings: SimulationSettings, export_settings:ExportFileOptions):
         export__list = [m.value for m in ModelTypes]
         export__dict = export_settings
         self.export_path = settings.simulation.project_path / EXPORTS_FOLDER 
@@ -17,19 +33,19 @@ class container:
         self.results = {}
         self.export_vars = {}
         for class_name in export__list:
-            variable_dict = export_settings[class_name]
-            if isinstance(variable_dict, dict):
-                for variable_name, is_exporting in variable_dict.items():
-                    if is_exporting:
-                        self.results['{}_{}'.format(class_name, variable_name)] = None
-                        if class_name not in self.export_vars:
-                            self.export_vars[class_name] = []
-                        self.export_vars[class_name].append(variable_name)
+            mapped_name = self.mapped_names[class_name]
+            variables = getattr(export_settings, class_name)
+            if variables:
+                for variable in variables:
+                    self.results['{}_{}'.format(mapped_name, variable.value)] = None
+                    if mapped_name not in self.export_vars:
+                        self.export_vars[mapped_name] = []
+                    self.export_vars[mapped_name].append(variable.value)
 
         timeSteps = int(self.settings.simulation.simulation_time.total_seconds() /
                         self.settings.simulation.simulation_step_resolution.total_seconds())
-        if self.export_settings["Write format"] not in self.BULK_WRITE_MODES:
-            self.dataWriter = DataWriter(self.export_path, export_settings["Write format"], timeSteps)
+        if self.export_settings.file_format not in self.BULK_WRITE_MODES:
+            self.dataWriter = DataWriter(self.export_path, export_settings.file_format.value, timeSteps)
         return
 
     def update_export_variables(self, params):
@@ -52,11 +68,11 @@ class container:
         return self.export_vars
 
     def Update(self, bus_data, line_data, index, time):
-        if self.export_settings["Write format"] not in self.BULK_WRITE_MODES:
+        if self.export_settings.file_format not in self.BULK_WRITE_MODES:
             if self.settings.helics:
                 file_name  = self.settings.helics.federate_name
             else:
-                file_name = "psse_results"
+                file_name = "simulation_results"
             self.dataWriter.write(file_name, time, bus_data, index)
         else:
             for variable_name, bus_dict in bus_data.items():
@@ -70,12 +86,12 @@ class container:
         return
 
     def export_results(self):
-        if self.export_settings["Write format"] in self.BULK_WRITE_MODES:
+        if self.export_settings.file_format in self.BULK_WRITE_MODES:
             for df_name, df in self.results.items():
                 export_path = self.settings.simulation.project_path / EXPORTS_FOLDER / f'{df_name}.{self.export_settings["Write format"]}'
-                if self.export_settings["Write format"] == 'csv':
+                if self.export_settings.file_format == BulkWriteModes.CSV:
                     if isinstance(df, pd.DataFrame):
                         df.to_csv(export_path)
-                elif self.export_settings["Write format"] == "pkl":
+                elif self.export_settings.file_format == BulkWriteModes.PKL:
                     df.to_pickle(export_path)
         return

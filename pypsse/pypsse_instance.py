@@ -25,7 +25,7 @@ import shutil
 import toml
 import time
 
-from pypsse.models import SimulationModes, HelicsCoreTypes, ModelTypes, ModelProperties, LoggingLevels
+from pypsse.models import SimulationModes, ExportFileOptions
 
 
 USING_NAERM = 0
@@ -36,6 +36,11 @@ class pyPSSE_instance:
           
         settings = self.read_settings(settings_toml_path)
         self.settings = SimulationSettings.validate(settings)
+        
+        export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
+        assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
+        export_settings = self.read_settings(export_settings_path)
+        self.export_settings = ExportFileOptions.validate(export_settings)
         
         log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
         self.logger = Logger.getLogger('pyPSSE', log_path, LoggerOptions=self.settings.log)
@@ -68,10 +73,7 @@ class pyPSSE_instance:
             self.PSSE.psseinit(nBus)
             self.initComplete = True
             self.message = 'success'
-
-            export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
-            assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
-            self.export_settings = self.read_settings(export_settings_path)
+            
             self.start_simulation()
             self.init()
         except:
@@ -101,7 +103,7 @@ class pyPSSE_instance:
         self.raw_data = rd.Reader(self.PSSE, self.logger)
         self.bus_subsystems, self.all_subsysten_buses = self.define_bus_subsystems()
 
-        if self.export_settings['Defined bus subsystems only']:
+        if self.export_settings.defined_subsystems_only:
             validBuses = self.all_subsysten_buses
         else:
             validBuses = self.raw_data.buses
@@ -221,7 +223,7 @@ class pyPSSE_instance:
                     break
 
             self.PSSE.pssehalt_2()
-            if not self.export_settings["Export results using channels"]:
+            if not self.export_settings.export_results_using_channels:
                 self.results.export_results()
             else:
                 
@@ -258,14 +260,14 @@ class pyPSSE_instance:
 
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             self.publish_data()
-        if self.export_settings['Defined bus subsystems only']:
+        if self.export_settings.defined_subsystems_only:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
             #curr_results = self.sim.read(self.exp_vars, self.raw_data)
 
         if not USING_NAERM:
-            if self.inc_time and not self.export_settings["Export results using channels"]:
+            if self.inc_time and not self.export_settings.export_results_using_channels:
                 self.results.Update(curr_results, None, t, self.sim.getTime())
 
         return curr_results
@@ -284,7 +286,7 @@ class pyPSSE_instance:
 
     def get_results(self, params):
         self.exp_vars = self.results.update_export_variables(params)
-        if self.export_settings['Defined bus subsystems only']:
+        if self.export_settings.defined_subsystems_only:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)

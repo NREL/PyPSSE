@@ -164,7 +164,7 @@ class AbstractMode:
 
     def load_user_defined_models(self):
         for mdl in self.settings.simulation.user_models:
-            self.PSSE.addmodellibrary(str(dll_path))
+            self.PSSE.addmodellibrary(str(mdl))
             self.logger.debug('User defined library added: {}'.format(mdl))
 
     def load_setup_files(self):
