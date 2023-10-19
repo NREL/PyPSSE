@@ -333,6 +333,7 @@ class AbstractMode:
         substation_numbers = self.get_substation_numbers(subsystem_buses)
 
         for class_name, vars in quantities.items():
+            
             if class_name in self.func_options:
                 funcs = self.func_options[class_name]
                 for id_, v in enumerate(vars):

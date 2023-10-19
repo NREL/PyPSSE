@@ -25,14 +25,21 @@ class Snap(AbstractMode, DynamicUtils):
 
         ierr = self.PSSE.case(str(self.settings.simulation.case_study))
         assert ierr == 0, "error={}".format(ierr)
+        
+        self.load_setup_files()
+        self.convert_load()
+        self.load_user_defined_models()
+        
         ierr = self.PSSE.rstr(str(self.settings.simulation.snp_file))
         assert ierr == 0, "error={}".format(ierr)
+         
+        # The following logiv only runs when the helics interface is enabled
+        # self.disable_load_models_for_coupled_buses()
+        # self.disable_generation_for_coupled_buses()
+        # self.save_model()
+        ############# ------------------------------------- ###############
+        
         ierr = self.PSSE.strt_2([0, 1],  str(self.settings.export.outx_file))
-
-        #self.disable_load_models_for_coupled_buses()
-        #self.disable_generation_for_coupled_buses()
-
-        #self.save_model()
 
         if ierr==1:
             self.PSSE.cong(0)
@@ -50,10 +57,6 @@ class Snap(AbstractMode, DynamicUtils):
         else:
             sim_step = self.settings.simulation.psse_solver_timestep.total_seconds() 
 
-        self.load_setup_files()
-        self.convert_load()
-        self.load_user_defined_models()
-
         self.PSSE.dynamics_solution_param_2(
             [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
             [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]
@@ -63,46 +66,9 @@ class Snap(AbstractMode, DynamicUtils):
 
         self.setup_all_channels()
         
-
         self.logger.debug('pyPSSE initialization complete!')
         self.initialization_complete = True
         return self.initialization_complete
-
-    def disable_generation_for_coupled_buses(self):
-        if self.settings.helics.cosimulation_mode and self.settings.helics.disable_generation_on_coupled_buses:
-            sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
-            sub_data = sub_data[sub_data['element_type'] == 'Load']
-            generators = {}
-            for ix, row in sub_data.iterrows():
-                bus = row['bus']
-                for gen_bus, gen_id in self.raw_data.generators:
-                    if gen_bus not in generators:
-                        generators[bus] = [gen_id]
-                    else:
-                        generators[bus].append(gen_id)
-
-            for bus_id, machines in generators.items():
-                for machine in machines:
-                    intgar = [0, self._i, self._i, self._i, self._i, self._i]
-                    realar = [
-                        self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f,
-                        self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f
-                    ]
-                    self.PSSE.machine_chng_2(bus_id, machine, intgar, realar)
-                    self.logger.info(f"Machine disabled: {bus_id}_{machine}")
-        return
-
-    def disable_load_models_for_coupled_buses(self):
-        if self.settings.helics.cosimulation_mode:
-            sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
-            sub_data = sub_data[sub_data['element_type'] == 'Load']
-
-            self.psse_dict = {}
-            for ix, row in sub_data.iterrows():
-                bus = row['bus']
-                load = row['element_id']
-                ierr = self.PSSE.ldmod_status(0, int(bus), str(load), 1, 0)
-                self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
     def step(self, t):
         self.time = self.time + self.incTime
@@ -112,7 +78,6 @@ class Snap(AbstractMode, DynamicUtils):
     def resolveStep(self, t):
         self.xTime += 1
         return self.PSSE.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
-
 
     def get_load_indices(self, bus_subsystems):
         all_bus_ids = {}
@@ -139,8 +104,6 @@ class Snap(AbstractMode, DynamicUtils):
 
     def GetStepSizeSec(self):
         return self.settings.simulation.simulation_step_resolution.total_seconds()
-
-    
 
     @converter
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info={}, mapping_dict={}):

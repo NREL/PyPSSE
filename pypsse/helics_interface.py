@@ -1,7 +1,8 @@
 from re import I
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, dyn_only_options
-from pypsse.profile_manager.common import PROFILE_VALIDATION
+from pypsse.profile_manager.common import PROFILE_VALIDATION 
 from pypsse.models import SimulationSettings, ExportSettings, SimulationModes
+from pypsse.common import MAPPED_CLASS_NAMES
 import pandas as pd
 import helics as h
 import time
@@ -30,7 +31,8 @@ class helics_interface:
         self.c_seconds_old = -1
 
         if settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
-            self.create_replica_model_for_coupled_loads(['FmD'])
+            #self.create_replica_model_for_coupled_loads(['FmD'])
+            ...
             
         self._co_convergance_error_tolerance = settings.helics.error_tolerance
         self._co_convergance_max_iterations = settings.helics.max_coiterations
@@ -186,31 +188,34 @@ class helics_interface:
         return
 
     def register_publications(self, bus_subsystems):
-        print(bus_subsystems)
         self.publications = {}
         self.pub_struc = []
         for publicationDict in self.settings.helics.publications:
-            print(publicationDict)
             bus_subsystem_ids = publicationDict.bus_subsystems
             if not set(bus_subsystem_ids).issubset(self.bus_subsystems):
                 raise Exception(f"One or more invalid bus subsystem ID pass in {bus_subsystem_ids}."
                                 f"Valid subsystem IDs are  '{list(self.bus_subsystems.keys())}'.")
 
             elmClass = publicationDict.model_type.value
-            if elmClass not in self.export_settings:
+            if not hasattr(self.export_settings, elmClass):
                 raise Exception(f"'{elmClass}' is not a valid class of elements. "
                                 f"Valid fields are: {list(self.export_settings.keys())}")
-
+            
+            managed_properties = set([ptpy.value for ptpy in getattr(self.export_settings, elmClass)])
             properties = [p.value for p in publicationDict.model_properties]
-            if not set(properties).issubset(self.export_settings[elmClass]):
+            if not set(properties).issubset(managed_properties):
                 raise Exception(
-                    f"One or more publication property defined for class '{elmClass}' is invalid. "
-                    f"Valid properties for class '{elmClass}' are '{list(self.export_settings[elmClass].keys())}'"
+                    f"One or more publication property defined for class '{elmClass}' is invalid. Properties defined {properties}"
+                    f"Valid properties for class '{elmClass}' are '{managed_properties}'"
                 )
 
             bus_cluster = []
             for bus_subsystem_id in bus_subsystem_ids:
                 bus_cluster.extend([str(x) for x in bus_subsystems[bus_subsystem_id]])
+
+            if elmClass in MAPPED_CLASS_NAMES:
+                elmClass = MAPPED_CLASS_NAMES[elmClass] 
+                
             self.pub_struc.append([{elmClass: properties}, bus_cluster])
             temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
             temp_res = self.get_restructured_results(temp_res)
@@ -223,7 +228,6 @@ class helics_interface:
                             Name,
                             pName
                         )
-                        print(pub_tag)
                         dtype_matched = True
                         if isinstance(val, float):
                             self.publications[pub_tag] = h.helicsFederateRegisterGlobalTypePublication(
@@ -375,8 +379,11 @@ class helics_interface:
             for n, v in d.items():
                 if isinstance(n, str):
                     n = n.replace(" ", "")
+                else:
+                    n = str(n)
                 if n not in results_dict[c]:
-                    results_dict[c][n] = {p:v}
+                    results_dict[c][n] = {}
+                results_dict[c][n].update( {p:v})
         return results_dict
 
     def publish(self):

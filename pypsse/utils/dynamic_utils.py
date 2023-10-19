@@ -7,18 +7,41 @@ class DynamicUtils:
     
     dynamic_params = ['FmA', 'FmB', 'FmC', 'FmD', 'Fel']
     
-    def disable_load_models_for_coupled_buses(self):
-        if self.settings.helics and self.settings.cosimulation_mode:
-            assert self.settings.simulation.subscriptions_file and self.settings.simulation.subscriptions_file.exists()
-            sub_data = pd.read_csv(str(self.settings.simulation.subscriptions_file))
+    def disable_generation_for_coupled_buses(self):
+        if self.settings.helics.cosimulation_mode and self.settings.helics.disable_generation_on_coupled_buses:
+            sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
+            generators = {}
+            for ix, row in sub_data.iterrows():
+                bus = row['bus']
+                for gen_bus, gen_id in self.raw_data.generators:
+                    if gen_bus not in generators:
+                        generators[bus] = [gen_id]
+                    else:
+                        generators[bus].append(gen_id)
+
+            for bus_id, machines in generators.items():
+                for machine in machines:
+                    intgar = [0, self._i, self._i, self._i, self._i, self._i]
+                    realar = [
+                        self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f,
+                        self._f, self._f, self._f, self._f, self._f, self._f, self._f, self._f
+                    ]
+                    self.PSSE.machine_chng_2(bus_id, machine, intgar, realar)
+                    self.logger.info(f"Machine disabled: {bus_id}_{machine}")
+        return
+
+    def disable_load_models_for_coupled_buses(self):
+        if self.settings.helics and self.settings.helics.cosimulation_mode:
+            sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
+            sub_data = sub_data[sub_data['element_type'] == 'Load']
+
             self.psse_dict = {}
             for ix, row in sub_data.iterrows():
                 bus = row['bus']
                 load = row['element_id']
                 ierr = self.PSSE.ldmod_status(0, int(bus), str(load), 1, 0)
                 self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
-
     
     def break_loads(self, loads=None, components_to_replace=["FmD"]):
         components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
