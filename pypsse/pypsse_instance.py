@@ -163,6 +163,10 @@ class pyPSSE_instance:
 
         all_subsysten_buses = []
         for i , buses in enumerate(bus_subsystems):
+            
+            if not buses:
+                continue
+
             all_subsysten_buses.extend(buses)
             ierr = self.PSSE.bsysinit(i)
             if ierr:
@@ -289,8 +293,9 @@ class pyPSSE_instance:
         if self.export_settings.defined_subsystems_only:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
+            print(self.exp_vars)
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
-            #curr_results = self.sim.read(self.exp_vars, self.raw_data)
+            # curr_results = self.sim.read(self.exp_vars, self.raw_data)
         
         class_name = list(params.keys())[0]
         #for x in self.restructure_results(curr_results, class_name):

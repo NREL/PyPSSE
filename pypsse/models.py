@@ -179,9 +179,9 @@ class GICExportSettings(BaseModel):
 
 class BusSubsystems(BaseModel):
     from_file : bool = False
-    bus_file : Optional[str] 
-    bus_subsystem_list : List[List[int]] = [ [ 74012, 17735, 20115, 38205, 70008, 80511,],]
-    publish_subsystems : List[int] = [ 0,]
+    bus_file : Optional[str] = ''
+    bus_subsystem_list : List[List[int]] = [[]]
+    publish_subsystems : List[int] = []
 
 class LoadBreakdown(BaseModel):
     constant_current_percentage : float = 0.0
@@ -189,8 +189,8 @@ class LoadBreakdown(BaseModel):
 
 class LoadSettings(BaseModel):
     convert : bool = True
-    active_load : LoadBreakdown
-    reactive_load: LoadBreakdown
+    active_load : LoadBreakdown = LoadBreakdown()
+    reactive_load: LoadBreakdown = LoadBreakdown()
 
 class GeneratorSettings(BaseModel):
     missing_machine_model : int = 1
@@ -226,14 +226,14 @@ class MachineTrip(BaseModel):
 
 class SimulationSettings(BaseModel):
     simulation : SimSettings
-    export : ExportSettings
+    export : ExportSettings = ExportSettings()
     helics : Optional[HelicsSettings]
-    log : LogSettings
+    log : LogSettings = LogSettings(logging_level=LoggingLevels.DEBUG)
     plots : Optional[PlotSettings]
     gic_export_Settings : Optional[GICExportSettings]
-    bus_subsystems : BusSubsystems
-    loads : LoadSettings
-    generators : GeneratorSettings
+    bus_subsystems : BusSubsystems = BusSubsystems()
+    loads : LoadSettings = LoadSettings()
+    generators : GeneratorSettings = GeneratorSettings()
     contingencies : Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip,MachineTrip]]]
 
     @validator('export')

@@ -25,6 +25,7 @@ class Snap(AbstractMode, DynamicUtils):
 
         ierr = self.PSSE.case(str(self.settings.simulation.case_study))
         assert ierr == 0, "error={}".format(ierr)
+        print(self.settings.simulation.snp_file, '---')
         ierr = self.PSSE.rstr(str(self.settings.simulation.snp_file))
         assert ierr == 0, "error={}".format(ierr)
         ierr = self.PSSE.strt_2([0, 1],  str(self.settings.export.outx_file))
@@ -42,7 +43,7 @@ class Snap(AbstractMode, DynamicUtils):
         elif ierr >1:
             raise Exception("Error starting simulation")
 
-        if self.settings.helics.cosimulation_mode:
+        if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.iterative_mode:
                 sim_step = self.settings.simulation.psse_solver_timestep.total_seconds() / self.iter_const
             else:

@@ -196,6 +196,9 @@ class DynamicUtils:
     def setup_all_channels(self):
         self.channel_map = {}
         self.chnl_idx = 1
+        if not self.export_settings.channel_setup:
+            return 
+        
         for channel in self.export_settings.channel_setup:
             method_type = channel.type.value
             if method_type == "buses":

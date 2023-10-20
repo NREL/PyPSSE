@@ -52,16 +52,16 @@ class container:
         export__list = [m.value for m in ModelTypes]
         self.results = {}
         self.export_vars = {}
+
         for class_name in export__list:
-            if class_name in params:
-                variable_dict = params[class_name]
-                if isinstance(variable_dict, dict):
-                    for variable_name, is_exporting in variable_dict.items():
-                        if is_exporting:
-                            self.results['{}_{}'.format(class_name, variable_name)] = None
-                            if class_name not in self.export_vars:
-                                self.export_vars[class_name] = []
-                            self.export_vars[class_name].append(variable_name)
+            mapped_name = self.mapped_names[class_name]
+            variables = getattr(self.export_settings, class_name)
+            if variables:
+                for variable in variables:
+                    self.results['{}_{}'.format(mapped_name, variable.value)] = None
+                    if mapped_name not in self.export_vars:
+                        self.export_vars[mapped_name] = []
+                    self.export_vars[mapped_name].append(variable.value)
         return self.export_vars
 
     def get_export_variables(self):
