@@ -18,6 +18,20 @@ REQUIRED_NETWORKX = ["GIC file"]
 REQUIRED_HELICS = ["Subscriptions file"]
 SUBSCRIPTION_FIELDS = {"bus_subsystem_id", "bus_id", "load_id",	"load_type", "sub_tag"}
 
+MAPPED_CLASS_NAMES = {
+        "buses" : "Buses",
+        "areas" : "Areas",
+        "zones" : "Zones",
+        "loads" : "Loads",
+        "branches" : "Branches",
+        "machines" : "Machines",
+        "stations" : "Stations",
+        "transformers" : "Transformers",
+        "fixed_shunts" : "Fixed_shunts",
+        "switched_shunts" : "Switched_shunts",
+        "induction_generators" : "Induction_generators",
+        "dc_transmission_lines" : "DCtransmissionlines",
+    }
 
 
 

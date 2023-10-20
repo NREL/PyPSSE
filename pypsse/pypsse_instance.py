@@ -114,7 +114,8 @@ class pyPSSE_instance:
 
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
-                self.sim.break_loads()
+                #self.sim.break_loads()
+                ...
             self.hi = helics_interface(
                 self.PSSE, self.sim, self.settings, self.export_settings, self.bus_subsystems, self.logger
             )

@@ -1,25 +1,10 @@
+from pypsse.common import EXPORTS_FOLDER, MAPPED_CLASS_NAMES
 from pypsse.data_writers.data_writer import DataWriter
-from pypsse.common import EXPORTS_FOLDER
 import pandas as pd
 import os
 
 from pypsse.models import SimulationSettings, ModelTypes, BulkWriteModes, StreamedWriteModes, ExportFileOptions
 class container:
-
-    mapped_names = {
-        "buses" : "Buses",
-        "areas" : "Areas",
-        "zones" : "Zones",
-        "loads" : "Loads",
-        "branches" : "Branches",
-        "machines" : "Machines",
-        "stations" : "Stations",
-        "transformers" : "Transformers",
-        "fixed_shunts" : "Fixed_shunts",
-        "switched_shunts" : "Switched_shunts",
-        "induction_generators" : "Induction_generators",
-        "dc_transmission_lines" : "DCtransmissionlines",
-    }
 
     BULK_WRITE_MODES = [m.value for m in BulkWriteModes]
     STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
@@ -33,7 +18,7 @@ class container:
         self.results = {}
         self.export_vars = {}
         for class_name in export__list:
-            mapped_name = self.mapped_names[class_name]
+            mapped_name = MAPPED_CLASS_NAMES[class_name]
             variables = getattr(export_settings, class_name)
             if variables:
                 for variable in variables:
