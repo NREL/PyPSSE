@@ -154,16 +154,19 @@ class AbstractMode:
         return
 
     def export(self):
-        self.logger.info('Starting export process. Can take a few minutes for large files')
-        achnf = self.dyntools.CHNF(self.outx_path)
-        achnf.xlsout(
-            channels='', 
-            show=False, 
-            xlsfile=str(self.settings.export.excel_file), 
-            outfile='', 
-            sheet='Sheet1', overwritesheet=True
-            )
-        self.logger.debug(f'Exported {self.settings.export.excel_file}')
+        try:
+            self.logger.info('Starting export process. Can take a few minutes for large files')
+            achnf = self.dyntools.CHNF(str(self.settings.export.outx_file))
+            achnf.xlsout(
+                channels='', 
+                show=False, 
+                xlsfile=str(self.settings.export.excel_file), 
+                outfile='', 
+                sheet='Sheet1', overwritesheet=True
+                )
+            self.logger.debug(f'Exported {self.settings.export.excel_file}')
+        except Exception as e:
+            print(f"Export failed >> {str(e)}")
 
     def load_user_defined_models(self):
         for mdl in self.settings.simulation.user_models:
