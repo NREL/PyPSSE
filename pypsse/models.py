@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, validator
+from typing import Literal
 from pydantic.networks import IPvAnyAddress
 from datetime import datetime, timedelta
 from typing import List, Optional, Union, Dict
@@ -196,33 +197,41 @@ class GeneratorSettings(BaseModel):
     missing_machine_model : int = 1
 
 class BusFault(BaseModel):
+    contingency_type:  Literal['bus_fault'] = "bus_fault"
     time : float = 0.2
     bus_id : int = 38205
     duration: float = 0.3
     bus_trip  : bool = False
     trip_delay : float = 0.05
-    fault_impedance : List[int] = [ 1.0, 1.0,]
+    fault_impedance : List[float] = [ 1.0, 1.0,]
 
 class BusTrip(BaseModel):
+    contingency_type:  Literal['bus_trip'] = "bus_trip"
     time : float = 0.2
     bus_id : int = 38205
 
 class LineFault(BaseModel):
+    contingency_type:  Literal['line_fault'] = "line_fault"
     time : float = 0.2
     bus_ids : List[int] 
     duration: float = 0.3
     bus_trip  : bool = False
     trip_delay : float = 0.05
-    fault_impedance : List[int] = [ 1.0, 1.0,]
+    fault_impedance : List[float] = [ 1.0, 1.0,]
     
 class LineTrip(BaseModel):
+    contingency_type:  Literal['line_trip'] = "line_trip"
     time : float = 0.2
     bus_ids : List[int] 
 
 class MachineTrip(BaseModel):
+    contingency_type:  Literal['machine_trip'] = "machine_trip"
     time : float = 0.2
     bus_id : int = 38205
     machine_id : str = ""
+
+
+ContingencyType = Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip,MachineTrip]]]
 
 class SimulationSettings(BaseModel):
     simulation : SimSettings
@@ -234,7 +243,7 @@ class SimulationSettings(BaseModel):
     bus_subsystems : BusSubsystems = BusSubsystems()
     loads : LoadSettings = LoadSettings()
     generators : GeneratorSettings = GeneratorSettings()
-    contingencies : Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip,MachineTrip]]]
+    contingencies : ContingencyType
 
     @validator('export')
     def validate_export_paths(cls, v, values, **kwargs):
@@ -563,11 +572,8 @@ class MachineChannel(BaseModel):
 class ExportModes(Enum):
     CSV = "csv"
     H5 = "h5"
-  
-class ExportFileOptions(BaseModel):
-    export_results_using_channels : bool = False
-    defined_subsystems_only: bool = True
-    file_format : ExportModes = "h5"
+
+class ExportAssetTypes(BaseModel):
     buses : Optional[List[BusProperties]]
     areas : Optional[List[AreaProperties]]
     zones : Optional[List[ZoneProperties]]
@@ -582,3 +588,8 @@ class ExportFileOptions(BaseModel):
     machines : Optional[List[MachinesProperties]]
     channels : Optional[List[str]]
     channel_setup :  Optional[List[Union[BusChannel, LoadChannel, MachineChannel]]]
+
+class ExportFileOptions(ExportAssetTypes):
+    export_results_using_channels : bool = False
+    defined_subsystems_only: bool = True
+    file_format : ExportModes = "h5"
