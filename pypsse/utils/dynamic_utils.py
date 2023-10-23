@@ -8,7 +8,7 @@ class DynamicUtils:
     dynamic_params = ['FmA', 'FmB', 'FmC', 'FmD', 'Fel']
     
     def disable_generation_for_coupled_buses(self):
-        if self.settings.helics.cosimulation_mode and self.settings.helics.disable_generation_on_coupled_buses:
+        if self.settings.helics and self.settings.helics.cosimulation_mode and self.settings.helics.disable_generation_on_coupled_buses:
             sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
             generators = {}

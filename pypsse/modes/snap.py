@@ -33,9 +33,9 @@ class Snap(AbstractMode, DynamicUtils):
         ierr = self.PSSE.rstr(str(self.settings.simulation.snp_file))
         assert ierr == 0, "error={}".format(ierr)
          
-        # The following logiv only runs when the helics interface is enabled
-        # self.disable_load_models_for_coupled_buses()
-        # self.disable_generation_for_coupled_buses()
+        # The following logic only runs when the helics interface is enabled
+        self.disable_load_models_for_coupled_buses()
+        self.disable_generation_for_coupled_buses()
         # self.save_model()
         ############# ------------------------------------- ###############
         
