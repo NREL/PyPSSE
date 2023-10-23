@@ -123,17 +123,20 @@ class AbstractMode:
     def save_model(self):
         
         export_path = self.settings.simulation.project_path / CASESTUDY_FOLDER
+        
         i = 0
-        while os.path.exists(os.path.join(str(export_path), f"modified_steady_state_{i}.sav")):
+        file_path  = export_path / f"modified_steady_state_{i}.sav"
+        while file_path.exists():
+            file_path  = export_path / f"modified_steady_state_{i}.sav"
             i += 1
         
         savfile = export_path / f"modified_steady_state_{i}.sav"
         rawfile = export_path / f"modified_steady_state_{i}.raw"
         #self.PSSE.save(savfile)    
-        self.PSSE.rawd_2(0,1,[1,1,1,0,0,0,0], 0, rawfile)         
+        self.PSSE.rawd_2(0,1,[1,1,1,0,0,0,0], 0, str(rawfile))         
         if self.settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
-            snpfile = os.path.join(str(export_path), f"modified_dynamic_{i}.snp")
-            self.PSSE.snap([-1,-1,-1,-1,-1], snpfile)
+            snpfile = export_path / f"modified_dynamic_{i}.snp"
+            self.PSSE.snap([-1,-1,-1,-1,-1], str(snpfile))
             return savfile, snpfile
     
         else:
