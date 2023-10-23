@@ -29,7 +29,7 @@ import shutil
 import toml
 import time
 
-from pypsse.models import SimulationModes, ExportFileOptions
+from pypsse.models import SimulationModes, ExportFileOptions, Contingencies
 
 
 USING_NAERM = 0
@@ -446,8 +446,8 @@ class pyPSSE_instance:
 
     def inject_contingencies_external(self, temp):
         print("external settings : ", temp, flush=True)
-        contingencies = c.build_contingencies(self.PSSE, temp, self.logger)
-        self.contingencies.update(contingencies)
+        contingencies = c.build_contingencies(self.PSSE, Contingencies.validate(temp), self.logger)
+        self.contingencies.extend(contingencies)
 
     def __del__(self):
         if hasattr(self, "PSSE"):
