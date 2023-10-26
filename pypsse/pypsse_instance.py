@@ -68,10 +68,13 @@ class pyPSSE_instance:
         try:
             nBus = 200000
             if "psse34" in str(self.settings.simulation.psse_path).lower():
+                self.logger.debug('Instantiating psse version 34')
                 import psse34
             elif "psse35" in str(self.settings.simulation.psse_path).lower():
+                self.logger.debug('Instantiating psse version 35')
                 import psse35
             else:
+                self.logger.debug('Instantiating psse version 36')
                 import psse36
             import psspy
             import dyntools

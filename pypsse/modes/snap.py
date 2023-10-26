@@ -28,7 +28,7 @@ class Snap(AbstractMode, DynamicUtils):
         
         self.load_setup_files()
         self.convert_load()
-        self.load_user_defined_models()
+        
         
         ierr = self.PSSE.rstr(str(self.settings.simulation.snp_file))
         assert ierr == 0, "error={}".format(ierr)
@@ -48,6 +48,8 @@ class Snap(AbstractMode, DynamicUtils):
         
         elif ierr >1:
             raise Exception("Error starting simulation")
+
+        self.load_user_defined_models()
 
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.iterative_mode:
