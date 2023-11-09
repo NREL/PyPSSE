@@ -39,9 +39,9 @@ h.helicsFederateInfoSetTimeProperty(fedinfo, h.helics_property_time_delta, delta
 vfed = h.helicsCreateValueFederate("Test Federate", fedinfo)
 
 # Register the publication #
-pub1 = h.helicsFederateRegisterGlobalTypePublication(vfed, "CYME_P21UHS0_1247--P21UDT6674.sxst.Source.NEW-SOURCE-1.KWTOT", "double", "")
-pub2 = h.helicsFederateRegisterGlobalTypePublication(vfed, "CYME_P21UHS0_1247--P21UDT6674.sxst.Source.NEW-SOURCE-1.KVARTOT", "double", "")
-sub1 = h.helicsFederateRegisterSubscription(vfed, "psse.Buses.1002.PU", "")
+pub1 = h.helicsFederateRegisterGlobalTypePublication(vfed, "test.load1.P", "double", "")
+pub2 = h.helicsFederateRegisterGlobalTypePublication(vfed, "test.load1.Q", "double", "")
+sub1 = h.helicsFederateRegisterSubscription(vfed, "psse.Buses.154.PU", "")
 #h.helicsInputSetMinimumChange(sub1, 0.1)
 
 # Enter execution mode #
@@ -51,8 +51,8 @@ h.helicsFederateEnterExecutingModeIterative(
              h.helics_iteration_request_iterate_if_needed
             )
 
-for t in range(1, 24):
-    time_requested = t * 3600
+for t in range(1, 30):
+    time_requested = t 
     #currenttime = h.helicsFederateRequestTime(vfed, time_requested)
     iteration_state = h.helics_iteration_result_iterating
     for i in range(15):

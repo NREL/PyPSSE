@@ -1,12 +1,13 @@
 # Standard imports
 import os
 from pypsse.modes.constants import converter
-
+from pypsse.models import SimulationSettings, ExportSettings, SimulationModes
+from pypsse.common import CASESTUDY_FOLDER, EXPORTS_FOLDER, LOGS_FOLDER
 import numpy as np
 
 class AbstractMode:
 
-    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
+    def __init__(self, psse, dyntools, settings: SimulationSettings, export_settings: ExportSettings, logger, subsystem_buses, raw_data):
         self.PSSE = psse
         self.raw_data = raw_data
         self.bus_freq_channels = {}
@@ -121,18 +122,21 @@ class AbstractMode:
 
     def save_model(self):
         
-        export_path = os.path.join( self.settings["Simulation"]["Project Path"], 'Case_study' )
+        export_path = self.settings.simulation.project_path / CASESTUDY_FOLDER
+        
         i = 0
-        while os.path.exists(os.path.join(export_path, f"modified_steady_state_{i}.sav")):
+        file_path  = export_path / f"modified_steady_state_{i}.sav"
+        while file_path.exists():
+            file_path  = export_path / f"modified_steady_state_{i}.sav"
             i += 1
         
-        savfile = os.path.join(export_path, f"modified_steady_state_{i}.sav")
-        rawfile = os.path.join(export_path, f"modified_steady_state_{i}.raw")
+        savfile = export_path / f"modified_steady_state_{i}.sav"
+        rawfile = export_path / f"modified_steady_state_{i}.raw"
         #self.PSSE.save(savfile)    
-        self.PSSE.rawd_2(0,1,[1,1,1,0,0,0,0], 0, rawfile)         
-        if self.settings["Simulation"]["Simulation mode"] in ["Dynamic", "Snap"]:
-            snpfile = os.path.join(export_path, f"modified_dynamic_{i}.snp")
-            self.PSSE.snap([-1,-1,-1,-1,-1], snpfile)
+        self.PSSE.rawd_2(0,1,[1,1,1,0,0,0,0], 0, str(rawfile))         
+        if self.settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
+            snpfile = export_path / f"modified_dynamic_{i}.snp"
+            self.PSSE.snap([-1,-1,-1,-1,-1], str(snpfile))
             return savfile, snpfile
     
         else:
@@ -140,28 +144,7 @@ class AbstractMode:
     
 
     def init(self, bus_subsystems):
-        self.export_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Exports')
-        self.study_case_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Case study"]
-        )
-        self.dyr_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Dyr file"]
-        )
-        self.outx_path = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Export_settings"]["Outx file"]
-        )
-        self.snp_file = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Snp file"]
-        )
-        self.rwn_file = os.path.join(
-            self.settings["Simulation"]["Project Path"], 'Case_study', self.settings["Simulation"]["Rwm file"]
-        )
-        # if self.settings["Simulation"]["Case study"]:
-        #     self.ext = self.study_case_path.split('.')[1]
-        # else:
-        #     self.ext = self.study_case_path.split('.')[1]
-
-        if self.settings["Logging"]["Disable PSSE logging"]:
+        if self.settings.log.disable_psse_logging:
             self.disable_logging()
 
     def step(self, dt):
@@ -171,11 +154,32 @@ class AbstractMode:
         return
 
     def export(self):
-        self.logger.debug('Starting export process. Can take a few minutes for large files')
-        excelpath = os.path.join(self.export_path, self.settings["Export_settings"]["Excel file"])
-        achnf = self.dyntools.CHNF(self.outx_path)
-        achnf.xlsout(channels='', show=False, xlsfile=excelpath, outfile='', sheet='Sheet1', overwritesheet=True)
-        self.logger.debug('{} export to {}'.format(self.settings["Export_settings"]["Excel file"], self.export_path))
+        try:
+            self.logger.info('Starting export process. Can take a few minutes for large files')
+            achnf = self.dyntools.CHNF(str(self.settings.export.outx_file))
+            achnf.xlsout(
+                channels='', 
+                show=False, 
+                xlsfile=str(self.settings.export.excel_file), 
+                outfile='', 
+                sheet='Sheet1', overwritesheet=True
+                )
+            self.logger.debug(f'Exported {self.settings.export.excel_file}')
+        except Exception as e:
+            print(f"Export failed >> {str(e)}")
+
+    def load_user_defined_models(self):
+        for mdl in self.settings.simulation.user_models:
+            self.PSSE.addmodellibrary(str(mdl))
+            self.logger.debug('User defined library added: {}'.format(mdl))
+
+    def load_setup_files(self):
+        for f in self.settings.simulation.setup_files:
+            ierr = self.PSSE.runrspnsfile(str(f))
+            if ierr:
+                raise Exception('Error running setup file "{}"'.format(f))
+            else:
+                self.logger.debug('Setup file {} sucessfully run'.format(f))
 
     def disable_logging(self):
         self.PSSE.progress_output(islct=6,  filarg='', options=[0, 0])
@@ -335,6 +339,7 @@ class AbstractMode:
         substation_numbers = self.get_substation_numbers(subsystem_buses)
 
         for class_name, vars in quantities.items():
+            
             if class_name in self.func_options:
                 funcs = self.func_options[class_name]
                 for id_, v in enumerate(vars):
@@ -653,18 +658,26 @@ class AbstractMode:
             results_dict[class_name][label] = None
         return results_dict
 
+    def convert_load(self, busSubsystem= None):
+        if self.settings.loads.convert:
+            P1 = self.settings.loads.active_load.constant_current_percentage
+            P2 = self.settings.loads.active_load.constant_admittance_percentage
+            Q1 = self.settings.loads.reactive_load.constant_current_percentage
+            Q2 = self.settings.loads.reactive_load.constant_admittance_percentage
+            if busSubsystem:
+                self.PSSE.conl(busSubsystem, 0, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
+                self.PSSE.conl(busSubsystem, 0, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
+                self.PSSE.conl(busSubsystem, 0, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
+            else:
+                self.PSSE.conl(0, 1, 1, [0, 0], [P1, P2, Q1, Q2]) # initialize for load conversion.
+                self.PSSE.conl(0, 1, 2, [0, 0], [P1, P2, Q1, Q2]) # convert loads.
+                self.PSSE.conl(0, 1, 3, [0, 0], [P1, P2, Q1, Q2]) # postprocessing housekeeping.
+
+
     def update_object(self, dType, bus, id, values):
-        #print(dType, bus, id, values)
         val = sum([x for x in values.values()])
         if val > -1000000.0 and val < 100000.0:
             if dType == "Load":
-                # print(dType, bus, id, values)
-                # import math
-                # pf = 0.9
-                # s = values['realar1'] / pf
-                # a = math.sin(math.acos(pf)) 
-                # q = s * a
-                # #values['realar2'] = q
                 ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
             elif dType == "Induction_machine":
                 ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)

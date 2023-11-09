@@ -13,4 +13,5 @@ aiohttp_swagger
 aiohttp_swagger3
 PyYAML
 aiohttp_cors
+pydantic<2.0
 xlrd

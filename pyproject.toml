@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pssepy"
+dynamic = ["version"]
+description = "A high-level python interface for PSS/E"
+readme = "README.md"
+license = "BSD-3-Clause"
+requires-python = ">=3.8"
+
+authors = [
+    { name = "Aadil Latif", email = "Aadil.Latif@nrel.gov" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "aiohttp",
+    "aiohttp_cors",
+    "aiohttp_swagger",
+    "aiohttp_swagger3",
+    "click",
+    "h5py",
+    "helics",
+    "networkx",
+    "numpy",
+    "pandas",
+    "pydantic<2.0",
+    "pytest",
+    "PyYAML",
+    "requests",
+    "terminaltables",
+    "toml",
+    "xlrd"
+]
+
+[project.scripts]
+pypsse = "pypsse.cli.pypsse:cli"
+
+[project.urls]
+Homepage = "http://www.github.com/nrel/pypsse"
+
+[tool.hatch.version]
+path = "pypsse/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/pypsse",
+]
