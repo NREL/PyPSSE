@@ -103,15 +103,6 @@ class PSSE:
                 logger.warning(f"{key} not present in settings.toml file")
 
     def get_results(self, params):
-        # print("\n\nGetting results\n\n")
-        # params = {
-        #     "Loads": {
-        #         "id_fields": ["MVA"]
-        #     },
-        #     "Buses": {
-        #         "id_fields": ["PU", "ANGLE"]
-        #     },
-        # }
         settings = {}
         for k, v in params.items():
             settings[k] = {}

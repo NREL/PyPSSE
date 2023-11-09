@@ -133,7 +133,6 @@ class pypsse_project:
             copy_tree(PSSEfolder, os.path.join(path, newPath))
             psseFiles = self._psse_project_file_dict(newPath)
         else:
-            #print(os.getcwd())
             raise Exception(f"PSSE project path does not exist. ({PSSEfolder}) {os.getcwd()}")
         return psseFiles
 

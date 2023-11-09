@@ -376,7 +376,6 @@ class pyPSSE_instance:
         ckt_id = []
         to_bus = []
         to_bus2 = []
-        # print(results)
         for class_ppty, vdict in results.items():
             if len(class_ppty.split("_")) == 3:
                 cName = (

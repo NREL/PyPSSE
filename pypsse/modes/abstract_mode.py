@@ -675,17 +675,9 @@ class AbstractMode:
 
 
     def update_object(self, dType, bus, id, values):
-        #print(dType, bus, id, values)
         val = sum([x for x in values.values()])
         if val > -1000000.0 and val < 100000.0:
             if dType == "Load":
-                # print(dType, bus, id, values)
-                # import math
-                # pf = 0.9
-                # s = values['realar1'] / pf
-                # a = math.sin(math.acos(pf)) 
-                # q = s * a
-                # #values['realar2'] = q
                 ierr = self.PSSE.load_chng_5(ibus=int(bus), id=id, **values)
             elif dType == "Induction_machine":
                 ierr = self.PSSE.induction_machine_data(ibus=int(bus), id=id, **values)

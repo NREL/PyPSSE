@@ -165,7 +165,6 @@ class Dynamic(AbstractMode, DynamicUtils):
                                             if con_index is not None:
                                                 act_con_index = con_index + con_ind
                                                 irr, value = self.PSSE.dsrval('CON', act_con_index)
-                                                # print(class_name, funcName, bus, ld_id, con_index, con_num, v, value)
                                                 res_base = f"{class_name}_{v}"
                                                 if res_base not in results:
                                                     results[res_base] = {}
