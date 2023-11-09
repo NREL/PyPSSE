@@ -59,6 +59,11 @@ class Snap(AbstractMode, DynamicUtils):
         else:
             sim_step = self.settings.simulation.psse_solver_timestep.total_seconds() 
 
+        for mdl in self.settings["Simulation"]["User models"]:
+            dll_path = os.path.join(self.settings["Simulation"]["Project Path"], 'Case_study', mdl)
+            self.PSSE.addmodellibrary(dll_path)
+            self.logger.debug('User defined library added: {}'.format(mdl))
+
         self.PSSE.dynamics_solution_param_2(
             [60, self._i, self._i, self._i, self._i, self._i, self._i, self._i],
             [0.4, self._f, sim_step, self._f, self._f, self._f, self._f, self._f]

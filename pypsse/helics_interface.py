@@ -218,7 +218,9 @@ class helics_interface:
                 
             self.pub_struc.append([{elmClass: properties}, bus_cluster])
             temp_res = self.sim.read_subsystems({elmClass: properties}, bus_cluster)
+            print(temp_res)
             temp_res = self.get_restructured_results(temp_res)
+            print(temp_res)
             for cName, elmInfo in temp_res.items():
                 for Name, vInfo in elmInfo.items():
                     for pName, val in vInfo.items():
@@ -384,6 +386,7 @@ class helics_interface:
                 if n not in results_dict[c]:
                     results_dict[c][n] = {}
                 results_dict[c][n].update( {p:v})
+
         return results_dict
 
     def publish(self):
