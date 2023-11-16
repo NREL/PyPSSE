@@ -39,8 +39,10 @@ class ModelTypes(Enum):
     STATIONS = "Stations"
 
 class ModelProperties(Enum):
-    FREQ = "FREQ"
     PU = "PU"
+    FREQ = "FREQ"
+    ANGLE = "ANGLE"
+    ANGLED = "ANGLED"
     
 class LoggingLevels(IntEnum):
     NOTSET=0
@@ -141,7 +143,7 @@ class ExportSettings(BaseModel):
     
 class PublicationDefination(BaseModel):
     bus_subsystems: List[int] = [ 0,]
-    model_type : ModelTypes = "Buses"   
+    model_type : ModelTypes = "buses"   
     model_properties : List[ModelProperties] = ["FREQ", "PU"]
 
 class HelicsSettings(BaseModel):
