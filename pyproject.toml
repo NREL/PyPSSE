@@ -34,7 +34,7 @@ dependencies = [
     "networkx",
     "numpy",
     "pandas",
-    "pydantic<2.0",
+    "pydantic~=2.4",
     "pytest",
     "PyYAML",
     "requests",
