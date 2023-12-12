@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, validator
-from pydantic.networks import IPvAnyAddress
+from pydantic.v1 import BaseModel, Field, validator
+from pydantic.v1.networks import IPvAnyAddress
 from datetime import datetime, timedelta
 from typing import List, Optional, Union
 from enum import Enum, IntEnum
