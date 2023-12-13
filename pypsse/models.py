@@ -46,8 +46,10 @@ class ModelTypes(Enum):
 
 
 class ModelProperties(Enum):
-    FREQ = "FREQ"
     PU = "PU"
+    FREQ = "FREQ"
+    ANGLE = "ANGLE"
+    ANGLED = "ANGLED"
 
 
 class LoggingLevels(IntEnum):

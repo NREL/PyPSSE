@@ -12,14 +12,17 @@ class DynamicUtils:
             sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data['element_type'] == 'Load']
             generators = {}
+            generator_list = {}
+            
+            for gen_bus, gen_id in self.raw_data.generators:
+                if gen_bus not in generator_list:
+                    generator_list[gen_bus] = []
+                generator_list[gen_bus].append(gen_id)
+            
             for ix, row in sub_data.iterrows():
                 bus = row['bus']
-                for gen_bus, gen_id in self.raw_data.generators:
-                    if gen_bus not in generators:
-                        generators[bus] = [gen_id]
-                    else:
-                        generators[bus].append(gen_id)
-
+                generators[bus] = generator_list[bus]
+                
             for bus_id, machines in generators.items():
                 for machine in machines:
                     intgar = [0, self._i, self._i, self._i, self._i, self._i]
@@ -29,6 +32,7 @@ class DynamicUtils:
                     ]
                     self.PSSE.machine_chng_2(bus_id, machine, intgar, realar)
                     self.logger.info(f"Machine disabled: {bus_id}_{machine}")
+                        
         return
 
     def disable_load_models_for_coupled_buses(self):
