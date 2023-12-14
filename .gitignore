@@ -59,6 +59,9 @@ pytestdebug.log
 *.mo
 *.pot
 
+*.tar.gz
+*.whl
+
 # Django stuff:
 *.log
 local_settings.py

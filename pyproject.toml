@@ -61,3 +61,19 @@ include = [
 packages = [
     "pypsse"
 ]
+
+[project.optional-dependencies]
+doc = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "pygraphviz",
+  "erdantic",
+  "mdutils",
+  "mkdocs-glightbox"
+]
+dev = [
+  "pylint",
+  "mypy",
+  "black"
+]
