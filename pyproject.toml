@@ -35,13 +35,15 @@ dependencies = [
     "numpy",
     "pandas",
     "pydantic~=2.4",
-    "pytest",
     "PyYAML",
     "requests",
     "terminaltables",
     "toml",
     "xlrd"
 ]
+
+[tool.hatch.envs.lint]
+detached = true
 
 [project.scripts]
 pypsse = "pypsse.cli.pypsse:cli"
@@ -51,6 +53,25 @@ Homepage = "http://www.github.com/nrel/pypsse"
 
 [tool.hatch.version]
 path = "pypsse/__init__.py"
+
+[tool.hatch.envs.test]
+dependencies = [
+  "coverage[toml]",
+  "pytest",
+  "pytest-cov",
+  "pytest-mock",
+]
+
+[tool.hatch.envs.doc]
+dependencies = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "pygraphviz",
+  "erdantic",
+  "mdutils",
+  "mkdocs-glightbox"
+]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -72,8 +93,8 @@ doc = [
   "mdutils",
   "mkdocs-glightbox"
 ]
-dev = [
-  "pylint",
-  "mypy",
-  "black"
-]
+# dev = [
+#   "pylint",
+#   "mypy",
+#   "black"
+# ]
