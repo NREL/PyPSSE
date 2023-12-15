@@ -87,7 +87,7 @@ class HelicsInterface:
                 msg = f"'{elm_class.lower()}' is not a valid class of elements. "
                 f"Valid fields are: {list(self.export_settings.dict().keys())}"
                 raise Exception(msg)
-            
+
             managed_properties = set([ptpy.value for ptpy in getattr(self.export_settings, elm_class.lower())])
             properties = [p.value for p in publication_dict.model_properties]
 
@@ -160,7 +160,10 @@ class HelicsInterface:
                 f"Valid element_type are: {list(PROFILE_VALIDATION.keys())}"
                 raise Exception(msg)
 
-            if isinstance(row["element_property"], str) and row["element_property"] not in PROFILE_VALIDATION[row["element_type"]]:
+            if (
+                isinstance(row["element_property"], str)
+                and row["element_property"] not in PROFILE_VALIDATION[row["element_type"]]
+            ):
                 msg = f"Subscription file error: {row['property']} is not valid. "
                 f"Valid subtypes for '{row['element_type']}' are: {PROFILE_VALIDATION[row['element_type']]}"
                 raise Exception(msg)
