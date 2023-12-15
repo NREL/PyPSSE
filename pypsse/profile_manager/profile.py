@@ -18,25 +18,25 @@ class Profile:
         self.neglect_year = neglect_year
         self.solver = solver
         self.attrs = self.profile.attrs
-        s = self.attrs["stime"].decode()
+        s = self.attrs["sTime"].decode()
         stime = s if "." in s else s + ".00"
-        e = self.attrs["etime"].decode()
+        e = self.attrs["eTime"].decode()
         etime = e if "." in e else e + ".00"
         self.stime = datetime.datetime.strptime(stime, "%Y-%m-%d %H:%M:%S.%f")
         self.etime = datetime.datetime.strptime(etime, "%Y-%m-%d %H:%M:%S.%f")
         self.sim_res = self.solver.get_step_size_cec()
-        self.time = copy.deepcopy(self.solver.gettime())
+        self.time = copy.deepcopy(self.solver.get_time())
         self.columns = self.attrs["units"]
         self.dtype = self.attrs["type"].decode()
 
     def update(self, update_object_properties=True):
-        self.time = copy.deepcopy(self.solver.gettime())
+        self.time = copy.deepcopy(self.solver.get_time())
         if self.time < self.stime or self.time > self.etime:
             value = np.array([0] * len(self.profile[0]))
             value1 = np.array([0] * len(self.profile[0]))
         else:
             dt = (self.time - self.stime).total_seconds()
-            n = int(dt / self.attrs["restime"])
+            n = int(dt / self.attrs["resTime"])
             value = np.array(list(self.profile[n]))
             try:
                 valuen1 = np.array(list(self.profile[n + 1]))
@@ -44,9 +44,9 @@ class Profile:
                 valuen1 = value
 
             dt2 = (
-                self.time - (self.stime + datetime.timedelta(seconds=int(n * self.attrs["restime"])))
+                self.time - (self.stime + datetime.timedelta(seconds=int(n * self.attrs["resTime"])))
             ).total_seconds()
-            value1 = value + (valuen1 - value) * dt2 / self.attrs["restime"]
+            value1 = value + (valuen1 - value) * dt2 / self.attrs["resTime"]
 
         if update_object_properties:
             for obj_name in self.value_settings:

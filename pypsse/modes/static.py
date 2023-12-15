@@ -16,8 +16,8 @@ class Static(AbstractMode):
         super().init(bussubsystems)
         self.initialization_complete = True
 
-    def step(self):
-        ierr = self.PSSE.fnsl()
+    def step(self, _):
+        ierr = self.psse.fnsl()
         # check if powerflow completed successfully
         if ierr == 0:
             self.time = self.time + self.incTime
@@ -27,7 +27,7 @@ class Static(AbstractMode):
             raise Exception(msg)
 
     def resolve_step(self):
-        ierr = self.PSSE.fnsl()
+        ierr = self.psse.fnsl()
         if ierr > 0:
             msg = f"Error code {ierr} returned from PSSE while running powerflow, please follow \
                                         PSSE doumentation to know more about error"

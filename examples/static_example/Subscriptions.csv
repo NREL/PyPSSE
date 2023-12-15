@@ -1,4 +1,4 @@
-bus_subsystem_id,bus,element_type,element_id,property,sub_tag,scaler
+bus_subsystem_id,bus,element_type,element_id,element_property,sub_tag,scaler
 0,153,Load,1,['PL'],test.load1.P,[1.0]
 0,153,Load,1,['QL'],test.load1.Q,[1.0]
 0,154,Load,2,['PL'],test.load2.P,[1.0]
