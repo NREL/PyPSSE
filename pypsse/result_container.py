@@ -5,7 +5,6 @@ from pypsse.data_writers.data_writer import DataWriter
 from pypsse.models import (
     BulkWriteModes,
     ExportAssetTypes,
-    ExportFileOptions,
     ModelTypes,
     SimulationSettings,
     StreamedWriteModes,
@@ -16,7 +15,7 @@ class Container:
     BULK_WRITE_MODES = [m.value for m in BulkWriteModes]
     STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
 
-    def __init__(self, settings: SimulationSettings, export_settings: ExportFileOptions):
+    def __init__(self, settings: SimulationSettings, export_settings: ExportAssetTypes):
         export__list = [m.value for m in ModelTypes]
         self.export_path = settings.simulation.project_path / EXPORTS_FOLDER
         self.export_settings = export_settings
@@ -24,8 +23,8 @@ class Container:
         self.results = {}
         self.export_vars = {}
         for class_name in export__list:
-            mapped_name = MAPPED_CLASS_NAMES[class_name]
-            variables = getattr(export_settings, class_name)
+            mapped_name = MAPPED_CLASS_NAMES[class_name.lower()]
+            variables = getattr(export_settings, class_name.lower())
             if variables:
                 for variable in variables:
                     self.results[f"{mapped_name}_{variable.value}"] = None
@@ -69,7 +68,7 @@ class Container:
                 file_name = self.settings.helics.federate_name
             else:
                 file_name = "simulation_results"
-            self.dataWriter.write(file_name, time, bus_data, index)
+            self.dataWriter.write(time, bus_data)
         else:
             for variable_name, _ in bus_data.items():
                 if not isinstance(self.results[f"{variable_name}"], pd.DataFrame):

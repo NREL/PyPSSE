@@ -7,7 +7,7 @@ import pytest
 import toml
 
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
-from pypsse.pypsse_project import pypsse_project
+from pypsse.project import pypsse_project
 from pypsse.Simulator import Simulator
 
 PROJECT_CREATION_SETTINGS = {

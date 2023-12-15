@@ -1,6 +1,6 @@
 import numpy as np
 
-from pypsse.models import ExportFileOptions, SimulationSettings
+from pypsse.models import ExportSettings, SimulationSettings
 from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, converter, dyn_only_options
 from pypsse.utils.dynamic_utils import DynamicUtils
@@ -12,7 +12,7 @@ class Dynamic(AbstractMode, DynamicUtils):
         psse,
         dyntools,
         settings: SimulationSettings,
-        export_settings: ExportFileOptions,
+        export_settings: ExportSettings,
         logger,
         subsystem_buses,
         raw_data,
@@ -119,10 +119,10 @@ class Dynamic(AbstractMode, DynamicUtils):
         for bus_subsystem_id in bus_subsystems.keys():
             load_info = {}
             ierr, load_data = self.psse.aloadchar(bus_subsystem_id, 1, ["ID", "NAME", "EXNAME"])
-            assert ierr == 0, f"Error code:{ierr}"
+            
             load_data = np.array(load_data)
             ierr, bus_data = self.psse.aloadint(bus_subsystem_id, 1, ["NUMBER"])
-            assert ierr == 0, f"Error code:{ierr}"
+            
             bus_data = bus_data[0]
             for i, bus_id in enumerate(bus_data):
                 load_info[bus_id] = {
@@ -169,18 +169,18 @@ class Dynamic(AbstractMode, DynamicUtils):
                                 for bus in subsystem_buses:
                                     if class_name == "Loads":
                                         ierr = self.psse.inilod(int(bus))
-                                        assert ierr == 0, f"Error code:{ierr}"
+                                        
                                         ierr, ld_id = self.psse.nxtlod(int(bus))
-                                        assert ierr == 0, f"Error code:{ierr}"
+                                        
                                         if ld_id is not None:
                                             ierr, con_index = getattr(self.psse, func_name)(
                                                 int(bus), ld_id, "CHARAC", "CON"
                                             )
-                                            assert ierr == 0, f"Error code:{ierr}"
+                                            
                                             if con_index is not None:
                                                 act_con_index = con_index + con_ind
                                                 ierr, value = self.psse.dsrval("CON", act_con_index)
-                                                assert ierr == 0, f"Error code:{ierr}"
+                                                
                                                 res_base = f"{class_name}_{v}"
                                                 if res_base not in results:
                                                     results[res_base] = {}

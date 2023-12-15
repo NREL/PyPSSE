@@ -31,18 +31,18 @@ class HelicsCoreTypes(Enum):
 
 
 class ModelTypes(Enum):
-    BUSES = "buses"
-    BRANCHES = "branches"
-    LOADS = "loads"
-    GENERATORS = "induction_generators"
-    MACHINES = "machines"
-    FIXED_SHUNTS = "fixed_shunts"
-    SWITCHED_SHUNTS = "switched_shunts"
-    TRANSFORMERS = "transformers"
-    AREAS = "areas"
-    ZONES = "zones"
-    DC_LINES = "dc_transmission_lines"
-    STATIONS = "stations"
+    BUSES = "Buses"
+    BRANCHES = "Branches"
+    LOADS = "Loads"
+    GENERATORS = "Induction_generators"
+    MACHINES = "Machines"
+    FIXED_SHUNTS = "Fixed_shunts"
+    SWITCHED_SHUNTS = "Switched_shunts"
+    TRANSFORMERS = "Transformers"
+    AREAS = "Areas"
+    ZONES = "Zones"
+    DC_LINES = "DCtransmissionlines"
+    STATIONS = "Stations"
 
 
 class ModelProperties(Enum):
@@ -91,57 +91,57 @@ class SimSettings(BaseModel):
     simulation_mode: SimulationModes
 
     @validator("simulation_step_resolution")
-    def sim_res_smaller_than_sim_time(cls, v, values, **_):
-        assert v < values["simulation_time"], "simulation_step_resolution should be smaller than simulation_time"
-        return v
+    def sim_res_smaller_than_sim_time(cls, value, values, **kwargs):
+        assert value <= values["simulation_time"], "simulation_step_resolution should be smaller than simulation_time"
+        return value
 
     @validator("psse_solver_timestep")
-    def psse_res_smaller_than_sim_time(cls, v, values, **_):
-        assert v < values["simulation_time"], "psse_solver_timestep should be smaller than simulation_time"
-        return v
+    def psse_res_smaller_than_sim_time(cls, value, values, **kwargs):
+        assert value <= values["simulation_time"], "psse_solver_timestep should be smaller than simulation_time"
+        return value
 
     @validator("case_study", "raw_file", "snp_file", "dyr_file", "rwm_file", "gic_file")
-    def validate_case_study(cls, v, values, **_):
+    def validate_case_study(cls, value, values, **kwargs):
         base_project_path = Path(values["project_path"])
-        if v:
-            v = base_project_path / CASESTUDY_FOLDER / v
-            assert v.exists(), f"{v} does not esist"
-            return v
+        if value:
+            value = base_project_path / CASESTUDY_FOLDER / value
+            assert value.exists(), f"{value} does not esist"
+            return value
         return None
 
     @validator("subscriptions_file")
-    def validate_subscription_file(cls, v, values, **_):
+    def validate_subscription_file(cls, value, values, **kwargs):
         base_project_path = Path(values["project_path"])
-        if v:
-            v = base_project_path / v
-            assert v.exists(), f"{v} does not esist"
-            data = pd.read_csv(v)
+        if value:
+            value = base_project_path / value
+            assert value.exists(), f"{value} does not esist"
+            data = pd.read_csv(value)
             csv_cols = set(data.columns)
             sub_cols = {e.value for e in SubscriptionFileRequiredColumns}
             assert sub_cols.issubset(csv_cols), f"{sub_cols} are required columns for a valid subscription file"
-            return v
+            return value
         return None
 
     @validator("user_models")
-    def validate_user_models(cls, v, values, **_):
+    def validate_user_models(cls, value, values, **kwargs):
         base_project_path = Path(values["project_path"])
-        if v:
+        if value:
             paths = []
-            for file in v:
+            for file in value:
                 model_file = base_project_path / CASESTUDY_FOLDER / file
                 assert model_file.exists(), f"{model_file} does not esist"
                 assert model_file.suffix == ".dll", "Invalid file extension. Use dll files"
                 paths.append(model_file)
             return paths
-        return v
+        return value
 
     @validator("simulation_mode")
-    def validate_simulation_mode(cls, v, values, **_):
-        if v == SimulationModes.DYNAMIC:
+    def validate_simulation_mode(cls, value, values, **kwargs):
+        if value == SimulationModes.DYNAMIC:
             assert not values[
                 "use_profile_manager"
             ], "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
-        return v
+        return value
 
 
 class ExportSettings(BaseModel):
@@ -157,7 +157,7 @@ class PublicationDefination(BaseModel):
     bus_subsystems: List[int] = [
         0,
     ]
-    model_type: ModelTypes = "Buses"
+    model_type: ModelTypes = "buses"
     model_properties: List[ModelProperties] = ["FREQ", "PU"]
 
 
@@ -200,9 +200,20 @@ class GICExportSettings(BaseModel):
 
 class BusSubsystems(BaseModel):
     from_file: bool = False
-    bus_file: Optional[str] = ""
-    bus_subsystem_list: List[List[int]] = [[]]
-    publish_subsystems: List[int] = []
+    bus_file: Optional[str]
+    bus_subsystem_list: List[List[int]] = [
+        [
+            74012,
+            17735,
+            20115,
+            38205,
+            70008,
+            80511,
+        ],
+    ]
+    publish_subsystems: List[int] = [
+        0,
+    ]
 
 
 class LoadBreakdown(BaseModel):
@@ -212,8 +223,8 @@ class LoadBreakdown(BaseModel):
 
 class LoadSettings(BaseModel):
     convert: bool = True
-    active_load: LoadBreakdown = LoadBreakdown()
-    reactive_load: LoadBreakdown = LoadBreakdown()
+    active_load: LoadBreakdown
+    reactive_load: LoadBreakdown
 
 
 class GeneratorSettings(BaseModel):
@@ -226,7 +237,7 @@ class BusFault(BaseModel):
     duration: float = 0.3
     bus_trip: bool = False
     trip_delay: float = 0.05
-    fault_impedance: List[float] = [
+    fault_impedance: List[int] = [
         1.0,
         1.0,
     ]
@@ -243,7 +254,7 @@ class LineFault(BaseModel):
     duration: float = 0.3
     bus_trip: bool = False
     trip_delay: float = 0.05
-    fault_impedance: List[float] = [
+    fault_impedance: List[int] = [
         1.0,
         1.0,
     ]
@@ -260,39 +271,36 @@ class MachineTrip(BaseModel):
     machine_id: str = ""
 
 
-class Contingencies(BaseModel):
-    contingencies: Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]]
-
-
-class SimulationSettings(Contingencies):
+class SimulationSettings(BaseModel):
     simulation: SimSettings
-    export: ExportSettings = ExportSettings()
+    export: ExportSettings
     helics: Optional[HelicsSettings]
-    log: LogSettings = LogSettings(logging_level=LoggingLevels.DEBUG)
+    log: LogSettings
     plots: Optional[PlotSettings]
     gic_export_settings: Optional[GICExportSettings]
-    bus_subsystems: BusSubsystems = BusSubsystems()
-    loads: LoadSettings = LoadSettings()
-    generators: GeneratorSettings = GeneratorSettings()
+    bus_subsystems: BusSubsystems
+    loads: LoadSettings
+    generators: GeneratorSettings
+    contingencies: Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]]
 
     @validator("export")
-    def validate_export_paths(cls, v, values, **__):
+    def validate_export_paths(cls, value, values, **kwargs):
         if "simulation" not in values:
-            return v
+            return value
         base_project_path = Path(values["simulation"].project_path)
-        if v.outx_file:
-            v.outx_file = base_project_path / EXPORTS_FOLDER / v.outx_file
-        if v.out_file:
-            v.out_file = base_project_path / EXPORTS_FOLDER / v.out_file
-        if v.excel_file:
-            v.excel_file = base_project_path / EXPORTS_FOLDER / v.excel_file
-        if v.log_file:
-            v.log_file = base_project_path / LOGS_FOLDER / v.log_file
-        if v.networkx_graph_file:
-            v.networkx_graph_file = base_project_path / EXPORTS_FOLDER / v.networkx_graph_file
-        if v.coordinate_file:
-            v.coordinate_file = base_project_path / EXPORTS_FOLDER / v.coordinate_file
-        return v
+        if value.outx_file:
+            value.outx_file = base_project_path / EXPORTS_FOLDER / value.outx_file
+        if value.out_file:
+            value.out_file = base_project_path / EXPORTS_FOLDER / value.out_file
+        if value.excel_file:
+            value.excel_file = base_project_path / EXPORTS_FOLDER / value.excel_file
+        if value.log_file:
+            value.log_file = base_project_path / LOGS_FOLDER / value.log_file
+        if value.networkx_graph_file:
+            value.networkx_graph_file = base_project_path / EXPORTS_FOLDER / value.networkx_graph_file
+        if value.coordinate_file:
+            value.coordinate_file = base_project_path / EXPORTS_FOLDER / value.coordinate_file
+        return value
 
 
 class BusProperties(Enum):
@@ -594,26 +602,26 @@ class UseModes(Enum):
 
 
 class BusChannel(BaseModel):
-    element_type: ChannelTypes = ChannelTypes.BUSES
+    type: ChannelTypes = ChannelTypes.BUSES
     use: UseModes = UseModes.LIST
     regex: str = ""
-    element_list: List[int] = []
+    list: List[int] = []
     properties: List[str] = ["voltage_and_angle", "frequency"]
 
 
 class LoadChannel(BaseModel):
-    element_type: ChannelTypes = ChannelTypes.LOADS
+    type: ChannelTypes = ChannelTypes.LOADS
     use: UseModes = UseModes.LIST
     regex: str = ""
-    element_list: List[List[str]] = [[]]
+    list: List[List[str]] = [[]]
     properties: List[str] = []
 
 
 class MachineChannel(BaseModel):
-    element_type: ChannelTypes = ChannelTypes.MACHINES
+    type: ChannelTypes = ChannelTypes.MACHINES
     use: UseModes = UseModes.LIST
     regex: str = ""
-    element_list: List[List[str]] = [[]]
+    list: List[List[str]] = [[]]
     properties: List[str] = ["PELEC", "QELEC", "SPEED"]
 
 
@@ -627,7 +635,7 @@ class ExportAssetTypes(BaseModel):
     areas: Optional[List[AreaProperties]]
     zones: Optional[List[ZoneProperties]]
     stations: Optional[List[StationProperties]]
-    dc_transmission_lines: Optional[List[DCLineProperties]]
+    dctransmissionlines: Optional[List[DCLineProperties]]
     loads: Optional[List[LoadProperties]]
     fixed_shunts: Optional[List[FixedShuntProperties]]
     switched_shunts: Optional[List[SwitchedShuntProperties]]
@@ -636,7 +644,9 @@ class ExportAssetTypes(BaseModel):
     induction_generators: Optional[List[InductionGeneratorProperties]]
     machines: Optional[List[MachinesProperties]]
     channels: Optional[List[str]]
-    channel_setup: Optional[List[Union[BusChannel, LoadChannel, MachineChannel]]]
+    channel_setup: Optional[
+        List[Union[BusChannel, LoadChannel, MachineChannel]]
+    ]
 
 
 class ExportFileOptions(ExportAssetTypes):

@@ -23,7 +23,7 @@ from pypsse.common import (
     LOGS_FOLDER,
 )
 from pypsse.helics_interface import HelicsInterface
-from pypsse.models import Contingencies, ExportFileOptions, SimulationModes, SimulationSettings
+from pypsse.models import ExportFileOptions, SimulationModes, SimulationSettings
 from pypsse.parsers import gic_parser as gp
 from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
@@ -43,7 +43,7 @@ class Simulator:
         self.export_settings = ExportFileOptions.validate(export_settings)
 
         log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
-        self.logger = logger.getLogger("pyPSSE", log_path, LoggerOptions=self.settings.log)
+        self.logger = logger.get_logger("pyPSSE", log_path, logger_options=self.settings.log)
         self.logger.debug("Starting PSSE instance")
 
         if psse_path != "" and Path(psse_path).exists():
@@ -262,7 +262,7 @@ class Simulator:
         if self.settings.simulation.use_profile_manager:
             self.pm.update()
         ctime = time.time() - self.simStartTime
-        self.logger.debug(f"Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.getTime()}")
+        self.logger.debug(f"Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.get_time()}")
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.create_subscriptions:
                 self.update_subscriptions()
@@ -285,7 +285,7 @@ class Simulator:
 
         if not USING_NAERM:
             if self.inc_time and not self.export_settings.export_results_using_channels:
-                self.results.Update(curr_results, None, t, self.sim.getTime())
+                self.results.update(curr_results, t, self.sim.get_time())
 
         return curr_results
 

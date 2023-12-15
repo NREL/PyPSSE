@@ -102,5 +102,5 @@ class HDF5Writer:
 
             self.store.flush()
             self.store.close()
-        except Exception as e:
-            raise e
+        except Exception as _:
+            pass

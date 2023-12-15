@@ -34,10 +34,8 @@ class Reader:
     def get_data(self, func_name, tails=[], strings=[], flags=[]):
         array_list = []
         for tail, string, flag in zip(tails, strings, flags):
-            self.logger.info(f'Executing self.psse.{func_name.lower() + tail}(sid=-1, flag={flag}, string="{string}")')
-            ierr, array_1 = literal_eval(
-                f'self.psse.{func_name.lower() + tail}(sid=-1, flag={flag}, string="{string}")'
-            )
+            func = getattr(self.psse, func_name.lower() + tail)
+            ierr, array_1= func(sid=-1, flag=flag, string=string)
             assert ierr == 0, f"Error code {ierr}, while running function '{func_name.lower() + tail}'"
             array_list.append([x for array in array_1 for x in array])
 

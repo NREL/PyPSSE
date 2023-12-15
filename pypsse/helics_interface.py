@@ -4,7 +4,7 @@ import helics as h
 import pandas as pd
 
 from pypsse.common import MAPPED_CLASS_NAMES
-from pypsse.models import SimulationModes, SimulationSettings, export_settings
+from pypsse.models import SimulationModes, SimulationSettings, ExportSettings
 from pypsse.modes.constants import dyn_only_options
 from pypsse.profile_manager.common import PROFILE_VALIDATION
 
@@ -20,7 +20,7 @@ class HelicsInterface:
     dynamic_params = ["FmA", "FmB", "FmC", "FmD", "Fel"]
 
     def __init__(
-        self, psse, sim, settings: SimulationSettings, export_settings: export_settings, bus_subsystems, logger
+        self, psse, sim, settings: SimulationSettings, export_settings: ExportSettings, bus_subsystems, logger
     ):
         self.bus_pubs = ["bus_id", "bus_Vmag", "bus_Vang", "bus_dev"]
         self.psse = psse

@@ -139,7 +139,7 @@ STANDARD_FORMAT = {
 
 def converter(func):
     def wrapper(*args, **kwargs):
-        new_args = args
+        new_args = list(args)
         quantities = new_args[1]
 
         """ Map NAERM keys to PyPSSE keys """

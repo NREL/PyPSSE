@@ -28,7 +28,7 @@ MAPPED_CLASS_NAMES = {
     "fixed_shunts": "Fixed_shunts",
     "switched_shunts": "Switched_shunts",
     "induction_generators": "Induction_generators",
-    "dc_transmission_lines": "DCtransmissionlines",
+    "dctransmissionlines": "DCtransmissionlines",
 }
 
 

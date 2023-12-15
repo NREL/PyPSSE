@@ -10,7 +10,7 @@ from queue import Empty
 import pandas as pd
 
 from pypsse.modes.constants import dyn_only_options
-from pypsse.Simulator import Simulator
+from pypsse.simulator import Simulator
 
 logger = logging.getLogger(__name__)
 # Make sure to change the PSSE path

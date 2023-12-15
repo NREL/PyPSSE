@@ -43,7 +43,7 @@ class BaseFault:
         self.contingency_type = contingency_type
         self.settings = settings
         self.logger = logger
-        self.PSSE = psse
+        self.psse = psse
         self.enabled = False
         self.tripped = False
 
@@ -61,14 +61,14 @@ class BaseFault:
             self.tripped = True
 
     def enable_fault(self):
-        err = getattr(self.PSSE, self.fault_method)(**self.fault_settings)
+        err = getattr(self.psse, self.fault_method)(**self.fault_settings)
         if err:
             self.logger.warning(f"Unable to enable {self.fault_method} at element {self.element}")
         else:
             self.logger.debug(f"{self.fault_method} applied to {self.element} at time {self.t} seconds")
 
     def disable_fault(self):
-        err = self.PSSE.dist_clear_fault()
+        err = self.psse.dist_clear_fault()
         if err:
             self.logger.warning(f"Unable to clear {self.fault_method} at element {self.element}")
         else:
@@ -82,7 +82,7 @@ class BaseFault:
 
 
 class BusFault(BaseFault):
-    fault_method = "distBusFault"
+    fault_method = "dist_bus_fault"
     fault_settings = {}
 
     def __init__(self, psse, settings: BusFault, logger, contingency_type):
@@ -121,7 +121,7 @@ class LineTrip(BaseFault):
 
 
 class BusTrip(BaseFault):
-    fault_method = "distBusTrip"
+    fault_method = "dist_bus_trip"
     fault_settings = {}
 
     def __init__(self, psse, settings: BusTrip, logger, contingency_type):
@@ -131,7 +131,7 @@ class BusTrip(BaseFault):
 
 
 class MachineTrip(BaseFault):
-    fault_method = "distMachineTrip"
+    fault_method = "dist_machine_trip"
     fault_settings = {}
 
     def __init__(self, psse, settings: MachineTrip, logger, contingency_type):

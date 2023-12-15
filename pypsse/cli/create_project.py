@@ -5,7 +5,7 @@ import os
 import click
 import toml
 
-from pypsse.pypsse_project import pypsse_project
+from pypsse.project import Project
 
 
 @click.argument(
@@ -84,7 +84,7 @@ def create_project(
         s_settings = toml.load(simulation_file) if simulation_file else {}
         e_settings = toml.load(export_settings_file) if export_settings_file else {}
         # TODO: Validate settings
-        a = pypsse_project()
+        a = Project()
         a.create(
             path,
             project,

@@ -52,7 +52,7 @@ class DynamicUtils:
                         self._f,
                         self._f,
                     ]
-                    self.PSSE.machine_chng_2(bus_id, machine, intgar, realar)
+                    self.psse.machine_chng_2(bus_id, machine, intgar, realar)
                     self.logger.info(f"Machine disabled: {bus_id}_{machine}")
 
     def disable_load_models_for_coupled_buses(self):
@@ -64,7 +64,7 @@ class DynamicUtils:
             for _, row in sub_data.iterrows():
                 bus = row["bus"]
                 load = row["element_id"]
-                ierr = self.PSSE.ldmod_status(0, int(bus), str(load), 1, 0)
+                ierr = self.psse.ldmod_status(0, int(bus), str(load), 1, 0)
                 assert ierr == 0, f"error={ierr}"
                 self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
@@ -93,18 +93,18 @@ class DynamicUtils:
             for k, v in new_percentages.items():
                 idx = dyn_only_options["Loads"]["lmodind"][k]
                 settings[idx] = v
-                # self.PSSE.change_ldmod_con(load['bus'], 'XX' ,r"""CMLDBLU2""" ,idx ,v)
+                # self.psse.change_ldmod_con(load['bus'], 'XX' ,r"""CMLDBLU2""" ,idx ,v)
             values = list(settings.values())
-            self.PSSE.add_load_model(load["bus"], "XX", 0, 1, r"""CMLDBLU2""", 2, [0, 0], ["", ""], 133, values)
+            self.psse.add_load_model(load["bus"], "XX", 0, 1, r"""CMLDBLU2""", 2, [0, 0], ["", ""], 133, values)
             self.logger.info(f"Dynamic model parameters for load {load['id']} at bus 'XX' changed.")
 
     def _get_load_dynamic_properties(self, load):
         settings = {}
         for i in range(133):
-            ierr, con_index = self.PSSE.lmodind(load["bus"], str(load["id"]), "CHARAC", "CON")
+            ierr, con_index = self.psse.lmodind(load["bus"], str(load["id"]), "CHARAC", "CON")
             if con_index is not None:
                 act_con_index = con_index + i
-                ierr, value = self.PSSE.dsrval("CON", act_con_index)
+                ierr, value = self.psse.dsrval("CON", act_con_index)
                 assert ierr == 0, f"error={ierr}"
                 settings[i] = value
         return settings
@@ -120,21 +120,21 @@ class DynamicUtils:
             total_distribution_load = total_load * static_percentage
             total_transmission_load = total_load * remaining_load
             # ceate new load
-            self.PSSE.load_data_5(
+            self.psse.load_data_5(
                 load["bus"],
                 "XX",
                 realar=[total_transmission_load.real, total_transmission_load.imag, 0.0, 0.0, 0.0, 0.0],
                 lodtyp="replica",
             )
-            # ierr, cmpval = self.PSSE.loddt2(load["bus"], "XX" ,"MVA" , "ACT")
+            # ierr, cmpval = self.psse.loddt2(load["bus"], "XX" ,"MVA" , "ACT")
             # modify old load
-            self.PSSE.load_data_5(
+            self.psse.load_data_5(
                 load["bus"],
                 str(load["id"]),
                 realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
                 lodtyp="original",
             )
-            # ierr, cmpval = self.PSSE.loddt2(load["bus"], load["id"] ,"MVA" , "ACT")
+            # ierr, cmpval = self.psse.loddt2(load["bus"], load["id"] ,"MVA" , "ACT")
             self.logger.info(f"Original load {load['id']} @ bus {load['bus']}: {total_load}")
             self.logger.info(f"New load 'XX' @ bus {load['bus']} created successfully: {total_transmission_load}")
             self.logger.info(f"Load {load['id']} @ bus {load['bus']} updated : {total_distribution_load}")
@@ -164,7 +164,7 @@ class DynamicUtils:
         values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
             for v in values:
-                ierr, cmpval = self.PSSE.loddt2(load["bus"], str(load["id"]), v, "ACT")
+                ierr, cmpval = self.psse.loddt2(load["bus"], str(load["id"]), v, "ACT")
                 load[v] = cmpval
         return loads
 
@@ -172,16 +172,16 @@ class DynamicUtils:
         values = dyn_only_options["Loads"]["lmodind"]
         for load in loads:
             for v, con_ind in values.items():
-                ierr = self.PSSE.inilod(load["bus"])
+                ierr = self.psse.inilod(load["bus"])
                 assert ierr == 0, f"error={ierr}"
-                ierr, ld_id = self.PSSE.nxtlod(load["bus"])
+                ierr, ld_id = self.psse.nxtlod(load["bus"])
                 assert ierr == 0, f"error={ierr}"
                 if ld_id is not None:
-                    ierr, con_index = self.PSSE.lmodind(load["bus"], ld_id, "CHARAC", "CON")
+                    ierr, con_index = self.psse.lmodind(load["bus"], ld_id, "CHARAC", "CON")
                     assert ierr == 0, f"error={ierr}"
                     if con_index is not None:
                         act_con_index = con_index + con_ind
-                        ierr, value = self.PSSE.dsrval("CON", act_con_index)
+                        ierr, value = self.psse.dsrval("CON", act_con_index)
                         assert ierr == 0, f"error={ierr}"
                         load[v] = value
         return loads
@@ -196,7 +196,7 @@ class DynamicUtils:
                     self.channel_map[nqty][f"{b}_{mch}"] = [self.chnl_idx]
                     chnl_id = MACHINE_CHANNELS[qty]
                     self.logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
-                    self.PSSE.machine_array_channel([self.chnl_idx, chnl_id, int(b)], mch, "")
+                    self.psse.machine_array_channel([self.chnl_idx, chnl_id, int(b)], mch, "")
                     self.chnl_idx += 1
 
     def setup_load_channels(self, loads):
@@ -207,8 +207,8 @@ class DynamicUtils:
         for ld, b in loads:
             self.channel_map["LOAD_P"][f"{b}_{ld}"] = [self.chnl_idx]
             self.channel_map["LOAD_Q"][f"{b}_{ld}"] = [self.chnl_idx + 1]
-            self.PSSE.load_array_channel([self.chnl_idx, 1, int(b)], ld, "")
-            self.PSSE.load_array_channel([self.chnl_idx + 1, 2, int(b)], ld, "")
+            self.psse.load_array_channel([self.chnl_idx, 1, int(b)], ld, "")
+            self.psse.load_array_channel([self.chnl_idx + 1, 2, int(b)], ld, "")
             self.logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
             self.chnl_idx += 2
 
@@ -219,12 +219,12 @@ class DynamicUtils:
             for _, b in enumerate(buses):
                 if qty == "frequency":
                     self.channel_map[qty][b] = [self.chnl_idx]
-                    self.PSSE.bus_frequency_channel([self.chnl_idx, int(b)], "")
+                    self.psse.bus_frequency_channel([self.chnl_idx, int(b)], "")
                     self.logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
                     self.chnl_idx += 1
                 elif qty == "voltage_and_angle":
                     self.channel_map[qty][b] = [self.chnl_idx, self.chnl_idx + 1]
-                    self.PSSE.voltage_and_angle_channel([self.chnl_idx, -1, -1, int(b)], "")
+                    self.psse.voltage_and_angle_channel([self.chnl_idx, -1, -1, int(b)], "")
                     self.logger.info(
                         f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}"
                     )
@@ -242,7 +242,7 @@ class DynamicUtils:
                         n_name = n
                     if n_name not in results:
                         results[n_name] = {}
-                    ierr, value = self.PSSE.chnval(idx)
+                    ierr, value = self.psse.chnval(idx)
                     assert ierr == 0, f"error={ierr}"
                     if value is None:
                         value = -1
