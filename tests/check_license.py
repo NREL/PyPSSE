@@ -1,7 +1,9 @@
-from pypsse.pypsse_instance import pyPSSE_instance
+import os
 import shutil
 import sys
-import os
+
+from pypsse.Simulator import Simulator
+
 
 def empty_folder(dirpath):
     for filename in os.listdir(dirpath):
@@ -12,7 +14,7 @@ def empty_folder(dirpath):
             os.remove(filepath)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         example_path = sys.argv[1]
     else:
@@ -20,6 +22,6 @@ if __name__ == '__main__':
     toml_path = os.path.join(example_path, "Settings", "simulation_settings.toml")
     export_path = os.path.join(example_path, "Exports")
     empty_folder(export_path)
-    x = pyPSSE_instance(toml_path)
+    x = Simulator(toml_path)
     x.init()
     x.run()

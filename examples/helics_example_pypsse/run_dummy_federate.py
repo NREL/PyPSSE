@@ -1,10 +1,7 @@
+import time
 
-import time
 import helics as h
-from math import pi
-import random
-import time
-import os
+
 initstring = "-f 2 --name=mainbroker"
 fedinitstring = "--broker=mainbroker --federates=1"
 deltat = 0.01
@@ -34,7 +31,7 @@ h.helicsFederateInfoSetCoreInitString(fedinfo, fedinitstring)
 
 # Set one second message interval #
 h.helicsFederateInfoSetTimeProperty(fedinfo, h.helics_property_time_delta, deltat)
-#h.helicsFederateInfoSetIntegerProperty(fedinfo, h.helics_property_int_log_level, 20)
+# h.helicsFederateInfoSetIntegerProperty(fedinfo, h.helics_property_int_log_level, 20)
 # Create value federate #
 vfed = h.helicsCreateValueFederate("Test Federate", fedinfo)
 
@@ -42,33 +39,25 @@ vfed = h.helicsCreateValueFederate("Test Federate", fedinfo)
 pub1 = h.helicsFederateRegisterGlobalTypePublication(vfed, "test.load1.P", "double", "")
 pub2 = h.helicsFederateRegisterGlobalTypePublication(vfed, "test.load1.Q", "double", "")
 sub1 = h.helicsFederateRegisterSubscription(vfed, "psse.Buses.154.PU", "")
-#h.helicsInputSetMinimumChange(sub1, 0.1)
+# h.helicsInputSetMinimumChange(sub1, 0.1)
 
 # Enter execution mode #
 
-h.helicsFederateEnterExecutingModeIterative(
-            vfed, 
-             h.helics_iteration_request_iterate_if_needed
-            )
+h.helicsFederateEnterExecutingModeIterative(vfed, h.helics_iteration_request_iterate_if_needed)
 
 for t in range(1, 30):
-    time_requested = t 
-    #currenttime = h.helicsFederateRequestTime(vfed, time_requested)
+    time_requested = t
+    # currenttime = h.helicsFederateRequestTime(vfed, time_requested)
     iteration_state = h.helics_iteration_result_iterating
     for i in range(15):
         currenttime, iteration_state = h.helicsFederateRequestTimeIterative(
-            vfed,
-            time_requested,
-            h.helics_iteration_request_iterate_if_needed
+            vfed, time_requested, h.helics_iteration_request_iterate_if_needed
         )
-        print(f"currenttime={currenttime} , time_requested={time_requested}")
-        kW = 5000
-        kVAR  = 4000 + 1000. / (1.0 + i)
-        h.helicsPublicationPublishDouble(pub1, kW)
-        print(f"kW={kW} , kVAR={kVAR}")
-        h.helicsPublicationPublishDouble(pub2, kVAR)
+        kw = 5000
+        kvar = 4000 + 1000.0 / (1.0 + i)
+        h.helicsPublicationPublishDouble(pub1, kw)
+        h.helicsPublicationPublishDouble(pub2, kvar)
         value = h.helicsInputGetVector(sub1)
-        print(value)
 
 h.helicsFederateFinalize(vfed)
 

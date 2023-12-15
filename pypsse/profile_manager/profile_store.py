@@ -1,95 +1,81 @@
-from pypsse.profile_manager.common import PROFILE_TYPES, PROFILE_VALIDATION
-from pypsse.profile_manager.profile import Profile as TSP
-from pypsse.exceptions import InvalidParameter
-
-from pypsse.common import PROFILES_FOLDER, DEFAULT_PROFILE_STORE_FILENAME, DEFAULT_PROFILE_MAPPING_FILENAME
-
-from datetime import datetime as dt
-from pypsse.common import *
-import pandas as pd
-import numpy as np
 import datetime
-import toml
+
 import h5py
-import os
+import numpy as np
+import pandas as pd
+import toml
 
+from pypsse.common import DEFAULT_PROFILE_MAPPING_FILENAME, DEFAULT_PROFILE_STORE_FILENAME, PROFILES_FOLDER
+from pypsse.exceptions import InvalidParameterError
 from pypsse.models import SimulationSettings
-class ProfileManager:
+from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
+from pypsse.profile_manager.profile import Profile as tsp
 
-    def __init__(self,  pypsseObjects, Solver, settings:SimulationSettings, logger, mode="r+"):
+
+class ProfileManager:
+    def __init__(self, pypsse_objects, solver, settings: SimulationSettings, logger, mode="r+"):
         self._logger = logger
-        self.Solver = Solver
-        self.Objects = pypsseObjects
+        self.solver = solver
+        self.objects = pypsse_objects
         self.settings = settings
-        
-        filePath = settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_STORE_FILENAME
-        
-        if filePath.exists():
+
+        file_path = settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_STORE_FILENAME
+
+        if file_path.exists():
             self._logger.info("Loading existing h5 store")
-            self.store = h5py.File(filePath, mode)
+            self.store = h5py.File(file_path, mode)
         else:
             self._logger.info("Creating new h5 store")
-            self.store = h5py.File(filePath, "w")
-            for profileGroup in PROFILE_TYPES.names():
-                self.store.create_group(profileGroup)
-        return
+            self.store = h5py.File(file_path, "w")
+            for profile_group in ProfileTypes.names():
+                self.store.create_group(profile_group)
 
-    def load_data(self, filePath):
-        tomlDict = toml.load(filePath)
-        return tomlDict
+    def load_data(self, file_path):
+        toml_dict = toml.load(file_path)
+        return toml_dict
 
     def setup_profiles(self):
-        mappingPath = self.settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_MAPPING_FILENAME
-        if mappingPath.exists():
-            self.profileMapping = self.load_data(mappingPath)
-            self.Profiles = {}
-            for group, profileMap in self.profileMapping.items():
+        mapping_path = self.settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_MAPPING_FILENAME
+        if mapping_path.exists():
+            self.profile_mapping = self.load_data(mapping_path)
+            self.profiles = {}
+            for group, profile_map in self.profile_mapping.items():
                 if group in self.store:
                     grp = self.store[group]
-                    for profileName, mappingDict in profileMap.items():
-                        if profileName in grp:
-                            self.Profiles[f"{group}/{profileName}"] = TSP(grp[profileName], self.Solver, mappingDict)
+                    for profile_name, mapping_dict in profile_map.items():
+                        if profile_name in grp:
+                            self.profiles[f"{group}/{profile_name}"] = tsp(grp[profile_name], self.solver, mapping_dict)
                         else:
-                            self._logger.warning("Group {} \ data set {} not found in the h5 store".format(
-                                group, profileName
-                            ))
+                            self._logger.warning(rf"Group {group} \ data set {profile_name} not found in the h5 store")
                 else:
-                    self._logger.warning("Group {} not found in the h5 store".format(group))
+                    self._logger.warning(f"Group {group} not found in the h5 store")
         else:
-            raise Exception(f"Profile_mapping.toml file does not exist in path {mappingPath}")
-        return
+            msg = f"Profile_mapping.toml file does not exist in path {mapping_path}"
+            raise Exception(msg)
 
-    def create_dataset(self, dname, pType, data ,startTime, resolution, units, info):
-        grp = self.store[pType]
+    def create_dataset(self, dname, p_type, data, start_time, resolution, _, info):
+        grp = self.store[p_type]
         if dname not in grp:
-            sa, saType = self.df_to_sarray(data)
+            sa, sa_type = self.df_to_sarray(data)
             dset = grp.create_dataset(
-                dname,
-                data=sa,
-                chunks=True,
-                compression="gzip",
-                compression_opts=4,
-                shuffle=True,
-                dtype=saType
+                dname, data=sa, chunks=True, compression="gzip", compression_opts=4, shuffle=True, dtype=sa_type
             )
-            self.createMetadata(
-                dset, startTime, resolution, data, list(data.columns), info, pType
-            )
+            self.create_metadata(dset, start_time, resolution, data, list(data.columns), info, p_type)
         else:
-            self._logger.error('Data set "{}" already exists in group "{}".'.format(dname, pType))
-            raise Exception('Data set "{}" already exists in group "{}".'.format(dname, pType))
+            self._logger.error(f'Data set "{dname}" already exists in group "{p_type}".')
+            msg = f'Data set "{dname}" already exists in group "{p_type}".'
+            raise Exception(msg)
 
     def df_to_sarray(self, df):
-
         def make_col_type(col_type, col):
             try:
-                if 'numpy.object_' in str(col_type.type):
+                if "numpy.object_" in str(col_type.type):
                     maxlens = col.dropna().str.len()
                     if maxlens.any():
                         maxlen = maxlens.max().astype(int)
-                        col_type = ('S%s' % maxlen, 1)
+                        col_type = ("S%s" % maxlen, 1)
                     else:
-                        col_type = 'f2'
+                        col_type = "f2"
                 return col.name, col_type
             except:
                 raise
@@ -99,11 +85,11 @@ class ProfileManager:
         numpy_struct_types = [make_col_type(types[col], df.loc[:, col]) for col in df.columns]
         dtype = np.dtype(numpy_struct_types)
         z = np.zeros(v.shape[0], dtype)
-        for (i, k) in enumerate(z.dtype.names):
+        for i, k in enumerate(z.dtype.names):
             # This is in case you have problems with the encoding, remove the if branch if not
             try:
-                if dtype[i].str.startswith('|S'):
-                    z[k] = df[k].str.encode('latin').astype('S')
+                if dtype[i].str.startswith("|S"):
+                    z[k] = df[k].str.encode("latin").astype("S")
                 else:
                     z[k] = v[:, i]
             except:
@@ -111,28 +97,30 @@ class ProfileManager:
 
         return z, dtype
 
-    def add_profiles_from_csv(self, csv_file, name, pType, startTime, resolution_sec=900, units="",
-                              info=""):
-        if pType not in PROFILE_VALIDATION:
-            raise Exception(f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}")
+    def add_profiles_from_csv(self, csv_file, name, p_type, start_time, resolution_sec=900, units="", info=""):
+        if p_type not in PROFILE_VALIDATION:
+            msg = f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}"
+            raise Exception(msg)
         data = pd.read_csv(csv_file)
         for c in data.columns:
-            if c not in PROFILE_VALIDATION[pType]:
-                raise Exception(f"{c} is not valid, Valid subtypes for '{pType}' are: {PROFILE_VALIDATION[pType]}")
-        self.add_profiles(name, pType, data, startTime, resolution_sec=resolution_sec, units=units, info=info)
+            if c not in PROFILE_VALIDATION[p_type]:
+                msg = f"{c} is not valid, Valid subtypes for '{p_type}' are: {PROFILE_VALIDATION[p_type]}"
+                raise Exception(msg)
+        self.add_profiles(name, p_type, data, start_time, resolution_sec=resolution_sec, units=units, info=info)
 
-    def add_profiles(self, name, pType, data, startTime, resolution_sec=900, units="", info=""):
-        if type(startTime) is not datetime.datetime:
-            raise InvalidParameter("startTime should be a python datetime object")
-        if pType not in PROFILE_TYPES.names():
-            raise InvalidParameter("Valid values for pType are {}".format(PROFILE_TYPES.names()))
-        self.create_dataset(name, pType, data, startTime, resolution_sec, units=units, info=info)
-        return
+    def add_profiles(self, name, p_type, data, start_time, resolution_sec=900, units="", info=""):
+        if type(start_time) is not datetime.datetime:
+            msg = "start_time should be a python datetime object"
+            raise InvalidParameterError(msg)
+        if p_type not in ProfileTypes.names():
+            msg = f"Valid values for p_type are {ProfileTypes.names()}"
+            raise InvalidParameterError(msg)
+        self.create_dataset(name, p_type, data, start_time, resolution_sec, units=units, info=info)
 
-    def createMetadata(self, dSet, startTime, resolution, data, units, info, pType):
+    def create_metadata(self, d_set, start_time, resolution, data, units, info, p_type):
         metadata = {
-            "sTime": str(startTime),
-            "eTime": str(startTime + datetime.timedelta(seconds=resolution*len(data))),
+            "sTime": str(start_time),
+            "eTime": str(start_time + datetime.timedelta(seconds=resolution * len(data))),
             "resTime": resolution,
             "npts": len(data),
             "min": data.min(),
@@ -140,60 +128,21 @@ class ProfileManager:
             "mean": np.mean(data),
             "units": units,
             "info": info,
-            "type": pType
+            "type": p_type,
         }
         for key, value in metadata.items():
             if isinstance(value, str):
-                value = np.string_(value)
-            dSet.attrs[key] = value
-        return
-
-    def remove_profile(self, profile_type, profile_name):
-        return
+                value_mod = np.string_(value)
+            else:
+                value_mod = value
+            d_set.attrs[key] = value_mod
 
     def update(self):
         results = {}
-        for profileaName, profileObj in self.Profiles.items():
-            result = profileObj.update()
-            results[profileaName] = result
+        for profile_name, profile_obj in self.profiles.items():
+            result = profile_obj.update()
+            results[profile_name] = result
         return results
 
     def __del__(self):
         self.store.flush()
-
-if __name__ == '__main__':
-    class Solver:
-
-        def __init__(self):
-            self.Time = dt.strptime("09/19/2018 13:55:26", "%m/%d/%Y %H:%M:%S")
-            return
-
-        def getTime(self):
-            return self.Time
-
-        def GetStepSizeSec(self):
-            return 1.0
-
-        def updateTime(self):
-            self.Time = self.Time + datetime.timedelta(seconds=1)
-            return
-
-        def update_object(self, dType, bus, id, value):
-            pass
-
-    settings = toml.load(r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Settings\simulation_settings.toml")
-    solver = Solver()
-    a = ProfileManager(None, solver, settings)
-    # a.setup_profiles()
-    # for i in range(30):
-    #     a.update()
-    #     solver.updateTime()
-
-    a.add_profiles_from_csv(
-        csv_file=r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Profiles\machine.csv",
-        name="test",
-        pType="Machine",
-        startTime=dt.strptime("2018-09-19 13:55:26.001", "%Y-%m-%d %H:%M:%S.%f"),
-        resolution_sec=1,
-        units="MW",
-    )

@@ -1,72 +1,70 @@
-from pypsse.profile_manager.common import PROFILE_VALIDATION
-import numpy as np
-import datetime
 import copy
+import datetime
+
+import numpy as np
+
+from pypsse.profile_manager.common import PROFILE_VALIDATION
+
 
 class Profile:
+    DEFAULT_SETTINGS = {"multiplier": 1, "normalize": False, "interpolate": False}
 
-    DEFAULT_SETTINGS = {
-        "multiplier": 1,
-        "normalize": False,
-        "interpolate": False
-    }
-
-    def __init__(self, profileObj, Solver, mappingDict,  bufferSize=10, neglectYear=True):
-        self.valueSettings = {f"{x['bus']}__{x['id']}": {**self.DEFAULT_SETTINGS, **x} for x in mappingDict}
-        self.mappingDict = mappingDict
-        self.bufferSize = bufferSize
-        self.buffer = np.zeros(bufferSize)
-        self.profile = profileObj
-        self.neglectYear = neglectYear
-        self.Solver = Solver
+    def __init__(self, profile_obj, solver, mapping_dict, buffer_size=10, neglect_year=True):
+        self.value_settings = {f"{x['bus']}__{x['id']}": {**self.DEFAULT_SETTINGS, **x} for x in mapping_dict}
+        self.mapping_dict = mapping_dict
+        self.buffer_size = buffer_size
+        self.buffer = np.zeros(buffer_size)
+        self.profile = profile_obj
+        self.neglect_year = neglect_year
+        self.solver = solver
         self.attrs = self.profile.attrs
-        S = self.attrs["sTime"].decode()
-        stime = S if "." in S else S + ".00"
-        E = self.attrs["eTime"].decode()
-        etime = E if "." in E else E + ".00"
-        self.sTime = datetime.datetime.strptime(stime, '%Y-%m-%d %H:%M:%S.%f')
-        self.eTime = datetime.datetime.strptime(etime, '%Y-%m-%d %H:%M:%S.%f')
-        self.simRes = self.Solver.GetStepSizeSec()
-        self.Time = copy.deepcopy(self.Solver.getTime())
-        self.Columns = self.attrs["units"]
-        self.dType = self.attrs["type"].decode()
-        return
+        s = self.attrs["stime"].decode()
+        stime = s if "." in s else s + ".00"
+        e = self.attrs["etime"].decode()
+        etime = e if "." in e else e + ".00"
+        self.stime = datetime.datetime.strptime(stime, "%Y-%m-%d %H:%M:%S.%f")
+        self.etime = datetime.datetime.strptime(etime, "%Y-%m-%d %H:%M:%S.%f")
+        self.sim_res = self.solver.get_step_size_cec()
+        self.time = copy.deepcopy(self.solver.gettime())
+        self.columns = self.attrs["units"]
+        self.dtype = self.attrs["type"].decode()
 
-    def update(self, updateObjectProperties=True):
-        self.Time = copy.deepcopy(self.Solver.getTime())
-        if self.Time < self.sTime or self.Time > self.eTime:
+    def update(self, update_object_properties=True):
+        self.time = copy.deepcopy(self.solver.gettime())
+        if self.time < self.stime or self.time > self.etime:
             value = np.array([0] * len(self.profile[0]))
             value1 = np.array([0] * len(self.profile[0]))
         else:
-            dT = (self.Time - self.sTime).total_seconds()
-            n = int(dT / self.attrs["resTime"])
+            dt = (self.time - self.stime).total_seconds()
+            n = int(dt / self.attrs["restime"])
             value = np.array(list(self.profile[n]))
             try:
-                valuen1 = np.array(list(self.profile[n+1]))
+                valuen1 = np.array(list(self.profile[n + 1]))
             except:
                 valuen1 = value
 
-            dT2 = (self.Time - (self.sTime + datetime.timedelta(seconds=int(n * self.attrs["resTime"])))).total_seconds()
-            value1 = value + (valuen1 - value) * dT2 / self.attrs["resTime"]
-            
-            
-        if updateObjectProperties:
-            for objName in self.valueSettings:
-                bus, id = objName.split("__")
-                if self.valueSettings[objName]['interpolate']:
+            dt2 = (
+                self.time - (self.stime + datetime.timedelta(seconds=int(n * self.attrs["restime"])))
+            ).total_seconds()
+            value1 = value + (valuen1 - value) * dt2 / self.attrs["restime"]
+
+        if update_object_properties:
+            for obj_name in self.value_settings:
+                bus, object_id = obj_name.split("__")
+                if self.value_settings[obj_name]["interpolate"]:
                     value = value1
-                mult = self.valueSettings[objName]['multiplier']
+                mult = self.value_settings[obj_name]["multiplier"]
                 if isinstance(mult, list):
                     mult = np.array(mult)
-                if self.valueSettings[objName]['normalize']:
-                    valueF = value / self.attrs["max"] * mult
+                if self.value_settings[obj_name]["normalize"]:
+                    value_f = value / self.attrs["max"] * mult
                 else:
-                    valueF = value * mult
-                valueF = self.fill_missing_values(valueF)
-                self.Solver.update_object(self.dType, bus, id, valueF)
+                    value_f = value * mult
+                value_f = self.fill_missing_values(value_f)
+                self.solver.update_object(self.dtype, bus, object_id, value_f)
         return value
 
     def fill_missing_values(self, value):
-        idx = [f'realar{PROFILE_VALIDATION[self.dType].index(c) + 1}' for c in self.Columns]
+        idx = [f"realar{PROFILE_VALIDATION[self.dtype].index(c) + 1}" for c in self.columns]
         x = dict(zip(idx, list(value)))
         return x

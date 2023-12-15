@@ -1,173 +1,199 @@
-from pypsse.profile_manager.profile_store import ProfileManager
-from distutils.dir_util import copy_tree
-from shutil import copy
-from pypsse.common import *
-import pandas as pd
 import logging
-import pypsse
-import shutil
-import toml
 import os
+from distutils.dir_util import copy_tree
+from shutil import copy, rmtree
+
+import pandas as pd
+import toml
+
+import pypsse
+from pypsse.common import (
+    DEFAULT_PROFILE_MAPPING_FILENAME,
+    DEFAULT_SUBSCRIPTION_FILENAMES,
+    EXPORTS_SETTINGS_FILENAME,
+    PROJECT_FOLDERS,
+    SIMULATION_SETTINGS_FILENAME,
+    SUBSCRIPTION_FIELDS,
+)
+from pypsse.profile_manager.profile_store import ProfileManager
 
 
-class pypsse_project:
-
+class Project:
     def __init__(self):
         logging.root.setLevel("DEBUG")
-        self.basepath = os.path.dirname(getattr(pypsse, "__path__")[0])
+        self.basepath = os.path.dirname(pypsse.__path__[0])
         pass
 
-    def create(self, path, projectName, PSSEfolder, settings, exportSettings, ProfileStore, profile_mapping,
-               overwrite=True, autofill=True):
+    def create(
+        self,
+        path,
+        project_name,
+        psse_folder,
+        settings,
+        export_settings,
+        profile_store,
+        profile_mapping,
+        overwrite=True,
+        autofill=True,
+    ):
         if os.path.exists(path):
-            self._create_folders(path, projectName, overwrite)
-            uSettings, uExports = self._update_settings(settings, exportSettings)
-            uSettings["Simulation"]["Project Path"] = os.path.join(path, projectName)
+            self._create_folders(path, project_name, overwrite)
+            u_settings, u_exports = self._update_settings(settings, export_settings)
+            u_settings["Simulation"]["Project Path"] = os.path.join(path, project_name)
 
-            psseFiles = self._copy_psse_project_files(path, projectName, PSSEfolder)
+            psse_files = self._copy_psse_project_files(path, project_name, psse_folder)
             if autofill:
-                uSettings = self._autofill_settings(
-                    psseFiles, uSettings, path, projectName, ProfileStore, profile_mapping
+                u_settings = self._autofill_settings(
+                    psse_files, u_settings, path, project_name, profile_store, profile_mapping
                 )
-            self._write_setting_files(path, projectName, uSettings, uExports)
+            self._write_setting_files(path, project_name, u_settings, u_exports)
 
         else:
-            raise Exception(f"Path provided does not exist ({path})")
+            msg = f"Path provided does not exist ({path})"
+            raise Exception(msg)
 
-    def _autofill_settings(self, psseFiles, uSettings, path, projectName, ProfileStore, profile_mapping):
-        pssePath = os.path.join(path, projectName, "Case_study")
+    def _autofill_settings(self, psse_files, u_settings, path, project_name, profile_store, profile_mapping):
+        psse_path = os.path.join(path, project_name, "Case_study")
 
-        uSettings = self._set_file("sav", "Case study", psseFiles, uSettings, pssePath)
-        uSettings = self._set_file("raw", "Raw file", psseFiles, uSettings, pssePath)
-        uSettings = self._set_file("snp", "Snp file", psseFiles, uSettings, pssePath)
-        uSettings = self._set_file("dyr", "Dyr file", psseFiles, uSettings, pssePath)
-        uSettings = self._set_file("gic", "GIC file", psseFiles, uSettings, pssePath)
-        uSettings = self._set_file("rwm", "Rwm file", psseFiles, uSettings, pssePath)
-        if "dll" in psseFiles:
-            uSettings["Simulation"]["User models"] = psseFiles["dll"]
-            logging.info(f"Settings:User models={psseFiles['dll']}")
+        u_settings = self._set_file("sav", "Case study", psse_files, u_settings, psse_path)
+        u_settings = self._set_file("raw", "Raw file", psse_files, u_settings, psse_path)
+        u_settings = self._set_file("snp", "Snp file", psse_files, u_settings, psse_path)
+        u_settings = self._set_file("dyr", "Dyr file", psse_files, u_settings, psse_path)
+        u_settings = self._set_file("gic", "GIC file", psse_files, u_settings, psse_path)
+        u_settings = self._set_file("rwm", "Rwm file", psse_files, u_settings, psse_path)
+        if "dll" in psse_files:
+            u_settings["Simulation"]["User models"] = psse_files["dll"]
+            logging.info(f"Settings:User models={psse_files['dll']}")
         else:
-            logging.info(f"No DLL files found in path {pssePath}")
-        if "idv" in psseFiles:
-            uSettings["Simulation"]["Setup files"] = psseFiles["idv"]
-            logging.info(f"Settings:Setup files={psseFiles['idv']}"
-                         f"\nSequence of IDV setup files is important. Manually change in TOML file f needed")
+            logging.info(f"No DLL files found in path {psse_path}")
+        if "idv" in psse_files:
+            u_settings["Simulation"]["Setup files"] = psse_files["idv"]
+            logging.info(
+                f"Settings:Setup files={psse_files['idv']}"
+                f"\nSequence of IDV setup files is important. Manually change in TOML file f needed"
+            )
         else:
-            logging.info(f"No IDV files found in path {pssePath}")
+            logging.info(f"No IDV files found in path {psse_path}")
 
-        if "csv" in psseFiles:
-            subscriptonFile = self._find_subscriptions_file(psseFiles["csv"], uSettings, pssePath)
-            if subscriptonFile:
-                uSettings["Simulation"]["Subscriptions file"] = subscriptonFile
-                logging.info(f"Settings:Subscriptions file={subscriptonFile}")
+        if "csv" in psse_files:
+            subscripton_file = self._find_subscriptions_file(psse_files["csv"], psse_path)
+            if subscripton_file:
+                u_settings["Simulation"]["Subscriptions file"] = subscripton_file
+                logging.info(f"Settings:Subscriptions file={subscripton_file}")
             else:
-                uSettings = self._create_default_sub_file(pssePath, uSettings)
+                u_settings = self._create_default_sub_file(psse_path, u_settings)
         else:
-            uSettings = self._create_default_sub_file(pssePath, uSettings)
+            u_settings = self._create_default_sub_file(psse_path, u_settings)
 
-        storePath = os.path.join(path, projectName, "Profiles")
-        if ProfileStore and os.path.exists(ProfileStore):
+        store_path = os.path.join(path, project_name, "Profiles")
+        if profile_store and os.path.exists(profile_store):
             try:
-                copy(ProfileStore, storePath)
+                copy(profile_store, store_path)
             except:
-                raise Exception(os.getcwd(),ProfileStore, storePath)
+                raise Exception(os.getcwd(), profile_store, store_path)
         else:
-            ProfileManager(None, None, uSettings, logging)
+            ProfileManager(None, None, u_settings, logging)
 
         if os.path.exists(profile_mapping):
-            copy(profile_mapping, storePath)
+            copy(profile_mapping, store_path)
         else:
-            #TODO: auto generate mapping file from bus subsystem files
-            with open(os.path.join(storePath, DEFAULT_PROFILE_MAPPING_FILENAME), "w") as f:
+            # TODO: auto generate mapping file from bus subsystem files
+            with open(os.path.join(store_path, DEFAULT_PROFILE_MAPPING_FILENAME), "w") as _:
                 pass
 
-        return uSettings
+        return u_settings
 
-    def _create_default_sub_file(self, pssePath, uSettings):
+    def _create_default_sub_file(self, psse_path, u_settings):
         data = pd.DataFrame({}, columns=list(SUBSCRIPTION_FIELDS))
-        data.to_csv(os.path.join(pssePath, DEFAULT_SUBSCRIPTION_FILENAMES), index=False)
-        logging.info(f"No valid HELICS subscriptions file found in path {pssePath}."
-                     f"Creating empty {DEFAULT_SUBSCRIPTION_FILENAMES} file")
-        uSettings["Simulation"]["Subscriptions file"] = DEFAULT_SUBSCRIPTION_FILENAMES
-        return uSettings
+        data.to_csv(os.path.join(psse_path, DEFAULT_SUBSCRIPTION_FILENAMES), index=False)
+        logging.info(
+            f"No valid HELICS subscriptions file found in path {psse_path}."
+            f"Creating empty {DEFAULT_SUBSCRIPTION_FILENAMES} file"
+        )
+        u_settings["Simulation"]["Subscriptions file"] = DEFAULT_SUBSCRIPTION_FILENAMES
+        return u_settings
 
-    def _find_subscriptions_file(self, fileList, uSettings, pssePath):
-        sFile = None
-        for fi in fileList:
-            fPath = os.path.join(pssePath, fi)
-            with open(fPath, 'r') as f:
+    def _find_subscriptions_file(self, file_list, psse_path):
+        s_file = None
+        for fi in file_list:
+            f_path = os.path.join(psse_path, fi)
+            with open(f_path) as f:
                 line = f.readline()
-            lData = set(line.split(","))
-            if SUBSCRIPTION_FIELDS.issubset(lData):
-                sFile = fi
+            l_data = set(line.split(","))
+            if SUBSCRIPTION_FIELDS.issubset(l_data):
+                s_file = fi
                 break
-        return sFile
+        return s_file
 
-    def _set_file(self, fType, key, psseFiles, settingsDict, pssePath):
-        if fType in psseFiles:
-            releventFiles = psseFiles[fType]
-            settingsDict["Simulation"][key] =releventFiles[0]
-            logging.info(f"Settings:{key}={releventFiles[0]}")
-            if len(releventFiles) > 1:
-                logging.warning(f"More than one file with extension {fType} exist."
-                                f"\nFiles found: {releventFiles}"
-                                f"\nManually update the settings toml file")
+    def _set_file(self, f_type, key, psse_files, settings_dict, psse_path):
+        if f_type in psse_files:
+            relevent_files = psse_files[f_type]
+            settings_dict["Simulation"][key] = relevent_files[0]
+            logging.info(f"Settings:{key}={relevent_files[0]}")
+            if len(relevent_files) > 1:
+                logging.warning(
+                    f"More than one file with extension {f_type} exist."
+                    f"\nFiles found: {relevent_files}"
+                    f"\nManually update the settings toml file"
+                )
         else:
-            logging.warning(f"No file with extension '{fType}' in path {pssePath}")
-        return settingsDict
+            logging.warning(f"No file with extension '{f_type}' in path {psse_path}")
+        return settings_dict
 
     def _psse_project_file_dict(self, path):
-        fileDict = {}
-        for root, dirs, files in os.walk(path):
+        file_dict = {}
+        for _, _, files in os.walk(path):
             for file in files:
-                fName, ext = file.split(".")
-                if ext not in fileDict:
-                    fileDict[ext.lower()] = [file]
+                _, ext = file.split(".")
+                if ext not in file_dict:
+                    file_dict[ext.lower()] = [file]
                 else:
-                    fileDict[ext.lower()].append(file)
-        return fileDict
+                    file_dict[ext.lower()].append(file)
+        return file_dict
 
-    def _copy_psse_project_files(self, path, projectName, PSSEfolder):
-        if os.path.exists(PSSEfolder):
-            newPath = os.path.join(path, projectName, "Case_study")
-            copy_tree(PSSEfolder, os.path.join(path, newPath))
-            psseFiles = self._psse_project_file_dict(newPath)
+    def _copy_psse_project_files(self, path, project_name, psse_folder):
+        if os.path.exists(psse_folder):
+            new_path = os.path.join(path, project_name, "Case_study")
+            copy_tree(psse_folder, os.path.join(path, new_path))
+            psse_files = self._psse_project_file_dict(new_path)
         else:
-            raise Exception(f"PSSE project path does not exist. ({PSSEfolder}) {os.getcwd()}")
-        return psseFiles
+            msg = f"PSSE project path does not exist. ({psse_folder}) {os.getcwd()}"
+            raise Exception(msg)
+        return psse_files
 
-    def _update_settings(self, settings, exportSettings):
-        defaultSettings = toml.load(os.path.join(self.basepath, "pypsse", 'defaults', SIMULATION_SETTINGS_FILENAME))
-        defaultExports = toml.load(os.path.join(self.basepath, "pypsse", 'defaults', EXPORTS_SETTINGS_FILENAME))
-        defaultSettings.update(settings)
-        defaultExports.update(exportSettings)
-        return defaultSettings, defaultExports
+    def _update_settings(self, settings, export_settings):
+        default_settings = toml.load(os.path.join(self.basepath, "pypsse", "defaults", SIMULATION_SETTINGS_FILENAME))
+        default_exports = toml.load(os.path.join(self.basepath, "pypsse", "defaults", EXPORTS_SETTINGS_FILENAME))
+        default_settings.update(settings)
+        default_exports.update(export_settings)
+        return default_settings, default_exports
 
-    def _write_setting_files(self, path, projectName, settings, exports):
-        with open(os.path.join(path, projectName, 'Settings', SIMULATION_SETTINGS_FILENAME), 'w') as f:
+    def _write_setting_files(self, path, project_name, settings, exports):
+        with open(os.path.join(path, project_name, "Settings", SIMULATION_SETTINGS_FILENAME), "w") as f:
             toml.dump(settings, f)
 
-        with open(os.path.join(path, projectName, 'Settings', EXPORTS_SETTINGS_FILENAME), 'w') as f:
+        with open(os.path.join(path, project_name, "Settings", EXPORTS_SETTINGS_FILENAME), "w") as f:
             toml.dump(exports, f)
-        return
 
-    def _create_folders(self, path, projectName, overwrite):
-        projectPath = os.path.join(path, projectName)
-        if os.path.exists(projectPath) and overwrite:
-            os.system('rmdir /S /Q "{}"'.format(projectPath))
-            #os.remove(projectPath)
-        elif os.path.exists(projectPath) and not overwrite:
-            raise Exception(f"Project already exists. Set 'overwrite' to true to overwrite existing project.")
+    def _create_folders(self, path, project_name, overwrite):
+        project_path = os.path.join(path, project_name)
+        if os.path.exists(project_path) and overwrite:
+            rmtree(project_path)
+        elif os.path.exists(project_path) and not overwrite:
+            msg = "Project already exists. Set 'overwrite' to true to overwrite existing project."
+            raise Exception(msg)
 
-        self.makeDIR(projectPath)
+        self.make_dir(project_path)
         for f in PROJECT_FOLDERS:
-            self.makeDIR(os.path.join(projectPath, f))
+            self.make_dir(os.path.join(project_path, f))
 
-    def makeDIR(self, path):
-        #try:
-            os.mkdir(path)
-       # except OSError:
-       #     raise Exception(f"Creation of the directory {path} failed; {OSError}")
+    def make_dir(self, path):
+        # try:
+        os.mkdir(path)
+
+    # except OSError:
+    #     raise Exception(f"Creation of the directory {path} failed; {OSError}")
+
 
 # a = pyPSSE_project()
 # a.create(
