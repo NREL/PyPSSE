@@ -644,9 +644,7 @@ class ExportAssetTypes(BaseModel):
     induction_generators: Optional[List[InductionGeneratorProperties]]
     machines: Optional[List[MachinesProperties]]
     channels: Optional[List[str]]
-    channel_setup: Optional[
-        List[Union[BusChannel, LoadChannel, MachineChannel]]
-    ]
+    channel_setup: Optional[List[Union[BusChannel, LoadChannel, MachineChannel]]]
 
 
 class ExportFileOptions(ExportAssetTypes):

@@ -4,7 +4,7 @@ import helics as h
 import pandas as pd
 
 from pypsse.common import MAPPED_CLASS_NAMES
-from pypsse.models import SimulationModes, SimulationSettings, ExportSettings
+from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
 from pypsse.modes.constants import dyn_only_options
 from pypsse.profile_manager.common import PROFILE_VALIDATION
 

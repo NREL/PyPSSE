@@ -295,7 +295,7 @@ class AbstractMode:
         else:
             return savfile, None
 
-    def init(self, bus_subsystems = None):
+    def init(self, bus_subsystems=None):
         assert bus_subsystems is not None
         if self.settings.log.disable_psse_logging:
             self.disable_logging()
@@ -354,7 +354,7 @@ class AbstractMode:
         area_numbers = []
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "AREA")
-            
+
             if val:
                 area_numbers.append(val)
         return list(set(area_numbers))
@@ -395,7 +395,7 @@ class AbstractMode:
         bus_numbers = []
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "STATION")
-            
+
             if val == sub_number:
                 bus_numbers.append(int(b))
         return list(set(bus_numbers))
@@ -404,10 +404,10 @@ class AbstractMode:
         nom_kvs = []
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "STATION")
-            
+
             if val == sub_number:
                 ierr, val = self.psse.busdat(int(b), "BASE")
-                
+
                 nom_kvs.append(val)
         return list(set(nom_kvs))
 
@@ -415,29 +415,29 @@ class AbstractMode:
         load_mw = 0
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "STATION")
-            
+
             if val == sub_number:
                 ierr = self.psse.inilod(int(b))
-                
+
                 ierr, load_id = self.psse.nxtlod(int(b))
-                
+
                 while ierr == 0:
                     ierr, val = self.psse.loddt2(int(b), load_id, "TOTAL", "ACT")
-                    
+
                     if isinstance(val, complex):
                         load_mw += val.real
                     ierr, load_id = self.psse.nxtlod(int(b))
-                    
+
         return load_mw
 
     def get_a_genmw_in_substation(self, sub_number, subsystem_buses):
         gen_mw = 0
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "STATION")
-            
+
             if val == sub_number:
                 ierr, val = self.psse.gendat(int(b))
-                
+
                 if isinstance(val, complex):
                     gen_mw += val.real
         return gen_mw
@@ -446,16 +446,16 @@ class AbstractMode:
         generators = []
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "STATION")
-            
+
             if val == sub_number:
                 ierr = self.psse.inimac(int(b))
-                
+
                 ierr, mach_id = self.psse.nxtmac(int(b))
-                
+
                 while ierr == 0:
                     gen_name = f"{b}_{mach_id}"
                     ierr, mach_id = self.psse.nxtmac(int(b))
-                    
+
                     generators.append(gen_name)
 
         return list(set(generators))
@@ -464,32 +464,31 @@ class AbstractMode:
         transformers = []
         for b in subsystem_buses:
             ierr, val = self.psse.busint(int(b), "STATION")
-            
+
             if val == sub_number:
                 # Get two winding transformers
                 ierr = self.psse.inibrx(int(b), 1)
-                
+
                 ierr, b1, ickt = self.psse.nxtbrn(int(b))
-                
+
                 ickt_string = str(ickt)
                 while ierr == 0:
                     ierr, val = self.psse.xfrdat(int(b), int(b1), ickt, "RATIO")
-                    
+
                     if ierr == 0:
                         t_name = f"{b}_{b1}_{ickt_string}"
                         transformers.append(t_name)
                     ierr, b1, ickt = self.psse.nxtbrn(int(b))
-                    
 
                 # Get three winding transformers
                 ierr = self.psse.inibrx(int(b), 1)
-                
+
                 ierr, b1, b2, ickt = self.psse.nxtbrn3(int(b))
-                
+
                 ickt_string = str(ickt)
                 while ierr == 0:
                     ierr, val = self.psse.tr3dt2(int(b), int(b1), int(b2), ickt, "Z01")
-                    
+
                     if ierr == 0:
                         t_name = f"{b!s}_{b1!s}_{b2!s}_{ickt_string}"
                         transformers.append(t_name)
@@ -499,7 +498,7 @@ class AbstractMode:
 
     def check_for_loadbus(self, b):
         ierr = self.psse.inilod(int(b))
-        
+
         if ierr == 0:
             ierr = self.psse.inimac(int(b))
             if ierr == 2:
@@ -540,7 +539,7 @@ class AbstractMode:
                                             results = self.add_result(results, q, int(arr_num), arr_num)
                                         elif v == "AREANAME":
                                             ierr, val = self.psse.arenam(int(arr_num))
-                                            
+
                                             results = self.add_result(results, q, val, arr_num)
 
                             elif class_name == "Stations":
@@ -550,7 +549,7 @@ class AbstractMode:
                                             results = self.add_result(results, q, int(sub_num), sub_num)
                                         elif v == "SUBNAME":
                                             ierr, val = self.psse.staname(int(sub_num))
-                                            
+
                                             results = self.add_result(results, q, val, sub_num)
                                         elif v == "BUSES":
                                             val = self.get_a_list_of_buses_in_substation(sub_num, subsystem_buses)
@@ -580,7 +579,7 @@ class AbstractMode:
                                             results = self.add_result(results, q, int(zn_num), zn_num)
                                         elif v == "ZONENAME":
                                             ierr, val = self.psse.zonnam(int(zn_num))
-                                            
+
                                             results = self.add_result(results, q, val, zn_num)
 
                             elif class_name == "DCtransmissionlines":
@@ -590,7 +589,7 @@ class AbstractMode:
                                             results = self.add_result(results, q, dcline, dcline)
                                     elif func_name == "dc2int_2":
                                         ierr, val = getattr(self.psse, func_name)(dcline, v)
-                                        
+
                                         results = self.add_result(results, q, val, dcline)
 
                             else:
@@ -617,7 +616,7 @@ class AbstractMode:
                                             if v == "FREQ":
                                                 if b in self.bus_freq_channels:
                                                     ierr, val = self.psse.chnval(self.bus_freq_channels[b])
-                                                    
+
                                                     if not val:
                                                         val = np.NaN
                                                     results = self.add_result(results, q, val * 60.0, int(b))
@@ -627,7 +626,7 @@ class AbstractMode:
                                         if func_name in ["busdat", "busint"]:
                                             # if v == 'FREQ':
                                             ierr, val = getattr(self.psse, func_name)(int(b), v)
-                                            
+
                                             results = self.add_result(results, q, val, b)
 
                                         elif func_name == "busdt2":
@@ -637,12 +636,12 @@ class AbstractMode:
                                                     string2 = ext_string2_info[class_name][v]
 
                                             ierr, val = getattr(self.psse, func_name)(int(b), v, string2)
-                                            
+
                                             results = self.add_result(results, q, val, b)
 
                                         elif func_name in ["notona", "gendat"]:
                                             ierr, val = getattr(self.psse, func_name)(int(b))
-                                            
+
                                             results = self.add_result(results, q, val, b)
 
                                         elif func_name == "busexs":
@@ -652,14 +651,14 @@ class AbstractMode:
 
                                         elif func_name == "arenam":
                                             ierr, val = self.psse.busint(int(b), "AREA")
-                                            
+
                                             if val:
                                                 irr, val = getattr(self.psse, func_name)(val)
                                             results = self.add_result(results, q, val, b)
 
                                     elif func_name == "stadat":
                                         ierr, val = self.psse.busint(int(b), "STATION")
-                                        
+
                                         if val:
                                             irr, val = getattr(self.psse, func_name)(val, v)
                                         results = self.add_result(results, q, val, b)
@@ -685,9 +684,9 @@ class AbstractMode:
 
                                     elif func_name in ["loddt2", "lodnofunc", "lodint"]:
                                         ierr = self.psse.inilod(int(b))
-                                        
+
                                         ierr, load_id = self.psse.nxtlod(int(b))
-                                        
+
                                         while load_id is not None:
                                             if func_name == "lodnofunc":
                                                 if v in ["BUSNUM", "LOADID"]:
@@ -695,15 +694,15 @@ class AbstractMode:
                                                     results = self.add_result(results, q, val, f"{load_id}_{b}")
                                                 elif v == "BUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
-                                                    
+
                                                     results = self.add_result(results, q, val, f"{load_id}_{b}")
                                             elif func_name == "loddt2":
                                                 ierr, val = getattr(self.psse, func_name)(int(b), load_id, v, "ACT")
-                                                
+
                                                 results = self.add_result(results, q, val, f"{load_id}_{b}")
                                             elif func_name == "lodint":
                                                 ierr, val = getattr(self.psse, func_name)(int(b), load_id, v)
-                                                
+
                                                 results = self.add_result(results, q, val, f"{load_id}_{b}")
 
                                             ierr, load_id = self.psse.nxtlod(int(b))
@@ -721,33 +720,33 @@ class AbstractMode:
                                                     results = self.add_result(results, q, val, f"{mach_id}_{b}")
                                                 elif v == "SUBNUMBER":
                                                     ierr, val = self.psse.busint(int(b), "STATION")
-                                                    
+
                                                     results = self.add_result(results, q, val, f"{mach_id}_{b}")
 
                                                 elif v == "AREANUMBER":
                                                     ierr, val = self.psse.busint(int(b), "AREA")
-                                                    
+
                                                     results = self.add_result(results, q, val, f"{mach_id}_{b}")
 
                                                 elif v in ["SUBLATITUDE", "SUBLONGITUDE"]:
                                                     sub_dict = {"SUBLATITUDE": "LATI", "SUBLONGITUDE": "LONG"}
                                                     ierr, val = self.psse.busint(int(b), "STATION")
-                                                    
+
                                                     if val:
                                                         ierr, val = self.psse.stadat(val, sub_dict[v])
-                                                        
+
                                                     results = self.add_result(results, q, val, b)
                                             else:
                                                 ierr, val = getattr(self.psse, func_name)(int(b), mach_id, v)
-                                                
+
                                                 results = self.add_result(results, q, val, f"{mach_id}_{b}")
                                             ierr, mach_id = self.psse.nxtmac(int(b))
 
                                     elif func_name in ["fxsdt2", "fxsnofunc"]:
                                         ierr = self.psse.inifxs(int(b))
-                                        
+
                                         ierr, fx_id = self.psse.nxtfxs(int(b))
-                                        
+
                                         while fx_id is not None:
                                             if func_name == "fxsnofunc":
                                                 if v in ["BUSNUM", "FXSHID"]:
@@ -755,36 +754,35 @@ class AbstractMode:
                                                     results = self.add_result(results, q, val, f"{fx_id}_{b}")
                                                 elif v == "BUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
-                                                    
+
                                                     results = self.add_result(results, q, val, f"{fx_id}_{b}")
                                             else:
                                                 ierr, val = getattr(self.psse, func_name)(int(b), fx_id, v)
-                                                
+
                                                 results = self.add_result(results, q, val, f"{fx_id}_{b}")
                                             ierr, fx_id = self.psse.nxtfxs(int(b))
-                                            
 
                                     elif func_name in ["swsdt1", "swsnofunc"]:
                                         if func_name == "swsnofunc":
                                             ierr, val = self.psse.swsint(int(b), "STATUS")
-                                            
+
                                         else:
                                             ierr, val = getattr(self.psse, func_name)(int(b), v)
-                                            
+
                                         if ierr == 0:
                                             if func_name == "nofunc":
                                                 if v == "BUSNUM":
                                                     val = int(b)
                                                 elif v == "BUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
-                                                    
+
                                             results = self.add_result(results, q, val, b)
 
                                     elif func_name in ["brndat", "brndt2", "brnmsc", "brnint", "brnnofunc"]:
                                         ierr = self.psse.inibrx(int(b), 1)
-                                        
+
                                         ierr, b1, ickt = self.psse.nxtbrn(int(b))
-                                        
+
                                         ickt_string = str(ickt)
                                         while ierr == 0:
                                             if func_name == "brnnofunc":
@@ -799,40 +797,40 @@ class AbstractMode:
                                                     )
                                                 elif v == "FROMBUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
-                                                    
+
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
                                                 elif v == "TOBUSNAME":
                                                     ierr, val = self.psse.notona(int(b1))
-                                                    
+
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
                                                 elif v in ["SUBNUMBERTO", "SUBNUMBERFROM"]:
                                                     sub_dict = {"SUBNUMBERFROM": int(b), "SUBNUMBERTO": int(b1)}
                                                     ierr, val = self.psse.busint(sub_dict[v], "STATION")
-                                                    
+
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
                                                 elif v == "NOMKVFROM":
                                                     ierr, val = self.psse.busdat(int(b), "BASE")
-                                                    
+
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
                                                 elif v == "NOMKVTO":
                                                     ierr, val = self.psse.busdat(int(b1), "BASE")
-                                                    
+
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
                                                 elif v == "BY":
                                                     ierr, vali = self.psse.brndt2(int(b), int(b1), "ISHNT", v)
-                                                    
+
                                                     ierr, valj = self.psse.brndt2(int(b), int(b1), "JSHNT", v)
-                                                    
+
                                                     if isinstance(vali, complex) and isinstance(valj, complex):
                                                         val = 0.5 * vali.imag + 0.5 * valj.imag
                                                     else:
@@ -843,24 +841,23 @@ class AbstractMode:
 
                                             else:
                                                 ierr, val = getattr(self.psse, func_name)(int(b), int(b1), str(ickt), v)
-                                                
+
                                                 if irr == 0:
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
                                             ierr, b1, ickt = self.psse.nxtbrn(int(b))
-                                            
 
                                     elif func_name in ["xfrdat", "tr3dt2", "trfnofunc"]:
                                         ierr = self.psse.inibrx(int(b), 1)
-                                        
+
                                         ierr, b1, ickt = self.psse.nxtbrn(int(b))
-                                        
+
                                         ickt_string = str(ickt)
                                         while ierr == 0:
                                             if func_name == "xfrdat":
                                                 ierr, val = getattr(self.psse, func_name)(int(b), int(b1), ickt, v)
-                                                
+
                                                 if ierr == 0:
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
@@ -881,7 +878,7 @@ class AbstractMode:
                                                         )
                                                     elif v == "FROMBUSNAME_2WDG":
                                                         ierr, val = self.psse.notona(int(b))
-                                                        
+
                                                         results = self.add_result(
                                                             results,
                                                             q,
@@ -890,7 +887,7 @@ class AbstractMode:
                                                         )
                                                     elif v == "TOBUSNAME_2WDG":
                                                         ierr, val = self.psse.notona(int(b1))
-                                                        
+
                                                         results = self.add_result(
                                                             results,
                                                             q,
@@ -899,19 +896,18 @@ class AbstractMode:
                                                         )
 
                                             ierr, b1, ickt = self.psse.nxtbrn(int(b))
-                                            
 
                                         ierr = self.psse.inibrx(int(b), 1)
-                                        
+
                                         ierr, b1, b2, ickt = self.psse.nxtbrn3(int(b))
-                                        
+
                                         ickt_string = str(ickt)
                                         while ierr == 0:
                                             if func_name == "tr3dt2":
                                                 ierr, val = getattr(self.psse, func_name)(
                                                     int(b), int(b1), int(b2), ickt, v
                                                 )
-                                                
+
                                                 if ierr == 0:
                                                     results = self.add_result(
                                                         results,
@@ -941,7 +937,7 @@ class AbstractMode:
                                                         )
                                                     elif v == "FROMBUSNAME_3WDG":
                                                         ierr, val = self.psse.notona(int(b))
-                                                        
+
                                                         results = self.add_result(
                                                             results,
                                                             q,
@@ -950,7 +946,7 @@ class AbstractMode:
                                                         )
                                                     elif v == "TOBUSNAME_3WDG":
                                                         ierr, val = self.psse.notona(int(b1))
-                                                        
+
                                                         results = self.add_result(
                                                             results,
                                                             q,
@@ -959,7 +955,7 @@ class AbstractMode:
                                                         )
                                                     elif v == "TOBUS2NAME_3WDG":
                                                         ierr, val = self.psse.notona(int(b1))
-                                                        
+
                                                         results = self.add_result(
                                                             results,
                                                             q,
@@ -967,7 +963,7 @@ class AbstractMode:
                                                             f"{b!s}_{b1!s}_{ickt_string}",
                                                         )
                                             ierr, b1, b2, ickt = self.psse.nxtbrn3(int(b))
-                                            
+
         return results
 
     def add_result(self, results_dict, class_name, value, label):

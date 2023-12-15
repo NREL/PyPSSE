@@ -119,10 +119,10 @@ class Dynamic(AbstractMode, DynamicUtils):
         for bus_subsystem_id in bus_subsystems.keys():
             load_info = {}
             ierr, load_data = self.psse.aloadchar(bus_subsystem_id, 1, ["ID", "NAME", "EXNAME"])
-            
+
             load_data = np.array(load_data)
             ierr, bus_data = self.psse.aloadint(bus_subsystem_id, 1, ["NUMBER"])
-            
+
             bus_data = bus_data[0]
             for i, bus_id in enumerate(bus_data):
                 load_info[bus_id] = {
@@ -169,18 +169,18 @@ class Dynamic(AbstractMode, DynamicUtils):
                                 for bus in subsystem_buses:
                                     if class_name == "Loads":
                                         ierr = self.psse.inilod(int(bus))
-                                        
+
                                         ierr, ld_id = self.psse.nxtlod(int(bus))
-                                        
+
                                         if ld_id is not None:
                                             ierr, con_index = getattr(self.psse, func_name)(
                                                 int(bus), ld_id, "CHARAC", "CON"
                                             )
-                                            
+
                                             if con_index is not None:
                                                 act_con_index = con_index + con_ind
                                                 ierr, value = self.psse.dsrval("CON", act_con_index)
-                                                
+
                                                 res_base = f"{class_name}_{v}"
                                                 if res_base not in results:
                                                     results[res_base] = {}
