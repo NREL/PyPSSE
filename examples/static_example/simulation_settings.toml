@@ -21,7 +21,7 @@ coordinate_file = "Coordinates.csv"
 networkx_graph_file = "Graph.gpickle"
 
 [helics]
-cosimulation_mode = false
+cosimulation_mode = true
 federate_name = "psse"
 time_delta = 0.00333333333
 core_type = "zmq"

@@ -143,7 +143,7 @@ class Simulator:
             )
             self.publications = self.hi.register_publications(self.bus_subsystems)
             if self.settings.helics.create_subscriptions:
-                self.subscriptions = self.hi.register_subscriptions(self.bus_subsystems)
+                self.subscriptions = self.hi.register_subscriptions()
 
         if self.settings.simulation.gic_file:
             self.network_graph = self.parse_gic_file()
