@@ -99,18 +99,20 @@ class SimSettings(BaseModel):
     setup_files: List[str] = []
     simulation_mode: SimulationModes
 
-    @model_validator(mode='after') 
-    def sim_res_smaller_than_sim_time(self):  
-        assert self.simulation_step_resolution <= self.simulation_time, "simulation_step_resolution should be smaller than simulation_time"
-        return 
+    @model_validator(mode="after")
+    def sim_res_smaller_than_sim_time(self):
+        assert (
+            self.simulation_step_resolution <= self.simulation_time
+        ), "simulation_step_resolution should be smaller than simulation_time"
 
-    @model_validator(mode='after') 
-    def psse_res_smaller_than_sim_time(self): 
-        assert self.psse_solver_timestep <= self.simulation_time, "psse_solver_timestep should be smaller than simulation_time"
-        return 
-    
-    @model_validator(mode='after')
-    def validate_case_study(self):  # noqa: ARG002
+    @model_validator(mode="after")
+    def psse_res_smaller_than_sim_time(self):
+        assert (
+            self.psse_solver_timestep <= self.simulation_time
+        ), "psse_solver_timestep should be smaller than simulation_time"
+
+    @model_validator(mode="after")
+    def validate_case_study(self):
         file_types = ["case_study", "raw_file", "snp_file", "dyr_file", "rwm_file", "gic_file"]
         base_project_path = self.project_path
         for file in file_types:
@@ -119,10 +121,10 @@ class SimSettings(BaseModel):
                 file_path = base_project_path / CASESTUDY_FOLDER / file_path
                 assert file_path.exists(), f"{file_path} does not exist"
 
-    @model_validator(mode='after')
-    def validate_subscription_file(self): 
+    @model_validator(mode="after")
+    def validate_subscription_file(self):
         base_project_path = self.project_path
-        if hasattr(self, 'subscriptions_file'):
+        if hasattr(self, "subscriptions_file"):
             self.subscriptions_file = base_project_path / self.subscriptions_file
             assert self.subscriptions_file.exists(), f"{self.subscriptions_file} does not esist"
             data = pd.read_csv(self.subscriptions_file)
@@ -130,10 +132,10 @@ class SimSettings(BaseModel):
             sub_cols = {e.value for e in SubscriptionFileRequiredColumns}
             assert sub_cols.issubset(csv_cols), f"{sub_cols} are required columns for a valid subscription file"
 
-    @model_validator(mode='after')
-    def validate_user_models(self):  
+    @model_validator(mode="after")
+    def validate_user_models(self):
         base_project_path = self.project_path
-        if hasattr(self, 'user_models'):
+        if hasattr(self, "user_models"):
             paths = []
             for file in self.user_models:
                 model_file = base_project_path / CASESTUDY_FOLDER / file
@@ -141,12 +143,13 @@ class SimSettings(BaseModel):
                 assert model_file.suffix == ".dll", "Invalid file extension. Use dll files"
                 paths.append(model_file)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def validate_simulation_mode(self):
         if self.simulation_mode == SimulationModes.DYNAMIC:
             assert not self.simulation_mode[
                 "use_profile_manager"
             ], "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
+
 
 class ExportSettings(BaseModel):
     "Export setting model defination"
@@ -167,6 +170,7 @@ class PublicationDefination(BaseModel):
         model_type (ModelTypes): asdsad.
         attmodel_typer2 (List, optional): Description of `attr2`.
     """
+
     bus_subsystems: List[int] = [
         0,
     ]
@@ -311,8 +315,8 @@ class SimulationSettings(BaseModel):
     generators: GeneratorSettings
     contingencies: Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]]
 
-    @model_validator(mode='after')
-    def validate_export_paths(self):  
+    @model_validator(mode="after")
+    def validate_export_paths(self):
         base_project_path = self.simulation.project_path
         if self.export.outx_file:
             self.export.outx_file = base_project_path / EXPORTS_FOLDER / self.export.outx_file
@@ -326,7 +330,6 @@ class SimulationSettings(BaseModel):
             self.export.networkx_graph_file = base_project_path / EXPORTS_FOLDER / self.export.networkx_graph_file
         if self.export.coordinate_file:
             self.export.coordinate_file = base_project_path / EXPORTS_FOLDER / self.export.coordinate_file
-
 
 
 class BusProperties(Enum):
