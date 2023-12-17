@@ -83,7 +83,7 @@ from pypsse.profile_manager.profile_store import ProfileManager
 def create_profiles(
     project_path, csv_file_path, profile_folder, profile_name, profile_type, start_time, profile_res, profile_info
 ):
-    """Run a PyPSSE simulation."""
+    """Creates profiles for PyPSSE project."""
     logging.root.setLevel("DEBUG")
     settings_file = os.path.join(project_path, "Settings", SIMULATION_SETTINGS_FILENAME)
     if os.path.exists(settings_file):
@@ -94,7 +94,7 @@ def create_profiles(
                 csv_file=csv_file_path,
                 name=profile_name,
                 pType=profile_type,
-                startTime=dt.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f"),
+                startTime=dt.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f").astimezone(None),
                 resolution_sec=profile_res,
                 info=profile_info,
             )
@@ -112,7 +112,7 @@ def create_profiles(
                                 csv_file=os.path.join(profile_folder, file),
                                 name=p_name,
                                 pType=dtype,
-                                startTime=dt.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f"),
+                                startTime=dt.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f").astimezone(None),
                                 resolution_sec=profile_res,
                                 info=profile_info,
                             )

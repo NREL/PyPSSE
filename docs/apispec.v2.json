@@ -1,0 +1,425 @@
+{
+    "info": {
+        "description": "Create PyPSSE instance, run simulation, get status of running instance, delete running instance etc.",
+        "title": "psse_service RESTful API documentation",
+        "version": "1.0.0"
+    },
+    "openapi": "3.0.0",
+    "paths": {
+        "/simulators/psse": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "examples": {
+                                "Example 1": {
+                                    "value": {
+                                        "parameters": {
+                                            "filename": "C:/Users/alatif/Desktop/pypsse-code/examples/static_example/Settings/simulation_settings.toml"
+                                        }
+                                    }
+                                }
+                            },
+                            "schema": {
+                                "properties": {
+                                    "parameters": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": false
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "post_message": {
+                                        "value": {
+                                            "Message": "Starting PSSE",
+                                            "Status": "Success,",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "creates an instance successfully."
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "post_message": {
+                                        "value": {
+                                            "Message": "Failed creating an instance",
+                                            "Status": "Failed,",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Failed creating a psse instance"
+                    }
+                },
+                "summary": "Creates a PyPSSE instance",
+                "tags": [
+                    "simulation"
+                ]
+            },
+            "put": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "examples": {
+                                "Example 1": {
+                                    "value": {
+                                        "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                                        "command": "init",
+                                        "parameters": {}
+                                    }
+                                },
+                                "Example 2": {
+                                    "value": {
+                                        "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                                        "command": "solve_step",
+                                        "parameters": {}
+                                    }
+                                },
+                                "Example 3": {
+                                    "value": {
+                                        "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                                        "command": "get_results",
+                                        "parameters": {
+                                            "params": {
+                                                "Buses": {
+                                                    "id_fields": [
+                                                        "PU",
+                                                        "ANGLE"
+                                                    ]
+                                                },
+                                                "Loads": {
+                                                    "id_fields": [
+                                                        "MVA"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "schema": {
+                                "properties": {
+                                    "UUID": {
+                                        "example": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                                        "format": "UUID",
+                                        "type": "string"
+                                    },
+                                    "command": {
+                                        "example": "open_case",
+                                        "type": "string"
+                                    },
+                                    "parameters": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": false
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "command_placed_psse": {
+                                        "value": {
+                                            "Message": "init command submitted, awaiting response",
+                                            "Status": "Success",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Success on placing command."
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "command_placed_psse": {
+                                        "value": {
+                                            "code": 500,
+                                            "message": "Error placing command"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Failed placing a acommand"
+                    }
+                },
+                "summary": "Run a command on an instance of PyPSSE.",
+                "tags": [
+                    "simulation"
+                ]
+            }
+        },
+        "/simulators/psse/instances": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "get_uuid_instances": {
+                                        "value": {
+                                            "Instances": [],
+                                            "Status": "Success"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "lists all PyPSSE instances."
+                    }
+                },
+                "summary": "Returns UUIDs of all instances running on the server",
+                "tags": [
+                    "simulation status"
+                ]
+            },
+            "head": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "get_uuid_instances": {
+                                        "value": {
+                                            "Instances": [],
+                                            "Status": "Success"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "lists all PyPSSE instances."
+                    }
+                },
+                "summary": "Returns UUIDs of all instances running on the server",
+                "tags": [
+                    "simulation status"
+                ]
+            }
+        },
+        "/simulators/psse/status/uuid/{uuid}": {
+            "get": {
+                "parameters": [
+                    {
+                        "explode": false,
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "example": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                            "format": "UUID",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "get_instance_status": {
+                                        "value": {
+                                            "Message": "None",
+                                            "Status": "Success",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Fetched the psse instance status successfully ."
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "get_instance_status": {
+                                        "value": {
+                                            "Message": "Does not exists",
+                                            "Status": "Failed",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Failed fetching the psse instance status."
+                    }
+                },
+                "summary": "This end-point gives the status of PyPSSE instance.",
+                "tags": [
+                    "simulation status"
+                ]
+            },
+            "head": {
+                "parameters": [
+                    {
+                        "explode": false,
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "example": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                            "format": "UUID",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "get_instance_status": {
+                                        "value": {
+                                            "Message": "None",
+                                            "Status": "Success",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Fetched the psse instance status successfully ."
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "get_instance_status": {
+                                        "value": {
+                                            "Message": "Does not exists",
+                                            "Status": "Failed",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Failed fetching the psse instance status."
+                    }
+                },
+                "summary": "This end-point gives the status of PyPSSE instance.",
+                "tags": [
+                    "simulation status"
+                ]
+            }
+        },
+        "/simulators/psse/uuid/{uuid}": {
+            "delete": {
+                "parameters": [
+                    {
+                        "explode": false,
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "example": "96c21e00-cd3c-4943-a914-14451f5f7ab6",
+                            "format": "UUID",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "delete_instance": {
+                                        "value": {
+                                            "Message": "Attempting to close psse instance",
+                                            "Status": "Success",
+                                            "UUID": "96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "deletes an instance successfullly."
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "delete_instance": {
+                                        "value": {
+                                            "code": 500,
+                                            "message": "Error closing in PSSE instance 96c21e00-cd3c-4943-a914-14451f5f7ab6"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Failed deleting a psse instance"
+                    }
+                },
+                "summary": "Deletes an active instance of PyPSSE.",
+                "tags": [
+                    "simulation"
+                ]
+            }
+        }
+    }
+}

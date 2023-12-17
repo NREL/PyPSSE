@@ -3,27 +3,46 @@ site_name: PYPSSE
 theme:
   name: "material"
 
+extra_css:
+  - css/mkdocsoad.css
+
 plugins:
+  - search
+  - autorefs
+  - table-reader
+  - neoteroi.mkdocsoad:
+      use_pymdownx: false
   - mkdocstrings:
       handlers:
-          python:
-            paths: [src]
+        python:
+          options:
+            show_symbol_type_heading: true
   - glightbox
+  - gen-files:
+      scripts:
+        - docs/code/doc_builder.py 
 
 nav:
-  - :Index.md
-  - installation.md
-  - how-to-guides.md
+  - Home : index.md
   - Tutorials : tutorials.md
-  - Server : server_example.md
-  - References :
-      Models: code/models.md
-      Code reference: code/reference.md
+  - Data models : code/models.md
+  - Interfaces :
+      API interface: code/api.md
+      CLI interface: code/cli.md
+  - Co-design and co-simulation :
+      HELICS: code/helics_interface.md
+      OpenMDAO: code/mdao.md
+  - Reference manual: code/reference.md
 
   
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
+  - mkdocs-click
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 
 extra_javascript:
   - javascripts/mathjax.js

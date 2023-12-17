@@ -4,22 +4,25 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import pandas as pd
-from pydantic.v1 import BaseModel, Field, validator
-from pydantic.v1.networks import IPvAnyAddress
+from pydantic import BaseModel, Field, model_validator
+from pydantic.networks import IPvAnyAddress
 
 from pypsse.common import CASESTUDY_FOLDER, EXPORTS_FOLDER, LOGS_FOLDER
 
 
 class BulkWriteModes(Enum):
+    "Supported bulk writers"
     CSV = "csv"
     PKL = "pkl"
 
 
 class StreamedWriteModes(Enum):
+    "Supported stream writers"
     H5 = "h5"
 
 
 class SimulationModes(Enum):
+    "Valid PyPSSE simulation modes"
     PCM = "PCM"
     SNAP = "Snap"
     STATIC = "Steady-state"
@@ -27,10 +30,12 @@ class SimulationModes(Enum):
 
 
 class HelicsCoreTypes(Enum):
+    "HILICS core types"
     ZMQ = "zmq"
 
 
 class ModelTypes(Enum):
+    "Supported asset tpyes in PyPSSE"
     BUSES = "Buses"
     BRANCHES = "Branches"
     LOADS = "Loads"
@@ -46,6 +51,7 @@ class ModelTypes(Enum):
 
 
 class ModelProperties(Enum):
+    "Support model properties"
     PU = "PU"
     FREQ = "FREQ"
     ANGLE = "ANGLE"
@@ -53,6 +59,7 @@ class ModelProperties(Enum):
 
 
 class LoggingLevels(IntEnum):
+    "logging level setting options"
     NOTSET = 0
     DEBUG = 10
     INFO = 20
@@ -62,6 +69,7 @@ class LoggingLevels(IntEnum):
 
 
 class SubscriptionFileRequiredColumns(Enum):
+    "Subscription file requirements"
     bus_subsystem_id = "bus_subsystem_id"
     element_type = "element_type"
     element_id = "element_id"
@@ -72,6 +80,7 @@ class SubscriptionFileRequiredColumns(Enum):
 
 
 class SimSettings(BaseModel):
+    "Simulation setting  model defination"
     simulation_time: timedelta = timedelta(seconds=3.0)
     simulation_step_resolution: timedelta = timedelta(seconds=0.025)
     psse_solver_timestep: timedelta = timedelta(seconds=0.00333333333)
@@ -90,61 +99,58 @@ class SimSettings(BaseModel):
     setup_files: List[str] = []
     simulation_mode: SimulationModes
 
-    @validator("simulation_step_resolution")
-    def sim_res_smaller_than_sim_time(cls, value, values, **kwargs):
-        assert value <= values["simulation_time"], "simulation_step_resolution should be smaller than simulation_time"
-        return value
+    @model_validator(mode='after') 
+    def sim_res_smaller_than_sim_time(self):  
+        assert self.simulation_step_resolution <= self.simulation_time, "simulation_step_resolution should be smaller than simulation_time"
+        return 
 
-    @validator("psse_solver_timestep")
-    def psse_res_smaller_than_sim_time(cls, value, values, **kwargs):
-        assert value <= values["simulation_time"], "psse_solver_timestep should be smaller than simulation_time"
-        return value
+    @model_validator(mode='after') 
+    def psse_res_smaller_than_sim_time(self): 
+        assert self.psse_solver_timestep <= self.simulation_time, "psse_solver_timestep should be smaller than simulation_time"
+        return 
+    
+    @model_validator(mode='after')
+    def validate_case_study(self):  # noqa: ARG002
+        file_types = ["case_study", "raw_file", "snp_file", "dyr_file", "rwm_file", "gic_file"]
+        base_project_path = self.project_path
+        for file in file_types:
+            if hasattr(self, file):
+                file_path = getattr(self, file)
+                file_path = base_project_path / CASESTUDY_FOLDER / file_path
+                assert file_path.exists(), f"{file_path} does not exist"
 
-    @validator("case_study", "raw_file", "snp_file", "dyr_file", "rwm_file", "gic_file")
-    def validate_case_study(cls, value, values, **kwargs):
-        base_project_path = Path(values["project_path"])
-        if value:
-            value = base_project_path / CASESTUDY_FOLDER / value
-            assert value.exists(), f"{value} does not esist"
-            return value
-        return None
-
-    @validator("subscriptions_file")
-    def validate_subscription_file(cls, value, values, **kwargs):
-        base_project_path = Path(values["project_path"])
-        if value:
-            value = base_project_path / value
-            assert value.exists(), f"{value} does not esist"
-            data = pd.read_csv(value)
+    @model_validator(mode='after')
+    def validate_subscription_file(self): 
+        base_project_path = self.project_path
+        if hasattr(self, 'subscriptions_file'):
+            self.subscriptions_file = base_project_path / self.subscriptions_file
+            assert self.subscriptions_file.exists(), f"{self.subscriptions_file} does not esist"
+            data = pd.read_csv(self.subscriptions_file)
             csv_cols = set(data.columns)
             sub_cols = {e.value for e in SubscriptionFileRequiredColumns}
             assert sub_cols.issubset(csv_cols), f"{sub_cols} are required columns for a valid subscription file"
-            return value
-        return None
 
-    @validator("user_models")
-    def validate_user_models(cls, value, values, **kwargs):
-        base_project_path = Path(values["project_path"])
-        if value:
+    @model_validator(mode='after')
+    def validate_user_models(self):  
+        base_project_path = self.project_path
+        if hasattr(self, 'user_models'):
             paths = []
-            for file in value:
+            for file in self.user_models:
                 model_file = base_project_path / CASESTUDY_FOLDER / file
                 assert model_file.exists(), f"{model_file} does not esist"
                 assert model_file.suffix == ".dll", "Invalid file extension. Use dll files"
                 paths.append(model_file)
-            return paths
-        return value
 
-    @validator("simulation_mode")
-    def validate_simulation_mode(cls, value, values, **kwargs):
-        if value == SimulationModes.DYNAMIC:
-            assert not values[
+    @model_validator(mode='after')
+    def validate_simulation_mode(self):
+        if self.simulation_mode == SimulationModes.DYNAMIC:
+            assert not self.simulation_mode[
                 "use_profile_manager"
             ], "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
-        return value
-
 
 class ExportSettings(BaseModel):
+    "Export setting model defination"
+
     outx_file: Path = "test.outx"
     out_file: Path = "20LS11p.out"
     excel_file: Path = "20LS11p.xls"
@@ -154,6 +160,13 @@ class ExportSettings(BaseModel):
 
 
 class PublicationDefination(BaseModel):
+    """Publication setting model defination
+
+    Attributes:
+        bus_subsystems (list(int)): Description of `attr1`.
+        model_type (ModelTypes): asdsad.
+        attmodel_typer2 (List, optional): Description of `attr2`.
+    """
     bus_subsystems: List[int] = [
         0,
     ]
@@ -162,6 +175,7 @@ class PublicationDefination(BaseModel):
 
 
 class HelicsSettings(BaseModel):
+    "HELICS co-simualtion setting model defination"
     cosimulation_mode: bool = False
     federate_name: str = "psse"
     time_delta: timedelta = timedelta(seconds=0.00333333333)
@@ -179,6 +193,7 @@ class HelicsSettings(BaseModel):
 
 
 class LogSettings(BaseModel):
+    "Logger setting model defination"
     disable_psse_logging: bool = True
     logging_level: LoggingLevels
     log_to_external_file: bool = True
@@ -188,17 +203,20 @@ class LogSettings(BaseModel):
 
 
 class PlotSettings(BaseModel):
+    "Plotting setting model defination"
     enable_dynamic_plots: bool = False
     columns: int = Field(15, ge=1)
 
 
 class GICExportSettings(BaseModel):
+    "GIC export setting model defination"
     include_substation_connections: bool = False
     include_transfomer_connections: bool = False
     include_branch_connections: bool = True
 
 
 class BusSubsystems(BaseModel):
+    "Bus subsystem model defination"
     from_file: bool = False
     bus_file: Optional[str]
     bus_subsystem_list: List[List[int]] = [
@@ -217,21 +235,25 @@ class BusSubsystems(BaseModel):
 
 
 class LoadBreakdown(BaseModel):
+    "Load ZIP model defination"
     constant_current_percentage: float = 0.0
     constant_admittance_percentage: float = 0.0
 
 
 class LoadSettings(BaseModel):
+    "Load model defination"
     convert: bool = True
     active_load: LoadBreakdown
     reactive_load: LoadBreakdown
 
 
 class GeneratorSettings(BaseModel):
+    "Generator model defination"
     missing_machine_model: int = 1
 
 
 class BusFault(BaseModel):
+    "Bus fault model defination"
     time: float = 0.2
     bus_id: int = 38205
     duration: float = 0.3
@@ -244,11 +266,13 @@ class BusFault(BaseModel):
 
 
 class BusTrip(BaseModel):
+    "Bus trip model defination"
     time: float = 0.2
     bus_id: int = 38205
 
 
 class LineFault(BaseModel):
+    "Line fault model defination"
     time: float = 0.2
     bus_ids: List[int]
     duration: float = 0.3
@@ -261,17 +285,21 @@ class LineFault(BaseModel):
 
 
 class LineTrip(BaseModel):
+    "Line trip model defination"
     time: float = 0.2
     bus_ids: List[int]
 
 
 class MachineTrip(BaseModel):
+    "Machine trip model defination"
     time: float = 0.2
     bus_id: int = 38205
     machine_id: str = ""
 
 
 class SimulationSettings(BaseModel):
+    "PyPSSE project settings"
+
     simulation: SimSettings
     export: ExportSettings
     helics: Optional[HelicsSettings]
@@ -283,27 +311,27 @@ class SimulationSettings(BaseModel):
     generators: GeneratorSettings
     contingencies: Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]]
 
-    @validator("export")
-    def validate_export_paths(cls, value, values, **kwargs):
-        if "simulation" not in values:
-            return value
-        base_project_path = Path(values["simulation"].project_path)
-        if value.outx_file:
-            value.outx_file = base_project_path / EXPORTS_FOLDER / value.outx_file
-        if value.out_file:
-            value.out_file = base_project_path / EXPORTS_FOLDER / value.out_file
-        if value.excel_file:
-            value.excel_file = base_project_path / EXPORTS_FOLDER / value.excel_file
-        if value.log_file:
-            value.log_file = base_project_path / LOGS_FOLDER / value.log_file
-        if value.networkx_graph_file:
-            value.networkx_graph_file = base_project_path / EXPORTS_FOLDER / value.networkx_graph_file
-        if value.coordinate_file:
-            value.coordinate_file = base_project_path / EXPORTS_FOLDER / value.coordinate_file
-        return value
+    @model_validator(mode='after')
+    def validate_export_paths(self):  
+        base_project_path = self.simulation.project_path
+        if self.export.outx_file:
+            self.export.outx_file = base_project_path / EXPORTS_FOLDER / self.export.outx_file
+        if self.export.out_file:
+            self.export.out_file = base_project_path / EXPORTS_FOLDER / self.export.out_file
+        if self.export.excel_file:
+            self.export.excel_file = base_project_path / EXPORTS_FOLDER / self.export.excel_file
+        if self.export.log_file:
+            self.export.log_file = base_project_path / LOGS_FOLDER / self.export.log_file
+        if self.export.networkx_graph_file:
+            self.export.networkx_graph_file = base_project_path / EXPORTS_FOLDER / self.export.networkx_graph_file
+        if self.export.coordinate_file:
+            self.export.coordinate_file = base_project_path / EXPORTS_FOLDER / self.export.coordinate_file
+
 
 
 class BusProperties(Enum):
+    "Valid bus properties"
+
     BASE = "BASE"
     FREQ = "FREQ"
     PU = "PU"
@@ -317,6 +345,8 @@ class BusProperties(Enum):
 
 
 class AreaProperties(Enum):
+    "Valid area properties"
+
     LOAD = "LOAD"
     LOADID = "LOADID"
     LGDN = "LGDN"
@@ -327,6 +357,8 @@ class AreaProperties(Enum):
 
 
 class ZoneProperties(Enum):
+    "Valid zone properties"
+
     LOAD = "LOAD"
     LOADID = "LOADID"
     LGDN = "LGDN"
@@ -337,6 +369,8 @@ class ZoneProperties(Enum):
 
 
 class StationProperties(Enum):
+    "Valid station properties"
+
     SUBNAME = "SUBNAME"
     SUBNUMBER = "SUBNUMBER"
     BUSES = "BUSES"
@@ -348,6 +382,8 @@ class StationProperties(Enum):
 
 
 class DCLineProperties(Enum):
+    "Valid DC line properties"
+
     DCLINENAME = "DCLINENAME"
     MDC = "MDC"
     RECT = "RECT"
@@ -362,6 +398,8 @@ class DCLineProperties(Enum):
 
 
 class LoadProperties(Enum):
+    "Valid load properties"
+
     MVA = "MVA"
     IL = "IL"
     YL = "YL"
@@ -379,6 +417,8 @@ class LoadProperties(Enum):
 
 
 class FixedShuntProperties(Enum):
+    "Valid fixed shunt properties"
+
     ACT = "ACT"
     O_ACT = "O_ACT"
     NOM = "NOM"
@@ -389,6 +429,8 @@ class FixedShuntProperties(Enum):
 
 
 class SwitchedShuntProperties(Enum):
+    "Valid switched shunt properties"
+
     VSWHI = "VSWHI"
     VSWLO = "VSWLO"
     RMPCT = "RMPCT"
@@ -397,6 +439,8 @@ class SwitchedShuntProperties(Enum):
 
 
 class TransformerProperties(Enum):
+    "Valid transformer properties"
+
     RATIO = "RATIO"
     RATIO2 = "RATIO2"
     ANGLE = "ANGLE"
@@ -437,6 +481,8 @@ class TransformerProperties(Enum):
 
 
 class BranchProperties(Enum):
+    "Valid branch properties"
+
     RATEn = "RATEn"
     RATEA = "RATEA"
     RATEB = "RATEB"
@@ -472,6 +518,8 @@ class BranchProperties(Enum):
 
 
 class InductionGeneratorProperties(Enum):
+    "Valid induction generator properties"
+
     MBASE = "MBASE"
     RATEKV = "RATEKV"
     PSET = "PSET"
@@ -517,6 +565,8 @@ class InductionGeneratorProperties(Enum):
 
 
 class MachinesProperties(Enum):
+    "Valid machine properties"
+
     QMAX = "QMAX"
     O_QMAX = "O_QMAX"
     QMIN = "QMIN"
@@ -590,18 +640,24 @@ Channels = {
 
 
 class ChannelTypes(Enum):
+    "Valid channel types"
+
     BUSES = "buses"
     LOADS = "loads"
     MACHINES = "machines"
 
 
 class UseModes(Enum):
+    "Valid use modes"
+
     REGEX = "regex"
     LIST = "list"
     ALL = "all"
 
 
 class BusChannel(BaseModel):
+    "Bus channel model defination"
+
     type: ChannelTypes = ChannelTypes.BUSES
     use: UseModes = UseModes.LIST
     regex: str = ""
@@ -610,6 +666,8 @@ class BusChannel(BaseModel):
 
 
 class LoadChannel(BaseModel):
+    "Load channel model defination"
+
     type: ChannelTypes = ChannelTypes.LOADS
     use: UseModes = UseModes.LIST
     regex: str = ""
@@ -618,6 +676,8 @@ class LoadChannel(BaseModel):
 
 
 class MachineChannel(BaseModel):
+    "Machine channel model defination"
+
     type: ChannelTypes = ChannelTypes.MACHINES
     use: UseModes = UseModes.LIST
     regex: str = ""
@@ -626,11 +686,15 @@ class MachineChannel(BaseModel):
 
 
 class ExportModes(Enum):
+    "Valid export modes"
+
     CSV = "csv"
     H5 = "h5"
 
 
 class ExportAssetTypes(BaseModel):
+    "Valid export models and associated options"
+
     buses: Optional[List[BusProperties]]
     areas: Optional[List[AreaProperties]]
     zones: Optional[List[ZoneProperties]]
@@ -648,6 +712,8 @@ class ExportAssetTypes(BaseModel):
 
 
 class ExportFileOptions(ExportAssetTypes):
+    "Exoprt settings for a PyPSSE project"
+
     export_results_using_channels: bool = False
     defined_subsystems_only: bool = True
     file_format: ExportModes = "h5"

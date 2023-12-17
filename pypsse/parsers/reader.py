@@ -2,6 +2,8 @@ from ast import literal_eval
 
 
 class Reader:
+    "Parser for indexing all PSSE model assets"
+
     def __init__(self, psse_instance, logger):
         self.psse = psse_instance
         self.logger = logger

@@ -12,6 +12,7 @@ class DummyWriter:
 
 
 class DataWriter:
+    "Data writer class defination"
     modes = {
         "h5": HDF5Writer,
         "csv": CSVWriter,
@@ -20,7 +21,9 @@ class DataWriter:
     }
 
     def __init__(self, log_dir, formatnm, column_length):
+        "Sets up a data writer as per user input"
         self.writer = self.modes[formatnm](log_dir, column_length)
 
     def write(self, currenttime, powerflow_output):
+        "Enables incremental write to the data writer object"
         self.writer.write(currenttime, powerflow_output)

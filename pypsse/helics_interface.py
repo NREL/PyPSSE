@@ -4,12 +4,12 @@ import helics as h
 import pandas as pd
 
 from pypsse.common import MAPPED_CLASS_NAMES
-from pypsse.models import ExportFileOptions, SimulationModes, SimulationSettings
-from pypsse.modes.constants import dyn_only_options
+from pypsse.models import ExportFileOptions, SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION
 
 
 class HelicsInterface:
+    "Implements the HEILCS interface for PyPSSE"
     all_sub_results = {}
     all_pub_results = {}
 
@@ -21,6 +21,7 @@ class HelicsInterface:
     def __init__(
         self, psse, sim, settings: SimulationSettings, export_settings: ExportFileOptions, bus_subsystems, logger
     ):
+        "Sets up the co-simulation federate"
         self.bus_pubs = ["bus_id", "bus_Vmag", "bus_Vang", "bus_dev"]
         self.psse = psse
         self.logger = logger
@@ -39,6 +40,7 @@ class HelicsInterface:
         self.subscriptions = {}
 
     def enter_execution_mode(self):
+        "Enables federate to enter execution mode"
         itr = 0
         itr_flag = h.helics_iteration_request_iterate_if_needed
         while True:
@@ -50,6 +52,7 @@ class HelicsInterface:
                 break
 
     def create_federate(self):
+        "Creates a HELICS co-simulation federate"
         self.fedinfo = h.helicsCreateFederateInfo()
         h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings.helics.federate_name)
         h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings.helics.core_type.value)
@@ -72,6 +75,7 @@ class HelicsInterface:
         self.psse_federate = h.helicsCreateValueFederate(self.settings.helics.federate_name, self.fedinfo)
 
     def register_publications(self, bus_subsystems):
+        "Creates a HELICS publications"
         self.publications = {}
         self.pub_struc = []
         for publication_dict in self.settings.helics.publications:
@@ -88,7 +92,7 @@ class HelicsInterface:
                 f"Valid fields are: {list(self.export_settings.dict().keys())}"
                 raise Exception(msg)
 
-            managed_properties = set([ptpy.value for ptpy in getattr(self.export_settings, elm_class.lower())])
+            managed_properties = [ptpy.value for ptpy in getattr(self.export_settings, elm_class.lower())]
             properties = [p.value for p in publication_dict.model_properties]
 
             if not set(properties).issubset(managed_properties):
@@ -139,6 +143,7 @@ class HelicsInterface:
                             self.logger.debug(f"Publication registered: {pub_tag}")
 
     def register_subscriptions(self):
+        "Creates a HELICS subscriptions"
         self.subscriptions = {}
         assert (
             self.settings.simulation.subscriptions_file
@@ -208,6 +213,7 @@ class HelicsInterface:
                         self.psse_dict[row["bus"]][row["element_type"]][element_id][r] = 0
 
     def request_time(self, _):
+        "Enables time increment of the federate ina  co-simulation. Works for both loosely ans tightly coupled co-simulations"
         r_seconds = self.sim.get_total_seconds()  # - self._dss_solver.GetStepResolutionSeconds()
         if self.sim.get_time() not in self.all_sub_results:
             self.all_sub_results[self.sim.get_time()] = {}
@@ -258,6 +264,7 @@ class HelicsInterface:
             return True, self.c_seconds
 
     def get_restructured_results(self, results):
+        "Quries PSSE results that are to be published each iteration."
         results_dict = {}
         for k, d in results.items():
             c, p = k.split("_")
@@ -274,6 +281,7 @@ class HelicsInterface:
         return results_dict
 
     def publish(self):
+        "Publishes updated reslts each iteration"
         pub_results = {}
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
@@ -304,6 +312,7 @@ class HelicsInterface:
         return pub_results
 
     def subscribe(self):
+        "Subscribes results each iteration and updates PSSE objects accordingly"
         for sub_tag, sub_data in self.subscriptions.items():
             if isinstance(sub_data["property"], str):
                 sub_data["value"] = h.helicsInputGetDouble(sub_data["subscription"])
@@ -356,6 +365,7 @@ class HelicsInterface:
         return all_values
 
     def fill_missing_values(self, value):
+        "Fix values before model dispatch"
         idx = [f"realar{PROFILE_VALIDATION[self.d_type].index(c) + 1}" for c in self.Columns]
         x = dict(zip(idx, list(value)))
         return x

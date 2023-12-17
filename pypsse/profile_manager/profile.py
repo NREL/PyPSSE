@@ -7,6 +7,8 @@ from pypsse.profile_manager.common import PROFILE_VALIDATION
 
 
 class Profile:
+    "Class defination fora single profile"
+
     DEFAULT_SETTINGS = {"multiplier": 1, "normalize": False, "interpolate": False}
 
     def __init__(self, profile_obj, solver, mapping_dict, buffer_size=10, neglect_year=True):
@@ -30,6 +32,7 @@ class Profile:
         self.dtype = self.attrs["type"].decode()
 
     def update(self, update_object_properties=True):
+        "Returns value at the current timestep in the given profile"
         self.time = copy.deepcopy(self.solver.get_time())
         if self.time < self.stime or self.time > self.etime:
             value = np.array([0] * len(self.profile[0]))
@@ -65,6 +68,7 @@ class Profile:
         return value
 
     def fill_missing_values(self, value):
+        "Fixes issues in profile data"
         idx = [f"realar{PROFILE_VALIDATION[self.dtype].index(c) + 1}" for c in self.columns]
         x = dict(zip(idx, list(value)))
         return x

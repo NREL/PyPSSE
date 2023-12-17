@@ -7,6 +7,8 @@ from pypsse.utils.dynamic_utils import DynamicUtils
 
 
 class Snap(AbstractMode, DynamicUtils):
+    "Class defination for snapshat simulation mode (uses snp and sav files)"
+
     def __init__(
         self,
         psse,
@@ -24,6 +26,7 @@ class Snap(AbstractMode, DynamicUtils):
         self.init(subsystem_buses)
 
     def init(self, bus_subsystems):
+        "Initializes the simulation"
         super().init(bus_subsystems)
 
         self.iter_const = 100.0
@@ -78,15 +81,18 @@ class Snap(AbstractMode, DynamicUtils):
         return self.initialization_complete
 
     def step(self, t):
+        "Increments the simulation"
         self.time = self.time + self.incTime
         self.xTime = 0
         return self.psse.run(0, t, 1, 1, 1)
 
     def resolve_step(self, t):
+        "Resolves the current time step"
         self.xTime += 1
         return self.psse.run(0, t + self.xTime * self.incTime / self.iter_const, 1, 1, 1)
 
     def get_load_indices(self, bus_subsystems):
+        "Returns load indices"
         all_bus_ids = {}
         for bus_subsystem_id in bus_subsystems.keys():
             load_info = {}
@@ -106,16 +112,20 @@ class Snap(AbstractMode, DynamicUtils):
         return all_bus_ids
 
     def get_time(self):
+        "Returns current simulator time"
         return self.time
 
     def get_total_seconds(self):
+        "Returns total simulation time"
         return (self.time - self._StartTime).total_seconds()
 
     def get_step_size_cec(self):
+        "Returns simulation timestep resolution"
         return self.settings.simulation.simulation_step_resolution.total_seconds()
 
     @converter
     def read_subsystems(self, quantities, subsystem_buses, ext_string2_info=None, mapping_dict=None):
+        "Queries the result container for current results"
         if ext_string2_info is None:
             ext_string2_info = {}
         if mapping_dict is None:

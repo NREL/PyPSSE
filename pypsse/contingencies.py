@@ -1,3 +1,5 @@
+"This module manages contingency modeling in PyPSSE"
+
 from abc import ABCMeta
 
 # from pyPSSE import
@@ -5,6 +7,7 @@ from pypsse.models import BusFault, BusTrip, LineFault, LineTrip, MachineTrip, S
 
 
 def build_contingencies(psse, settings: SimulationSettings, logger):
+    "Builds all contingencies defined in the settings file"
     system_contingencies = []
     if settings.contingencies:
         for contingency in settings.contingencies:
@@ -22,6 +25,7 @@ def build_contingencies(psse, settings: SimulationSettings, logger):
 
 
 def add_contingency(contingency, cont_dict, dt, system_contingencies):
+    "Adds a new contingency"
     ontingency_type = contingency.__class__.__name__
     if ontingency_type in contingencies:
         system_contingencies.append(contingencies[ontingency_type](**cont_dict))
@@ -32,6 +36,7 @@ def add_contingency(contingency, cont_dict, dt, system_contingencies):
 
 
 class BaseFault:
+    "Base class defination for all fault types"
     __metaclass__ = ABCMeta
 
     requirements = []
@@ -48,6 +53,7 @@ class BaseFault:
         self.tripped = False
 
     def update(self, t):
+        "updates a fault event"
         self.t = t
         if hasattr(self.settings, "duration"):
             if self.settings.time + self.settings.duration > t >= self.settings.time and not self.enabled:
@@ -61,6 +67,7 @@ class BaseFault:
             self.tripped = True
 
     def enable_fault(self):
+        "Enables a fault event"
         err = getattr(self.psse, self.fault_method)(**self.fault_settings)
         if err:
             self.logger.warning(f"Unable to enable {self.fault_method} at element {self.element}")
@@ -68,6 +75,7 @@ class BaseFault:
             self.logger.debug(f"{self.fault_method} applied to {self.element} at time {self.t} seconds")
 
     def disable_fault(self):
+        "Disables a fault event"
         err = self.psse.dist_clear_fault()
         if err:
             self.logger.warning(f"Unable to clear {self.fault_method} at element {self.element}")
@@ -75,13 +83,16 @@ class BaseFault:
             self.logger.debug(f"{self.fault_method} cleared at element {self.element} at time {self.t} seconds")
 
     def is_enabled(self):
+        "Returns true if the fault object is enabled else false"
         return self.enabled
 
     def is_tripped(self):
+        "Returns true if the fault object is tripped else false"
         return self.tripped
 
 
 class BusFault(BaseFault):
+    "Class defination for a bus fault"
     fault_method = "dist_bus_fault"
     fault_settings = {}
 
@@ -95,6 +106,7 @@ class BusFault(BaseFault):
 
 
 class LineFault(BaseFault):
+    "Class defination for a line fault"
     fault_method = "dist_branch_fault"
     fault_settings = {}
 
@@ -110,6 +122,7 @@ class LineFault(BaseFault):
 
 
 class LineTrip(BaseFault):
+    "Class defination for a line trip"
     fault_method = "dist_branch_trip"
     fault_settings = {}
 
@@ -121,6 +134,7 @@ class LineTrip(BaseFault):
 
 
 class BusTrip(BaseFault):
+    "Class defination for a bus trip"
     fault_method = "dist_bus_trip"
     fault_settings = {}
 
@@ -131,6 +145,7 @@ class BusTrip(BaseFault):
 
 
 class MachineTrip(BaseFault):
+    "Class defination for a machine fault"
     fault_method = "dist_machine_trip"
     fault_settings = {}
 

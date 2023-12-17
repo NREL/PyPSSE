@@ -19,6 +19,8 @@ from pypsse.profile_manager.profile_store import ProfileManager
 
 
 class Project:
+    "This class defines the structure of a PyPSSE project"
+
     def __init__(self):
         logging.root.setLevel("DEBUG")
         self.basepath = os.path.dirname(pypsse.__path__[0])
@@ -36,6 +38,7 @@ class Project:
         overwrite=True,
         autofill=True,
     ):
+        "The methods creates a new PyPSSE project"
         if os.path.exists(path):
             self._create_folders(path, project_name, overwrite)
             u_settings, u_exports = self._update_settings(settings, export_settings)
@@ -53,6 +56,7 @@ class Project:
             raise Exception(msg)
 
     def _autofill_settings(self, psse_files, u_settings, path, project_name, profile_store, profile_mapping):
+        "The method auto populates fields for a new PyPSSE project"
         psse_path = os.path.join(path, project_name, "Case_study")
 
         u_settings = self._set_file("sav", "Case study", psse_files, u_settings, psse_path)
@@ -104,6 +108,7 @@ class Project:
         return u_settings
 
     def _create_default_sub_file(self, psse_path, u_settings):
+        "Method creates a subscription file for the HELICS interface"
         data = pd.DataFrame({}, columns=list(SUBSCRIPTION_FIELDS))
         data.to_csv(os.path.join(psse_path, DEFAULT_SUBSCRIPTION_FILENAMES), index=False)
         logging.info(
@@ -114,6 +119,7 @@ class Project:
         return u_settings
 
     def _find_subscriptions_file(self, file_list, psse_path):
+        "Validates an existing subscription file for the HELICS interface"
         s_file = None
         for fi in file_list:
             f_path = os.path.join(psse_path, fi)
@@ -141,6 +147,7 @@ class Project:
         return settings_dict
 
     def _psse_project_file_dict(self, path):
+        "Creates a mapping of all PyPSSE project files"
         file_dict = {}
         for _, _, files in os.walk(path):
             for file in files:
@@ -152,6 +159,7 @@ class Project:
         return file_dict
 
     def _copy_psse_project_files(self, path, project_name, psse_folder):
+        "Copies PSSE file to the new project folder"
         if os.path.exists(psse_folder):
             new_path = os.path.join(path, project_name, "Case_study")
             copy_tree(psse_folder, os.path.join(path, new_path))
@@ -162,6 +170,7 @@ class Project:
         return psse_files
 
     def _update_settings(self, settings, export_settings):
+        "Unables update of an existing settings file"
         default_settings = toml.load(os.path.join(self.basepath, "pypsse", "defaults", SIMULATION_SETTINGS_FILENAME))
         default_exports = toml.load(os.path.join(self.basepath, "pypsse", "defaults", EXPORTS_SETTINGS_FILENAME))
         default_settings.update(settings)
@@ -169,6 +178,7 @@ class Project:
         return default_settings, default_exports
 
     def _write_setting_files(self, path, project_name, settings, exports):
+        "Creats a new settings file"
         with open(os.path.join(path, project_name, "Settings", SIMULATION_SETTINGS_FILENAME), "w") as f:
             toml.dump(settings, f)
 
@@ -176,6 +186,7 @@ class Project:
             toml.dump(exports, f)
 
     def _create_folders(self, path, project_name, overwrite):
+        "Creates folder structure for a new project. Older project can be over-written"
         project_path = os.path.join(path, project_name)
         if os.path.exists(project_path) and overwrite:
             rmtree(project_path)
@@ -190,16 +201,3 @@ class Project:
     def make_dir(self, path):
         # try:
         os.mkdir(path)
-
-    # except OSError:
-    #     raise Exception(f"Creation of the directory {path} failed; {OSError}")
-
-
-# a = pyPSSE_project()
-# a.create(
-#     r"C:\Users\alatif\Desktop\pypsse-usecases",
-#     "TestProject",
-#     r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Case_study",
-#     {},
-#     {},
-# )

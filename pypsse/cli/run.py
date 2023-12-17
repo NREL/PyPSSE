@@ -24,7 +24,7 @@ from pypsse.simulator import Simulator
 )
 @click.command()
 def run(project_path, simulations_file=None):
-    """Run a PyPSSE simulation."""
+    """Runs a valid PyPSSE simulation."""
     path = os.path.join(project_path, simulations_file)
     if os.path.exists(path):
         x = Simulator(path)

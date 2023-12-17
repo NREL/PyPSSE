@@ -91,7 +91,7 @@ class HDF5Writer:
 
     def __del__(self):
         try:
-            k = list(self.dfs.keys())[0]
+            k = next(self.dfs.keys())
             length = len(self.dfs[k])
             if self.dfs[k] is not None:
                 for obj_type in self.dfs.keys():

@@ -16,7 +16,7 @@ import pandas as pd
 import toml
 
 import pypsse.contingencies as c
-import pypsse.pypsse_logger as logger
+import pypsse.custom_logger as logger
 import pypsse.simulation_controller as sc
 from pypsse.common import (
     EXPORTS_SETTINGS_FILENAME,
@@ -33,7 +33,11 @@ USING_NAERM = 0
 
 
 class Simulator:
+    "Base class for the simulator"
+
     def __init__(self, settings_toml_path="", psse_path=""):
+        "Load a valid PyPSSE project and sets up simulation"
+
         settings = self.read_settings(settings_toml_path)
         self.settings = SimulationSettings.validate(settings)
 
@@ -90,6 +94,8 @@ class Simulator:
         shutil.copy(export_toml_file, dest_dir)
 
     def start_simulation(self):
+        "Starts a loaded simulation"
+
         self.hi = None
         self.simStartTime = time.time()
 
@@ -156,6 +162,8 @@ class Simulator:
         self.inc_time = True
 
     def init(self):
+        "Initializes the model"
+
         self.sim.init(self.bus_subsystems)
 
         if self.settings.simulation.use_profile_manager:
@@ -165,10 +173,14 @@ class Simulator:
             self.hi.enter_execution_mode()
 
     def parse_gic_file(self):
+        "Parses the GIC file (if included in the project)"
+
         gicdata = gp.GICParser(self.settings, self.logger)
         return gicdata.psse_graph
 
     def define_bus_subsystems(self):
+        "Defines a bussystem in the loaded PSSE model"
+
         bus_subsystems_dict = {}
         bus_subsystems = self.get_bus_indices()
         # valid bus subsystem ID. Valid bus subsystem IDs range from 0 to 11 (PSSE documentation)
@@ -200,6 +212,8 @@ class Simulator:
         return bus_subsystems_dict, all_subsysten_buses
 
     def get_bus_indices(self):
+        "Retuens bus indices for bus subsystems"
+
         if self.settings.bus_subsystems.from_file:
             bus_file = self.settings.bus_subsystems.bus_file
             bus_info = pd.read_csv(bus_file, index_col=None)
@@ -214,6 +228,8 @@ class Simulator:
         return bus_data
 
     def read_settings(self, settings_toml_path):
+        "Read the user defined settings"
+
         settings_text = ""
         f = open(settings_toml_path)
         text = settings_text.join(f.readlines())
@@ -223,6 +239,8 @@ class Simulator:
         return toml_data
 
     def run(self):
+        "Launches the simulation"
+
         if self.sim.initialization_complete:
             if self.settings.plots and self.settings.plots.enable_dynamic_plots:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
@@ -253,11 +271,15 @@ class Simulator:
             self.logger.error("Run init() command to initialize models before running the simulation")
 
     def get_bus_ids(self):
+        "Returns bus IDs"
+
         ierr, iarray = self.psse.abusint(-1, 1, "NUMBER")
         assert ierr == 0, f"Error code: {ierr}"
         return iarray
 
     def step(self, t):
+        "Steps through a single simulation time step. Is called iteratively to increment the simualtion"
+
         self.update_contingencies(t)
         if self.settings.simulation.use_profile_manager:
             self.pm.update()
@@ -290,16 +312,22 @@ class Simulator:
         return curr_results
 
     def update_subscriptions(self):
+        "Updates subscriptions (co-simulation mode only)"
+
         self.hi.subscribe()
 
     def update_federate_time(self, t):
+        "Makes a time request to teh HELICS broker (co-simulation mode only)"
+
         inc_time, curr_time = self.hi.request_time(t)
         return inc_time, curr_time
 
     def publish_data(self):
+        "Updates publications (co-simulation mode only)"
         self.hi.publish()
 
     def get_results(self, params):
+        "Returns queried simulation results"
         self.exp_vars = self.results.update_export_variables(params)
         curr_results = (
             self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
@@ -312,6 +340,8 @@ class Simulator:
         # return curr_results, restruct_results
 
     def restructure_results(self, results, class_name):
+        "Restructure results for the improved user experience"
+
         # c_names = []
         p_names = []
         data = []
@@ -358,6 +388,8 @@ class Simulator:
         return p_names, bud_id, uuid, to_bus, to_bus2, ckt_id, data
 
     def get_bus_data(self, t, bus_subsystem_id):
+        "Return bus data"
+
         bus_data_formated = []
         ierr, rarray = self.psse.abusint(bus_subsystem_id, 1, "NUMBER")
         assert ierr == 0, f"Error code: {ierr}"
@@ -373,16 +405,15 @@ class Simulator:
         return bus_data_formated
 
     def build_contingencies(self):
+        "Builds user defined contengingies"
+
         contingencies = c.build_contingencies(self.psse, self.settings, self.logger)
         return contingencies
 
     def update_contingencies(self, t):
+        "Updates contingencies during the simualtion run"
         for contingency in self.contingencies:
             contingency.update(t)
-
-    def inject_contingencies_external(self, temp):
-        contingencies = c.build_contingencies(self.psse, Contingencies.validate(temp), self.logger)
-        self.contingencies.extend(contingencies)
 
     def __del__(self):
         if hasattr(self, "PSSE"):

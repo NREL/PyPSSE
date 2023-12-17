@@ -49,12 +49,16 @@ class GICParser:
         # plt.show()
 
     def create_graph(self):
+        "Creates graph representation"
+
         self.parse_substation_data()
         self.parse_transformer_data()
         self.parse_branch_data()
         nx.set_node_attributes(self.psse_graph, self.bus_data)
 
     def parse_substation_data(self):
+        "Parses substation data"
+
         self.logger.debug("Parsing substation data...")
         linedata = ""
         while True:
@@ -72,6 +76,8 @@ class GICParser:
                     )
 
     def parse_transformer_data(self):
+        "Parses transformer data"
+
         self.logger.debug("Parsing transformer data...")
         linedata = ""
         while True:
@@ -100,6 +106,8 @@ class GICParser:
                     pass
 
     def parse_branch_data(self):
+        "Parses branch data"
+
         self.logger.debug("Parsing branch data...")
         linedata = ""
         while True:
@@ -117,6 +125,8 @@ class GICParser:
                     )
 
     def get_bus_coordinates(self):
+        "Parses bus coordinates"
+
         self.logger.debug("Parsing bus coordinates...")
         bus_data_headers = ["subsystem/bustype?", "latitude", "longitude", "angle?"]
         self.bus_data = {}

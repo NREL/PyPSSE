@@ -12,10 +12,14 @@ from pypsse.models import (
 
 
 class Container:
+    "Class defination for the simulation result container"
+
     BULK_WRITE_MODES = [m.value for m in BulkWriteModes]
     STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
 
     def __init__(self, settings: SimulationSettings, export_settings: ExportAssetTypes):
+        "Sets up the result container object"
+
         export__list = [m.value for m in ModelTypes]
         self.export_path = settings.simulation.project_path / EXPORTS_FOLDER
         self.export_settings = export_settings
@@ -40,6 +44,9 @@ class Container:
             self.dataWriter = DataWriter(self.export_path, export_settings.file_format.value, time_steps)
 
     def update_export_variables(self, params):
+        """Updates the container with current system state.
+        Method is called iteratively to store results as a simulation executes"""
+
         export__list = [m.value for m in ModelTypes]
         self.results = {}
         self.export_vars = {}
@@ -60,9 +67,11 @@ class Container:
         return self.export_vars
 
     def get_export_variables(self):
+        "Queries and return results from the current timestep"
         return self.export_vars
 
     def update(self, bus_data, index, time):
+        "Updates the results cotainer"
         if self.export_settings.file_format not in self.BULK_WRITE_MODES:
             if self.settings.helics:
                 file_name = self.settings.helics.federate_name
@@ -80,6 +89,7 @@ class Container:
                     self.results[f"{variable_name}"] = concatenated
 
     def export_results(self):
+        "Exports all results stored to an external file."
         if self.export_settings.file_format in self.BULK_WRITE_MODES:
             for df_name, df in self.results.items():
                 export_path = (

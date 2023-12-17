@@ -79,7 +79,7 @@ def create_project(
     overwrite=None,
     autofill=None,
 ):
-    """Create PyPSSE project."""
+    """Create a new PyPSSE project."""
     if os.path.exists(path):
         s_settings = toml.load(simulation_file) if simulation_file else {}
         e_settings = toml.load(export_settings_file) if export_settings_file else {}

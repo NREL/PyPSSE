@@ -1,3 +1,5 @@
+"""Defines all standard shared varibales in PyPSSE"""
+
 CASESTUDY_FOLDER = "case_study"
 SETTINGS_FOLDER = "settings"
 EXPORTS_FOLDER = "exports"

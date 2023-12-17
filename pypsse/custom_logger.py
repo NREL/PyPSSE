@@ -5,6 +5,7 @@ from pypsse.models import LogSettings
 
 
 def get_logger(name, path, logger_options: LogSettings = None):
+    "Customizes the logger for PyPSSE"
     if logger_options.clear_old_log_file:
         test = os.listdir(os.getcwd())
         for item in test:

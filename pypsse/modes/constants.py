@@ -1,4 +1,6 @@
 # Handle complex and nominal this way
+"Constant definations for the simulation modes"
+
 import copy
 
 dyn_only_options = {

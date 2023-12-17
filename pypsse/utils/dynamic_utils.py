@@ -8,9 +8,12 @@ from pypsse.modes.constants import dyn_only_options
 
 
 class DynamicUtils:
+    "Utility functions for dynamic simulations"
+
     dynamic_params: ClassVar[List[str]] = ["FmA", "FmB", "FmC", "FmD", "Fel"]
 
     def disable_generation_for_coupled_buses(self):
+        "Disables generation of coupled buses (co-simulation mode only)"
         if (
             self.settings.helics
             and self.settings.helics.cosimulation_mode
@@ -56,6 +59,7 @@ class DynamicUtils:
                     self.logger.info(f"Machine disabled: {bus_id}_{machine}")
 
     def disable_load_models_for_coupled_buses(self):
+        "Disables loads of coupled buses (co-simulation mode only)"
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data["element_type"] == "Load"]
@@ -69,6 +73,7 @@ class DynamicUtils:
                 self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
     def break_loads(self, loads=None, components_to_replace: List[str] = []):
+        "Implements the load split logic"
         components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
         if loads is None:
             loads = self._get_coupled_loads()
@@ -78,6 +83,7 @@ class DynamicUtils:
         self._update_dynamic_parameters(loads, components_to_stay, components_to_replace)
 
     def _update_dynamic_parameters(self, loads, components_to_stay, components_to_replace):
+        "Updates dynamic parameters of composite load models"
         new_percentages = {}
         for load in loads:
             count = 0
@@ -99,6 +105,7 @@ class DynamicUtils:
             self.logger.info(f"Dynamic model parameters for load {load['id']} at bus 'XX' changed.")
 
     def _get_load_dynamic_properties(self, load):
+        "Returns dynamic parameters of composite load models"
         settings = {}
         for i in range(133):
             ierr, con_index = self.psse.lmodind(load["bus"], str(load["id"]), "CHARAC", "CON")
@@ -110,6 +117,7 @@ class DynamicUtils:
         return settings
 
     def _replicate_coupled_load(self, loads, components_to_replace):
+        "Create a replica of composite load model"
         for load in loads:
             dynamic_percentage = load["FmA"] + load["FmB"] + load["FmC"] + load["FmD"] + load["Fel"]
             static_percentage = 1.0 - dynamic_percentage
@@ -143,6 +151,8 @@ class DynamicUtils:
         return loads
 
     def _get_coupled_loads(self):
+        "Returns a list of all coupled loads ina give simualtion"
+
         sub_data = pd.read_csv(
             os.path.join(
                 self.settings["Simulation"]["Project Path"], "Settings", self.settings["HELICS"]["Subscriptions file"]
@@ -161,6 +171,8 @@ class DynamicUtils:
         return load
 
     def _get_load_static_data(self, loads):
+        "Returns static data for load models"
+
         values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
             for v in values:
@@ -169,6 +181,7 @@ class DynamicUtils:
         return loads
 
     def _get_load_dynamic_data(self, loads):
+        "Returns dynamic data for load models"
         values = dyn_only_options["Loads"]["lmodind"]
         for load in loads:
             for v, con_ind in values.items():
@@ -187,6 +200,7 @@ class DynamicUtils:
         return loads
 
     def setup_machine_channels(self, machines, properties):
+        "Sets up machine channels"
         for _, qty in enumerate(properties):
             if qty not in self.channel_map:
                 nqty = f"MACHINE_{qty}"
@@ -200,6 +214,8 @@ class DynamicUtils:
                     self.chnl_idx += 1
 
     def setup_load_channels(self, loads):
+        "Sets up load channels"
+
         if "LOAD_P" not in self.channel_map:
             self.channel_map["LOAD_P"] = {}
             self.channel_map["LOAD_Q"] = {}
@@ -213,6 +229,8 @@ class DynamicUtils:
             self.chnl_idx += 2
 
     def setup_bus_channels(self, buses, properties):
+        "Sets up bus channels"
+
         for _, qty in enumerate(properties):
             if qty not in self.channel_map:
                 self.channel_map[qty] = {}
@@ -231,6 +249,8 @@ class DynamicUtils:
                     self.chnl_idx += 2
 
     def poll_channels(self):
+        "Polls all channels adde during the setup process"
+
         results = {}
         for ppty, b_dict in self.channel_map.items():
             ppty_new = ppty.split("_and_")
@@ -250,6 +270,8 @@ class DynamicUtils:
         return results
 
     def setup_all_channels(self):
+        "Sets up all user-defined channels for a project"
+
         self.channel_map = {}
         self.chnl_idx = 1
         if not self.export_settings.channel_setup:
