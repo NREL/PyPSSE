@@ -10,6 +10,7 @@ plugins:
   - search
   - autorefs
   - table-reader
+  - mkdocs-video
   - neoteroi.mkdocsoad:
       use_pymdownx: false
   - mkdocstrings:
@@ -24,10 +25,10 @@ plugins:
 
 nav:
   - Home : index.md
-  - Tutorials : tutorials.md
-  - Interfaces :
-      API interface: code/api.md
+  - Getting Started :
       CLI interface: code/cli.md
+      API interface: code/api.md
+  - Tutorials : tutorials.md
   - Co-design and co-simulation :
       HELICS: code/helics_interface.md
       OpenMDAO: code/mdao.md
