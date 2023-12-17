@@ -44,6 +44,7 @@ pypsse serve
 - Supports time-series steady-state simulations, which are not inherently supported by PSS/E
 - Fully supports dynamic simulations
 - Built in HELICS interface (for both steady-state and dynamic simulations) enables quick cosimulation setup without a without writing a single line of code
+- Built in OpenMDAO interface for co-optimization / co-design type use cases 
 - Command line interface allows users to create new projects, run simulations, and view reports
 - Offers RESTful API interface
 - Profile and result management modules allow users to interface with external profiles and mange results

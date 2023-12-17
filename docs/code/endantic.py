@@ -46,7 +46,7 @@ class PydanticDocBuilder:
         """Method to create markdown file."""
         md_file_path = folder_path / md_filename
         md_file = MdUtils(file_name=str(md_file_path))
-        md_file.new_header(level=1, title="Data models")
+        md_file.new_header(level=1, title="Library data models")
         md_file.new_paragraph("This page provides details on the data models part of the PyPSSE library.")
 
         md_file.new_paragraph()

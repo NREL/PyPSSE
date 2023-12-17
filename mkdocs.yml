@@ -25,14 +25,16 @@ plugins:
 nav:
   - Home : index.md
   - Tutorials : tutorials.md
-  - Data models : code/models.md
   - Interfaces :
       API interface: code/api.md
       CLI interface: code/cli.md
   - Co-design and co-simulation :
       HELICS: code/helics_interface.md
       OpenMDAO: code/mdao.md
-  - Reference manual: code/reference.md
+  - Reference manual: 
+      Data models : code/models.md
+      Enumerations : code/enumerations.md
+      PyPSSE package: code/reference.md
 
   
 markdown_extensions:
@@ -50,4 +52,5 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 hooks:
+  - docs/code/enumerations.py
   - docs/code/endantic.py

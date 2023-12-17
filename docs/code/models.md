@@ -2,7 +2,7 @@
 
 
 
-# Data models
+# Library data models
 
 
 This page provides details on the data models part of the PyPSSE library.

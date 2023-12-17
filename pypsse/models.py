@@ -125,11 +125,6 @@ class ExportSettings(BaseModel):
 
 class PublicationDefination(BaseModel):
     """Publication setting model defination
-
-    Attributes:
-        bus_subsystems (list(int)): Description of `attr1`.
-        model_type (ModelTypes): asdsad.
-        attmodel_typer2 (List, optional): Description of `attr2`.
     """
 
     bus_subsystems: List[int] = [
