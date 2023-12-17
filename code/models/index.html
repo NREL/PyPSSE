@@ -225,26 +225,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tutorials
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -255,47 +235,26 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Interfaces
+    Getting Started
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            Interfaces
+            Getting Started
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    API interface
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -318,9 +277,50 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -997,9 +997,9 @@
                   
 
 
-<h1 id="library-data-models">Library data models</h1>
+<div><h1 id="library-data-models">Library data models</h1>
 <p>This page provides details on the data models part of the PyPSSE library.</p>
-<p><a class="glightbox" href="BusChannel.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusChannel.svg" /></a> 
+<p><a class="glightbox" href="BusChannel.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusChannel.svg"></a> 
 </p>
 
 
@@ -1025,13 +1025,13 @@
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Bus channel model defination&quot;</span>
+    <span class="s2">"Bus channel model defination"</span>
 
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">ChannelTypes</span> <span class="o">=</span> <span class="n">ChannelTypes</span><span class="o">.</span><span class="n">BUSES</span>
     <span class="n">use</span><span class="p">:</span> <span class="n">UseModes</span> <span class="o">=</span> <span class="n">UseModes</span><span class="o">.</span><span class="n">LIST</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">asset_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;voltage_and_angle&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">]</span>
+    <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"voltage_and_angle"</span><span class="p">,</span> <span class="s2">"frequency"</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1053,7 +1053,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="BusFault.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusFault.svg" /></a> 
+</div><p><a class="glightbox" href="BusFault.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusFault.svg"></a> 
 </p>
 
 
@@ -1082,7 +1082,7 @@
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusFault</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Bus fault model defination&quot;</span>
+    <span class="s2">"Bus fault model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">38205</span>
     <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span>
@@ -1113,7 +1113,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="BusSubsystems.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusSubsystems.svg" /></a> 
+</div><p><a class="glightbox" href="BusSubsystems.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusSubsystems.svg"></a> 
 </p>
 
 
@@ -1148,7 +1148,7 @@
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusSubsystems</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Bus subsystem model defination&quot;</span>
+    <span class="s2">"Bus subsystem model defination"</span>
     <span class="n">from_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">bus_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">bus_subsystem_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
@@ -1185,7 +1185,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="BusTrip.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusTrip.svg" /></a> 
+</div><p><a class="glightbox" href="BusTrip.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="BusTrip.svg"></a> 
 </p>
 
 
@@ -1207,7 +1207,7 @@
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Bus trip model defination&quot;</span>
+    <span class="s2">"Bus trip model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">38205</span>
 </code></pre></div></td></tr></table></div>
@@ -1231,7 +1231,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="ExportAssetTypes.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="ExportAssetTypes.svg" /></a> 
+</div><p><a class="glightbox" href="ExportAssetTypes.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="ExportAssetTypes.svg"></a> 
 </p>
 
 
@@ -1266,7 +1266,7 @@
 <span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportAssetTypes</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Valid export models and associated options&quot;</span>
+    <span class="s2">"Valid export models and associated options"</span>
 
     <span class="n">buses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BusProperties</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">areas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">AreaProperties</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1303,7 +1303,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="ExportFileOptions.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="ExportFileOptions.svg" /></a> 
+</div><p><a class="glightbox" href="ExportFileOptions.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="ExportFileOptions.svg"></a> 
 </p>
 
 
@@ -1327,11 +1327,11 @@
 <span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportFileOptions</span><span class="p">(</span><span class="n">ExportAssetTypes</span><span class="p">):</span>
-    <span class="s2">&quot;Exoprt settings for a PyPSSE project&quot;</span>
+    <span class="s2">"Exoprt settings for a PyPSSE project"</span>
 
     <span class="n">export_results_using_channels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">defined_subsystems_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">file_format</span><span class="p">:</span> <span class="n">ExportModes</span> <span class="o">=</span> <span class="s2">&quot;h5&quot;</span>
+    <span class="n">file_format</span><span class="p">:</span> <span class="n">ExportModes</span> <span class="o">=</span> <span class="s2">"h5"</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1353,7 +1353,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="ExportSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="ExportSettings.svg" /></a> 
+</div><p><a class="glightbox" href="ExportSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="ExportSettings.svg"></a> 
 </p>
 
 
@@ -1380,14 +1380,14 @@
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Export setting model defination&quot;</span>
+    <span class="s2">"Export setting model defination"</span>
 
-    <span class="n">outx_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;test.outx&quot;</span>
-    <span class="n">out_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;20LS11p.out&quot;</span>
-    <span class="n">excel_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;20LS11p.xls&quot;</span>
-    <span class="n">log_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;20LS11p.log&quot;</span>
-    <span class="n">coordinate_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">networkx_graph_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;20LS11p.gpickle&quot;</span>
+    <span class="n">outx_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"test.outx"</span>
+    <span class="n">out_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"20LS11p.out"</span>
+    <span class="n">excel_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"20LS11p.xls"</span>
+    <span class="n">log_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"20LS11p.log"</span>
+    <span class="n">coordinate_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">networkx_graph_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"20LS11p.gpickle"</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1409,7 +1409,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="GICExportSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="GICExportSettings.svg" /></a> 
+</div><p><a class="glightbox" href="GICExportSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="GICExportSettings.svg"></a> 
 </p>
 
 
@@ -1432,7 +1432,7 @@
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GICExportSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;GIC export setting model defination&quot;</span>
+    <span class="s2">"GIC export setting model defination"</span>
     <span class="n">include_substation_connections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">include_transfomer_connections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">include_branch_connections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1457,7 +1457,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="GeneratorSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="GeneratorSettings.svg" /></a> 
+</div><p><a class="glightbox" href="GeneratorSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="GeneratorSettings.svg"></a> 
 </p>
 
 
@@ -1478,7 +1478,7 @@
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GeneratorSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Generator model defination&quot;</span>
+    <span class="s2">"Generator model defination"</span>
     <span class="n">missing_machine_model</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1501,7 +1501,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="HelicsSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="HelicsSettings.svg" /></a> 
+</div><p><a class="glightbox" href="HelicsSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="HelicsSettings.svg"></a> 
 </p>
 
 
@@ -1535,18 +1535,18 @@
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HelicsSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;HELICS co-simualtion setting model defination&quot;</span>
+    <span class="s2">"HELICS co-simualtion setting model defination"</span>
     <span class="n">cosimulation_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">federate_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;psse&quot;</span>
+    <span class="n">federate_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"psse"</span>
     <span class="n">time_delta</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.00333333333</span><span class="p">)</span>
-    <span class="n">core_type</span><span class="p">:</span> <span class="n">HelicsCoreTypes</span> <span class="o">=</span> <span class="s2">&quot;zmq&quot;</span>
+    <span class="n">core_type</span><span class="p">:</span> <span class="n">HelicsCoreTypes</span> <span class="o">=</span> <span class="s2">"zmq"</span>
     <span class="n">uninterruptible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">helics_logging_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
     <span class="n">create_subscriptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">iterative_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">error_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">max_coiterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">broker_ip</span><span class="p">:</span> <span class="n">IPvAnyAddress</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+    <span class="n">broker_ip</span><span class="p">:</span> <span class="n">IPvAnyAddress</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span>
     <span class="n">broker_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">23404</span>
     <span class="n">disable_generation_on_coupled_buses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">publications</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PublicationDefination</span><span class="p">]</span>
@@ -1571,7 +1571,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="LineFault.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LineFault.svg" /></a> 
+</div><p><a class="glightbox" href="LineFault.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LineFault.svg"></a> 
 </p>
 
 
@@ -1600,7 +1600,7 @@
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LineFault</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Line fault model defination&quot;</span>
+    <span class="s2">"Line fault model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span>
@@ -1631,7 +1631,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="LineTrip.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LineTrip.svg" /></a> 
+</div><p><a class="glightbox" href="LineTrip.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LineTrip.svg"></a> 
 </p>
 
 
@@ -1653,7 +1653,7 @@
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LineTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Line trip model defination&quot;</span>
+    <span class="s2">"Line trip model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
@@ -1677,7 +1677,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="LoadBreakdown.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LoadBreakdown.svg" /></a> 
+</div><p><a class="glightbox" href="LoadBreakdown.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LoadBreakdown.svg"></a> 
 </p>
 
 
@@ -1699,7 +1699,7 @@
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadBreakdown</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Load ZIP model defination&quot;</span>
+    <span class="s2">"Load ZIP model defination"</span>
     <span class="n">constant_current_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">constant_admittance_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 </code></pre></div></td></tr></table></div>
@@ -1723,7 +1723,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="LoadChannel.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LoadChannel.svg" /></a> 
+</div><p><a class="glightbox" href="LoadChannel.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LoadChannel.svg"></a> 
 </p>
 
 
@@ -1749,11 +1749,11 @@
 <span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Load channel model defination&quot;</span>
+    <span class="s2">"Load channel model defination"</span>
 
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">ChannelTypes</span> <span class="o">=</span> <span class="n">ChannelTypes</span><span class="o">.</span><span class="n">LOADS</span>
     <span class="n">use</span><span class="p">:</span> <span class="n">UseModes</span> <span class="o">=</span> <span class="n">UseModes</span><span class="o">.</span><span class="n">LIST</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">asset_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[[]]</span>
     <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </code></pre></div></td></tr></table></div>
@@ -1777,7 +1777,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="LoadSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LoadSettings.svg" /></a> 
+</div><p><a class="glightbox" href="LoadSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LoadSettings.svg"></a> 
 </p>
 
 
@@ -1800,7 +1800,7 @@
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Load model defination&quot;</span>
+    <span class="s2">"Load model defination"</span>
     <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">active_load</span><span class="p">:</span> <span class="n">LoadBreakdown</span>
     <span class="n">reactive_load</span><span class="p">:</span> <span class="n">LoadBreakdown</span>
@@ -1825,7 +1825,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="LogSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LogSettings.svg" /></a> 
+</div><p><a class="glightbox" href="LogSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="LogSettings.svg"></a> 
 </p>
 
 
@@ -1851,7 +1851,7 @@
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LogSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Logger setting model defination&quot;</span>
+    <span class="s2">"Logger setting model defination"</span>
     <span class="n">disable_psse_logging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">logging_level</span><span class="p">:</span> <span class="n">LoggingLevels</span>
     <span class="n">log_to_external_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1879,7 +1879,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="MachineChannel.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="MachineChannel.svg" /></a> 
+</div><p><a class="glightbox" href="MachineChannel.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="MachineChannel.svg"></a> 
 </p>
 
 
@@ -1905,13 +1905,13 @@
 <span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MachineChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Machine channel model defination&quot;</span>
+    <span class="s2">"Machine channel model defination"</span>
 
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">ChannelTypes</span> <span class="o">=</span> <span class="n">ChannelTypes</span><span class="o">.</span><span class="n">MACHINES</span>
     <span class="n">use</span><span class="p">:</span> <span class="n">UseModes</span> <span class="o">=</span> <span class="n">UseModes</span><span class="o">.</span><span class="n">LIST</span>
-    <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">asset_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[[]]</span>
-    <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PELEC&quot;</span><span class="p">,</span> <span class="s2">&quot;QELEC&quot;</span><span class="p">,</span> <span class="s2">&quot;SPEED&quot;</span><span class="p">]</span>
+    <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PELEC"</span><span class="p">,</span> <span class="s2">"QELEC"</span><span class="p">,</span> <span class="s2">"SPEED"</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1933,7 +1933,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="MachineTrip.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="MachineTrip.svg" /></a> 
+</div><p><a class="glightbox" href="MachineTrip.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="MachineTrip.svg"></a> 
 </p>
 
 
@@ -1956,10 +1956,10 @@
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MachineTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Machine trip model defination&quot;</span>
+    <span class="s2">"Machine trip model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">38205</span>
-    <span class="n">machine_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">machine_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1981,7 +1981,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="PlotSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="PlotSettings.svg" /></a> 
+</div><p><a class="glightbox" href="PlotSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="PlotSettings.svg"></a> 
 </p>
 
 
@@ -2003,7 +2003,7 @@
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PlotSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Plotting setting model defination&quot;</span>
+    <span class="s2">"Plotting setting model defination"</span>
     <span class="n">enable_dynamic_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2027,7 +2027,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="PublicationDefination.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="PublicationDefination.svg" /></a> 
+</div><p><a class="glightbox" href="PublicationDefination.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="PublicationDefination.svg"></a> 
 </p>
 
 
@@ -2054,14 +2054,14 @@
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PublicationDefination</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Publication setting model defination</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Publication setting model defination</span>
+<span class="sd">    """</span>
 
     <span class="n">bus_subsystems</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="mi">0</span><span class="p">,</span>
     <span class="p">]</span>
-    <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelTypes</span> <span class="o">=</span> <span class="s2">&quot;buses&quot;</span>
-    <span class="n">model_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ModelProperties</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FREQ&quot;</span><span class="p">,</span> <span class="s2">&quot;PU&quot;</span><span class="p">]</span>
+    <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelTypes</span> <span class="o">=</span> <span class="s2">"buses"</span>
+    <span class="n">model_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ModelProperties</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"FREQ"</span><span class="p">,</span> <span class="s2">"PU"</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2083,7 +2083,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="SimSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="SimSettings.svg" /></a> 
+</div><p><a class="glightbox" href="SimSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="SimSettings.svg"></a> 
 </p>
 
 
@@ -2179,14 +2179,14 @@
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;Simulation setting  model defination&quot;</span>
+    <span class="s2">"Simulation setting  model defination"</span>
     <span class="n">simulation_time</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
     <span class="n">simulation_step_resolution</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
     <span class="n">psse_solver_timestep</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.00333333333</span><span class="p">)</span>
-    <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="s2">&quot;01/01/2020 00:00:00&quot;</span>
+    <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="s2">"01/01/2020 00:00:00"</span>
     <span class="n">use_profile_manager</span><span class="p">:</span> <span class="nb">bool</span>
-    <span class="n">psse_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;C:/Program Files/PTI/PSSE35/35.4/PSSPY39232&quot;</span>
-    <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">&quot;C:/Users/alatif/Desktop/NAERM/models/pyPSSEModel&quot;</span>
+    <span class="n">psse_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"C:/Program Files/PTI/PSSE35/35.4/PSSPY39232"</span>
+    <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"C:/Users/alatif/Desktop/NAERM/models/pyPSSEModel"</span>
     <span class="n">case_study</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">raw_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">snp_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2198,63 +2198,63 @@
     <span class="n">setup_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">simulation_mode</span><span class="p">:</span> <span class="n">SimulationModes</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">sim_res_smaller_than_sim_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulation_step_resolution</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span>
-        <span class="p">),</span> <span class="s2">&quot;simulation_step_resolution should be smaller than simulation_time&quot;</span>
+        <span class="p">),</span> <span class="s2">"simulation_step_resolution should be smaller than simulation_time"</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">psse_res_smaller_than_sim_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">psse_solver_timestep</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_time</span>
-        <span class="p">),</span> <span class="s2">&quot;psse_solver_timestep should be smaller than simulation_time&quot;</span>
+        <span class="p">),</span> <span class="s2">"psse_solver_timestep should be smaller than simulation_time"</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_case_study</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">file_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case_study&quot;</span><span class="p">,</span> <span class="s2">&quot;raw_file&quot;</span><span class="p">,</span> <span class="s2">&quot;snp_file&quot;</span><span class="p">,</span> <span class="s2">&quot;dyr_file&quot;</span><span class="p">,</span> <span class="s2">&quot;rwm_file&quot;</span><span class="p">,</span> <span class="s2">&quot;gic_file&quot;</span><span class="p">]</span>
+        <span class="n">file_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"case_study"</span><span class="p">,</span> <span class="s2">"raw_file"</span><span class="p">,</span> <span class="s2">"snp_file"</span><span class="p">,</span> <span class="s2">"dyr_file"</span><span class="p">,</span> <span class="s2">"rwm_file"</span><span class="p">,</span> <span class="s2">"gic_file"</span><span class="p">]</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_types</span><span class="p">:</span>
             <span class="n">file_path</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">file_path</span><span class="p">:</span>
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">CASESTUDY_FOLDER</span> <span class="o">/</span> <span class="n">file_path</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
-                <span class="k">assert</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist&quot;</span>
+                <span class="k">assert</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist"</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_subscription_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span>
-            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="si">}</span><span class="s2"> does not exist&quot;</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="si">}</span><span class="s2"> does not exist"</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="p">)</span>
             <span class="n">csv_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
             <span class="n">sub_cols</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">SubscriptionFileRequiredColumns</span><span class="p">}</span>
-            <span class="k">assert</span> <span class="n">sub_cols</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">csv_cols</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sub_cols</span><span class="si">}</span><span class="s2"> are required columns for a valid subscription file&quot;</span>
+            <span class="k">assert</span> <span class="n">sub_cols</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">csv_cols</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sub_cols</span><span class="si">}</span><span class="s2"> are required columns for a valid subscription file"</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_user_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_models</span><span class="p">:</span>
             <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_models</span><span class="p">:</span>
                 <span class="n">model_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">CASESTUDY_FOLDER</span> <span class="o">/</span> <span class="n">file</span>
-                <span class="k">assert</span> <span class="n">model_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_file</span><span class="si">}</span><span class="s2"> does not esist&quot;</span>
-                <span class="k">assert</span> <span class="n">model_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid file extension. Use dll files&quot;</span>
+                <span class="k">assert</span> <span class="n">model_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_file</span><span class="si">}</span><span class="s2"> does not esist"</span>
+                <span class="k">assert</span> <span class="n">model_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">".dll"</span><span class="p">,</span> <span class="s2">"Invalid file extension. Use dll files"</span>
                 <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_file</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">user_models</span> <span class="o">=</span> <span class="n">paths</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_simulation_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SimulationModes</span><span class="o">.</span><span class="n">DYNAMIC</span><span class="p">,</span> <span class="n">SimulationModes</span><span class="o">.</span><span class="n">SNAP</span><span class="p">]:</span>
             <span class="k">assert</span> <span class="p">(</span>
                 <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_profile_manager</span>
-            <span class="p">),</span> <span class="s2">&quot;Profile manager can not be used for dynamic simulations. Set &#39;Use profile manager&#39; to False&quot;</span>
+            <span class="p">),</span> <span class="s2">"Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"</span>
         <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2277,7 +2277,7 @@
 
   </div>
 
-</div><p><a class="glightbox" href="SimulationSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="SimulationSettings.svg" /></a> 
+</div><p><a class="glightbox" href="SimulationSettings.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="SimulationSettings.svg"></a> 
 </p>
 
 
@@ -2325,7 +2325,7 @@
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulationSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="s2">&quot;PyPSSE project settings&quot;</span>
+    <span class="s2">"PyPSSE project settings"</span>
 
     <span class="n">simulation</span><span class="p">:</span> <span class="n">SimSettings</span>
     <span class="n">export</span><span class="p">:</span> <span class="n">ExportSettings</span>
@@ -2338,7 +2338,7 @@
     <span class="n">generators</span><span class="p">:</span> <span class="n">GeneratorSettings</span>
     <span class="n">contingencies</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BusFault</span><span class="p">,</span> <span class="n">LineFault</span><span class="p">,</span> <span class="n">LineTrip</span><span class="p">,</span> <span class="n">BusTrip</span><span class="p">,</span> <span class="n">MachineTrip</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_export_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span><span class="p">:</span>
@@ -2375,7 +2375,7 @@
 
   </div>
 
-</div>
+</div></div>
 
 
 

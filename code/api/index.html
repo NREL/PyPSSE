@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../../tutorials/">
+        <link rel="prev" href="../cli/">
       
       
-        <link rel="next" href="../cli/">
+        <link rel="next" href="../../tutorials/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -223,26 +223,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tutorials
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -257,26 +237,47 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Interfaces
+    Getting Started
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            Interfaces
+            Getting Started
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -309,30 +310,29 @@
 
               
             
-              
-                
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
   
   
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+      <a href="../../tutorials/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    CLI interface
+    Tutorials
   </span>
   
 
       </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -563,7 +563,7 @@
                   
 
 
-<h1 id="api-interfaces">API interfaces</h1>
+<div><h1 id="api-interfaces">API interfaces</h1>
 <p>The PyPSSE REST API interface enables users to run PyPSSE on a server machine. The interface enables orchestration of multiple simualtion runs in parallel. Future extenions will support</p>
 <ul>
 <li>User management</li>
@@ -580,52 +580,52 @@ Most likely, it is not desirable to edit this file by hand!
 <h1 id="psse_service-restful-api-documentation-100">psse_service RESTful API documentation 1.0.0</h1>
 <p>Create PyPSSE instance, run simulation, get status of running instance, delete
 running instance etc.</p>
-<hr />
+<hr>
 <h2 id="simulation">simulation</h2>
 <h3 id="post-simulatorspsse">POST /simulators/psse</h3>
 <p>Creates a PyPSSE instance</p>
 <p><strong>Request body</strong></p>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;filename&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;C:/Users/alatif/Desktop/pypsse-code/examples/static_example/Settings/simulation_settings.toml&quot;</span>
+<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"C:/Users/alatif/Desktop/pypsse-code/examples/static_example/Settings/simulation_settings.toml"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the request body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-200-ok">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Starting PSSE&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success,&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Starting PSSE"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success,"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-500-internal-server-error">Response 500 Internal Server Error</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Failed creating an instance&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Failed,&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Failed creating an instance"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Failed,"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="put-simulatorspsse">PUT /simulators/psse</h3>
@@ -633,31 +633,31 @@ running instance etc.</p>
 <p><strong>Request body</strong></p>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;init&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"init"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">}</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;solve_step&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"solve_step"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">}</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_results&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;Buses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;id_fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                    </span><span class="s2">&quot;PU&quot;</span><span class="p">,</span>
-<span class="w">                    </span><span class="s2">&quot;ANGLE&quot;</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get_results"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"Buses"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"id_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">"PU"</span><span class="p">,</span>
+<span class="w">                    </span><span class="s2">"ANGLE"</span>
 <span class="w">                </span><span class="p">]</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;Loads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;id_fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                    </span><span class="s2">&quot;MVA&quot;</span>
+<span class="w">            </span><span class="nt">"Loads"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"id_fields"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">"MVA"</span>
 <span class="w">                </span><span class="p">]</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
@@ -666,46 +666,46 @@ running instance etc.</p>
 </code></pre></div>
 <p><strong>Schema of the request body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;example&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UUID&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"example"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UUID"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;example&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;open_case&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">        </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"example"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open_case"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">        </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-200-ok_1">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;init command submitted, awaiting response&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"init command submitted, awaiting response"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-500-internal-server-error_1">Response 500 Internal Server Error</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Error placing command&quot;</span>
+<span class="w">    </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Error placing command"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="delete-simulatorspsseuuiduuid">DELETE /simulators/psse/uuid/{uuid}</h3>
@@ -736,26 +736,26 @@ running instance etc.</p>
 <h3 id="response-200-ok_2">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Attempting to close psse instance&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Attempting to close psse instance"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-500-internal-server-error_2">Response 500 Internal Server Error</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Error closing in PSSE instance 96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Error closing in PSSE instance 96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="simulation-status">simulation status</h2>
@@ -764,13 +764,13 @@ running instance etc.</p>
 <h3 id="response-200-ok_3">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Instances&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span>
+<span class="w">    </span><span class="nt">"Instances"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="head-simulatorspsseinstances">HEAD /simulators/psse/instances</h3>
@@ -778,13 +778,13 @@ running instance etc.</p>
 <h3 id="response-200-ok_4">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Instances&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span>
+<span class="w">    </span><span class="nt">"Instances"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="get-simulatorspssestatusuuiduuid">GET /simulators/psse/status/uuid/{uuid}</h3>
@@ -815,27 +815,27 @@ running instance etc.</p>
 <h3 id="response-200-ok_5">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;None&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"None"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-500-internal-server-error_3">Response 500 Internal Server Error</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Does not exists&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Failed&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Does not exists"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Failed"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="head-simulatorspssestatusuuiduuid">HEAD /simulators/psse/status/uuid/{uuid}</h3>
@@ -866,30 +866,30 @@ running instance etc.</p>
 <h3 id="response-200-ok_6">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;None&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"None"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Success"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="response-500-internal-server-error_4">Response 500 Internal Server Error</h3>
 <p><strong>application/json</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Does not exists&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Failed&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;UUID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;96c21e00-cd3c-4943-a914-14451f5f7ab6&quot;</span>
+<span class="w">    </span><span class="nt">"Message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Does not exists"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"Status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Failed"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"UUID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"96c21e00-cd3c-4943-a914-14451f5f7ab6"</span>
 <span class="p">}</span>
 </code></pre></div>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="p">}</span>
 </code></pre></div>
-<hr />
+<hr></div>
 
 
 

@@ -225,26 +225,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tutorials
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -255,47 +235,26 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Interfaces
+    Getting Started
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            Interfaces
+            Getting Started
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    API interface
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -318,9 +277,50 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -841,7 +841,7 @@
                   
 
 
-<h1 id="reference-manual">Reference manual</h1>
+<div><h1 id="reference-manual">Reference manual</h1>
 <p>PyPSSE enables out of the box integration for co-simulation and co-optimization / co-design frameworks.</p>
 <h2 id="co-optimization-co-design-with-openmdao">Co-optimization / co-design with OpenMDAO</h2>
 <p>The OpenMDAO framework enables multi-domain co-optimization by structuring the problem as a group of sub problems. (<a href="https://openmdao.org/newdocs/versions/latest/main.html">Ssee OpenMDAO documentation</a>). The OpenMDAO interface implemented in PyPSSE enables it to a subproblem in a larger co-optimization or co-design problem. </p>
@@ -924,41 +924,41 @@
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PSSE</span><span class="p">:</span>
-    <span class="s2">&quot;The class defines the PSSE interface to OpenMDAO&quot;</span>
+    <span class="s2">"The class defines the PSSE interface to OpenMDAO"</span>
     <span class="n">model_loaded</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">):</span>
-        <span class="s2">&quot;Load the PyPSSE model&quot;</span>
+        <span class="s2">"Load the PyPSSE model"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span><span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_loaded</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">solve_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Solves for the current time set and incremetn in time&quot;</span>
+        <span class="s2">"Solves for the current time set and incremetn in time"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;Simulation&quot;</span><span class="p">][</span><span class="s2">&quot;Step resolution (sec)&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Step resolution (sec)"</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_result</span>
 
     <span class="k">def</span> <span class="nf">export_result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Updates results in the result container&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">export_settings</span><span class="p">[</span><span class="s2">&quot;Export results using channels&quot;</span><span class="p">]:</span>
+        <span class="s2">"Updates results in the result container"</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">export_settings</span><span class="p">[</span><span class="s2">"Export results using channels"</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">export_results</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">close_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Closes the loaded model in PyPSSE&quot;</span>
+        <span class="s2">"Closes the loaded model in PyPSSE"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">PSSE</span><span class="o">.</span><span class="n">pssehalt_2</span><span class="p">()</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PSSE case </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> closed.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"PSSE case </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> closed."</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="s2">&quot;Queries results from PyPSSE&quot;</span>
+        <span class="s2">"Queries results from PyPSSE"</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">settings</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">ppties</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;id_fields&quot;</span><span class="p">]</span>
+            <span class="n">ppties</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">"id_fields"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ppties</span><span class="p">:</span>
                 <span class="n">settings</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
@@ -1001,10 +1001,10 @@
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">close_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="s2">&quot;Closes the loaded model in PyPSSE&quot;</span>
+    <span class="s2">"Closes the loaded model in PyPSSE"</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">PSSE</span><span class="o">.</span><span class="n">pssehalt_2</span><span class="p">()</span>
     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PSSE case </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> closed.&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"PSSE case </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s2"> closed."</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -1035,8 +1035,8 @@
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">export_result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="s2">&quot;Updates results in the result container&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">export_settings</span><span class="p">[</span><span class="s2">&quot;Export results using channels&quot;</span><span class="p">]:</span>
+    <span class="s2">"Updates results in the result container"</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">export_settings</span><span class="p">[</span><span class="s2">"Export results using channels"</span><span class="p">]:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">export_results</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
@@ -1074,11 +1074,11 @@
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-    <span class="s2">&quot;Queries results from PyPSSE&quot;</span>
+    <span class="s2">"Queries results from PyPSSE"</span>
     <span class="n">settings</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">settings</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">ppties</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;id_fields&quot;</span><span class="p">]</span>
+        <span class="n">ppties</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">"id_fields"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ppties</span><span class="p">:</span>
             <span class="n">settings</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
@@ -1113,7 +1113,7 @@
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">):</span>
-    <span class="s2">&quot;Load the PyPSSE model&quot;</span>
+    <span class="s2">"Load the PyPSSE model"</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">(</span><span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
@@ -1147,9 +1147,9 @@
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">solve_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="s2">&quot;Solves for the current time set and incremetn in time&quot;</span>
+    <span class="s2">"Solves for the current time set and incremetn in time"</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">current_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;Simulation&quot;</span><span class="p">][</span><span class="s2">&quot;Step resolution (sec)&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">time_counter</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse_obj</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Step resolution (sec)"</span><span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_result</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -1202,21 +1202,21 @@
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PSSEModel</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">,</span> <span class="n">PSSE</span><span class="p">):</span>
-    <span class="s2">&quot;Expicit OpenMDAO component&quot;</span>
+    <span class="s2">"Expicit OpenMDAO component"</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem_file</span><span class="p">,</span> <span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">):</span>
-        <span class="s2">&quot;Initializes the optimization problem&quot;</span>
+        <span class="s2">"Initializes the optimization problem"</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read_problem_data</span><span class="p">(</span><span class="n">problem_file</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
-        <span class="s2">&quot;Sets up the optimization problem&quot;</span>
+        <span class="s2">"Sets up the optimization problem"</span>
         <span class="o">...</span>
 
     <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Sets up the partial derivatives&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fd&quot;</span><span class="p">)</span>
+        <span class="s2">"Sets up the partial derivatives"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">"*"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"fd"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1255,7 +1255,7 @@
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem_file</span><span class="p">,</span> <span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">):</span>
-    <span class="s2">&quot;Initializes the optimization problem&quot;</span>
+    <span class="s2">"Initializes the optimization problem"</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read_problem_data</span><span class="p">(</span><span class="n">problem_file</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">settings_file_path</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1286,7 +1286,7 @@
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
-    <span class="s2">&quot;Sets up the optimization problem&quot;</span>
+    <span class="s2">"Sets up the optimization problem"</span>
     <span class="o">...</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -1315,8 +1315,8 @@
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="s2">&quot;Sets up the partial derivatives&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fd&quot;</span><span class="p">)</span>
+    <span class="s2">"Sets up the partial derivatives"</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">"*"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"fd"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -1338,7 +1338,7 @@
 
   </div>
 
-</div>
+</div></div>
 
 
 
