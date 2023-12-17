@@ -3,12 +3,11 @@ import pandas as pd
 from pypsse.common import EXPORTS_FOLDER, MAPPED_CLASS_NAMES
 from pypsse.data_writers.data_writer import DataWriter
 from pypsse.models import (
-    BulkWriteModes,
     ExportAssetTypes,
     ModelTypes,
-    SimulationSettings,
-    StreamedWriteModes,
+    SimulationSettings
 )
+from pypsse.enumerations import StreamedWriteModes, BulkWriteModes
 
 
 class Container:
