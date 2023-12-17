@@ -70,13 +70,9 @@ class Container:
         "Queries and return results from the current timestep"
         return self.export_vars
 
-    def update(self, bus_data, index, time):
+    def update(self, bus_data, _, time):
         "Updates the results cotainer"
         if self.export_settings.file_format not in self.BULK_WRITE_MODES:
-            if self.settings.helics:
-                file_name = self.settings.helics.federate_name
-            else:
-                file_name = "simulation_results"
             self.dataWriter.write(time, bus_data)
         else:
             for variable_name, _ in bus_data.items():

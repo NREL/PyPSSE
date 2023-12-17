@@ -9,7 +9,7 @@ from pypsse.common import DEFAULT_PROFILE_MAPPING_FILENAME, DEFAULT_PROFILE_STOR
 from pypsse.exceptions import InvalidParameterError
 from pypsse.models import SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
-from pypsse.profile_manager.profile import Profile as tsp
+from pypsse.profile_manager.profile import Profile
 
 
 class ProfileManager:
@@ -49,7 +49,9 @@ class ProfileManager:
                     grp = self.store[group]
                     for profile_name, mapping_dict in profile_map.items():
                         if profile_name in grp:
-                            self.profiles[f"{group}/{profile_name}"] = tsp(grp[profile_name], self.solver, mapping_dict)
+                            self.profiles[f"{group}/{profile_name}"] = Profile(
+                                grp[profile_name], self.solver, mapping_dict
+                            )
                         else:
                             self._logger.warning(rf"Group {group} \ data set {profile_name} not found in the h5 store")
                 else:

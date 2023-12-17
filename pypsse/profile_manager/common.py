@@ -62,8 +62,9 @@ class ProfileTypes(IntEnum):
 
     @staticmethod
     def names():
-        return list(map(lambda c: c.name, ProfileTypes))
+        return [c.name for c in ProfileTypes]
+        # list(map(lambda c: c.name, ProfileTypes))
 
     @staticmethod
     def values():
-        return list(map(lambda c: c.value, ProfileTypes))
+        return [c.value for c in ProfileTypes]

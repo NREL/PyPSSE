@@ -1,5 +1,6 @@
 # Standard libraries
 # from common import dtype_MAPPING
+import logging
 import os
 
 import h5py
@@ -102,5 +103,5 @@ class HDF5Writer:
 
             self.store.flush()
             self.store.close()
-        except Exception as _:
-            pass
+        except Exception as e:
+            logging.info(str(e))

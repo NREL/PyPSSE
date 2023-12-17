@@ -9,5 +9,9 @@ class InvalidParameterError(Exception):
     """Raised when bad user input is detected."""
 
 
-class OpenDssConvergenceError(Exception):
+class HelicsConvergenceError(Exception):
+    """Raised when OpenDSS fails to converge on a solution."""
+
+
+class PsseConvergenceError(Exception):
     """Raised when OpenDSS fails to converge on a solution."""

@@ -156,7 +156,7 @@ def converter(func):
                         naerm_element_array = STANDARD_FORMAT[class_name][v]
                         new_vars = [naerm_element_array[0] if el == v else el for el in new_vars]
 
-                        if len(naerm_element_array) == 3:
+                        if len(naerm_element_array) == 3:  # noqa: PLR2004
                             ext_string2_info[naerm_element_array[0]] = naerm_element_array[2]
                         if len(naerm_element_array) > 1:
                             if class_name not in complex_conversion_dict:

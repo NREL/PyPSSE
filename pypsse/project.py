@@ -91,10 +91,7 @@ class Project:
 
         store_path = os.path.join(path, project_name, "Profiles")
         if profile_store and os.path.exists(profile_store):
-            try:
-                copy(profile_store, store_path)
-            except:
-                raise Exception(os.getcwd(), profile_store, store_path)
+            copy(profile_store, store_path)
         else:
             ProfileManager(None, None, u_settings, logging)
 

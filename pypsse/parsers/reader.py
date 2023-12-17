@@ -1,6 +1,3 @@
-from ast import literal_eval
-
-
 class Reader:
     "Parser for indexing all PSSE model assets"
 

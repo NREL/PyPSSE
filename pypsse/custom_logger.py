@@ -12,8 +12,8 @@ def get_logger(name, path, logger_options: LogSettings = None):
             if item.endswith(".log"):
                 try:
                     os.remove(item)
-                except:
-                    logging.warning("Unable to delete the old log file")
+                except Exception as e:
+                    logging.warning(f"Unable to delete the old log file, {e!s}")
     formatter = logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(module)s - %(message)s")
 
     logger = logging.getLogger(name)

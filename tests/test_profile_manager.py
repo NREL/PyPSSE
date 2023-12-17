@@ -9,9 +9,9 @@ from pypsse.profile_manager.profile_store import ProfileManager
 def test_profile_manager():
     class Solver:
         def __init__(self):
-            self.Time = dt.strptime("09/19/2018 13:55:26", "%m/%d/%Y %H:%M:%S")
+            self.Time = dt.strptime("09/19/2018 13:55:26", "%m/%d/%Y %H:%M:%S").astimezone(None)
 
-        def getTime(self):
+        def get_time(self):
             return self.Time
 
         def get_step_size_cec(self):
@@ -35,7 +35,7 @@ def test_profile_manager():
         csv_file=r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Profiles\machine.csv",
         name="test",
         p_type="Machine",
-        start_time=dt.strptime("2018-09-19 13:55:26.001", "%Y-%m-%d %H:%M:%S.%f"),
+        start_time=dt.strptime("2018-09-19 13:55:26.001", "%Y-%m-%d %H:%M:%S.%f").astimezone(None),
         resolution_sec=1,
         units="MW",
     )

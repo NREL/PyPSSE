@@ -2,6 +2,7 @@
 
 # standard imports
 import enum
+import logging
 from pathlib import Path
 
 # third-party imports
@@ -30,16 +31,15 @@ class PydanticDocBuilder:
             if not asset.startswith("_") and asset != "BaseModel":
                 model = getattr(models, asset)
                 if isinstance(model, type):
-                    print(model, issubclass(model, BaseModel))
+                    print(model, issubclass(model, BaseModel))  # noqa: T201
                     if not issubclass(model, enum.Enum):
                         try:
-                            print(model)
                             file_fath = folder_path / md_filename / f"{asset}.svg"
                             diagram = erd.create(model)
                             diagram.draw(file_fath)
                             asset_list[asset] = f"{asset}.svg"
-                        except:
-                            pass
+                        except Exception as e:
+                            logging.info(str(e))
         return asset_list
 
     def create_markdown_file(self, md_filename, asset_list):

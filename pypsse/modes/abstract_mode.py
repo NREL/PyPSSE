@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from pypsse.common import CASESTUDY_FOLDER
+from pypsse.common import CASESTUDY_FOLDER, VALUE_UPDATE_BOUND
 from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
 from pypsse.modes.constants import converter
 
@@ -501,7 +501,7 @@ class AbstractMode:
 
         if ierr == 0:
             ierr = self.psse.inimac(int(b))
-            if ierr == 2:
+            if ierr:
                 return 1
 
         return 0
@@ -992,9 +992,9 @@ class AbstractMode:
                 self.psse.conl(0, 1, 2, [0, 0], [p1, p2, q1, q2])  # convert loads.
                 self.psse.conl(0, 1, 3, [0, 0], [p1, p2, q1, q2])  # postprocessing housekeeping.
 
-    def update_object(self, dtype, bus, element_id, values):
-        val = sum([x for x in values.values()])
-        if val > -1000000.0 and val < 100000.0:
+    def update_object(self, dtype, bus, element_id, values: dict):
+        val = sum(list(values.values()))
+        if val > -VALUE_UPDATE_BOUND and val < VALUE_UPDATE_BOUND:
             if dtype == "Load":
                 ierr = self.psse.load_chng_5(ibus=int(bus), id=element_id, **values)
             elif dtype == "Induction_machine":

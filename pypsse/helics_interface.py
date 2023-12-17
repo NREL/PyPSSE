@@ -3,7 +3,7 @@ import ast
 import helics as h
 import pandas as pd
 
-from pypsse.common import MAPPED_CLASS_NAMES
+from pypsse.common import MAPPED_CLASS_NAMES, VALUE_UPDATE_BOUND
 from pypsse.models import ExportFileOptions, SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION
 
@@ -96,7 +96,8 @@ class HelicsInterface:
             properties = [p.value for p in publication_dict.model_properties]
 
             if not set(properties).issubset(managed_properties):
-                msg = f"One or more publication property defined for class '{elm_class}' is invalid. Properties defined {properties}"
+                msg = f"One or more publication property defined for class '{elm_class}' is invalid."
+                " Properties defined {properties}"
                 f"Valid properties for class '{elm_class.lower()}' are '{managed_properties}'"
 
                 raise Exception(msg)
@@ -153,12 +154,12 @@ class HelicsInterface:
         for _, row in sub_data.iterrows():
             try:
                 row["element_property"] = ast.literal_eval(row["element_property"])
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(str(e))
             try:
                 row["scaler"] = ast.literal_eval(row["scaler"])
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(str(e))
 
             if row["element_type"] not in PROFILE_VALIDATION:
                 msg = f"Subscription file error: {row['element_type']} not a valid element_type."
@@ -213,7 +214,8 @@ class HelicsInterface:
                         self.psse_dict[row["bus"]][row["element_type"]][element_id][r] = 0
 
     def request_time(self, _):
-        "Enables time increment of the federate ina  co-simulation. Works for both loosely ans tightly coupled co-simulations"
+        """Enables time increment of the federate ina  co-simulation."
+        Works for both loosely ans tightly coupled co-simulations"""
         r_seconds = self.sim.get_total_seconds()  # - self._dss_solver.GetStepResolutionSeconds()
         if self.sim.get_time() not in self.all_sub_results:
             self.all_sub_results[self.sim.get_time()] = {}
@@ -226,7 +228,7 @@ class HelicsInterface:
             return True, self.c_seconds
         else:
             itr = 0
-            epsilon = 1e-6
+
             while True:
                 self.c_seconds, itr_state = h.helicsFederateRequestTimeIterative(
                     self.psse_federate, r_seconds, h.helics_iteration_request_iterate_if_needed
@@ -254,7 +256,7 @@ class HelicsInterface:
                 itr += 1
                 self.logger.debug(f"\titr = {itr}")
 
-                if itr > self.settings.helics.max_coiterations or error < epsilon:
+                if itr > self.settings.helics.max_coiterations or error < self.settings.helics.error_tolerance:
                     self.c_seconds, itr_state = h.helicsFederateRequestTimeIterative(
                         self.psse_federate, r_seconds, h.helics_iteration_request_no_iteration
                     )
@@ -354,7 +356,11 @@ class HelicsInterface:
                         j += 1
 
                     is_empty = [0 if not vx else 1 for vx in values.values()]
-                    if sum(is_empty) != 0 and sum(values.values()) < 1e6 and sum(values.values()) > -1e6:
+                    if (
+                        sum(is_empty) != 0
+                        and sum(values.values()) < VALUE_UPDATE_BOUND
+                        and sum(values.values()) > -VALUE_UPDATE_BOUND
+                    ):
                         self.sim.update_object(t, b, i, values)
                         self.logger.debug(f"{t}.{b}.{i} = {values}")
 

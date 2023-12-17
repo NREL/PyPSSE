@@ -26,7 +26,7 @@ PROJECT_NAME = "psse_project"
 
 
 @pytest.fixture
-def cleanup():
+def _cleanup():
     if os.path.exists(TMP_FOLDER):
         shutil.rmtree(TMP_FOLDER)
     yield
@@ -34,7 +34,7 @@ def cleanup():
         shutil.rmtree(TMP_FOLDER)
 
 
-def test_create_project(cleanup):
+def test_create_project(_cleanup):
     os.mkdir(TMP_FOLDER)
     settings = PROJECT_CREATION_SETTINGS
     s_settings = toml.load(settings["simulation_file"]) if settings["simulation_file"] else {}
@@ -54,7 +54,7 @@ def test_create_project(cleanup):
     )
 
 
-def test_run_sim_static(cleanup):
+def test_run_sim_static(_cleanup):
     test_create_project(None)
     path = os.path.join(TMP_FOLDER, PROJECT_NAME, "Settings", SIMULATION_SETTINGS_FILENAME)
     if os.path.exists(path):
@@ -66,7 +66,7 @@ def test_run_sim_static(cleanup):
         raise Exception(msg)
 
 
-def test_run_sim_dynamic(cleanup):
+def test_run_sim_dynamic(_cleanup):
     test_create_project(None)
     path = os.path.join(TMP_FOLDER, PROJECT_NAME, "Settings", SIMULATION_SETTINGS_FILENAME)
     s_settings = toml.load(path)
@@ -83,7 +83,7 @@ def test_run_sim_dynamic(cleanup):
         raise Exception(msg)
 
 
-def test_license_availability(cleanup):
+def test_license_availability(_cleanup):
     example_path = "./examples/static_example"
     export_path = os.path.join(example_path, "Exports")
     python_path = sys.executable

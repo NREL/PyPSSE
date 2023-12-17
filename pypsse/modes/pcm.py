@@ -10,8 +10,12 @@ from pypsse.utils.dc2ac.dc_ac_algorithm import DC2ACconverter
 class ProductionCostModel(AbstractMode):
     def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
         super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
-        self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
-        self._StartTime = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S")
+        self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S").astimezone(
+            None
+        )
+        self._StartTime = datetime.datetime.strptime(
+            settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S"
+        ).astimezone(None)
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
         self.convergence_helper = DC2ACconverter(psse, self, settings, raw_data, logger)
 

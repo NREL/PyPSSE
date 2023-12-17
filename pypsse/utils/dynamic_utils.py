@@ -278,12 +278,12 @@ class DynamicUtils:
             return
 
         for channel in self.export_settings.channel_setup:
-            method_type = channel.type.value
+            method_type = channel.asset_type.value
             if method_type == "buses":
-                self.setup_bus_channels(channel.list, channel.properties)
+                self.setup_bus_channels(channel.asset_list, channel.asset_properties)
             elif method_type == "loads":
-                load_list = [[x, int(y)] for x, y in channel.list]
+                load_list = [[x, int(y)] for x, y in channel.asset_list]
                 self.setup_load_channels(load_list)
             elif method_type == "machines":
-                machine_list = [[x, int(y)] for x, y in channel.list]
-                self.setup_machine_channels(machine_list, channel.properties)
+                machine_list = [[x, int(y)] for x, y in channel.asset_list]
+                self.setup_machine_channels(machine_list, channel.asset_properties)

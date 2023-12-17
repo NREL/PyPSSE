@@ -1,5 +1,8 @@
 """Defines all standard shared varibales in PyPSSE"""
 
+VALUE_UPDATE_BOUND = 1e6
+MAX_PSSE_BUSSYSTEMS = 12
+
 CASESTUDY_FOLDER = "case_study"
 SETTINGS_FOLDER = "settings"
 EXPORTS_FOLDER = "exports"

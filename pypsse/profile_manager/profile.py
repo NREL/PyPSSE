@@ -24,8 +24,8 @@ class Profile:
         stime = s if "." in s else s + ".00"
         e = self.attrs["eTime"].decode()
         etime = e if "." in e else e + ".00"
-        self.stime = datetime.datetime.strptime(stime, "%Y-%m-%d %H:%M:%S.%f")
-        self.etime = datetime.datetime.strptime(etime, "%Y-%m-%d %H:%M:%S.%f")
+        self.stime = datetime.datetime.strptime(stime, "%Y-%m-%d %H:%M:%S.%f").astimezone(None)
+        self.etime = datetime.datetime.strptime(etime, "%Y-%m-%d %H:%M:%S.%f").astimezone(None)
         self.sim_res = self.solver.get_step_size_cec()
         self.time = copy.deepcopy(self.solver.get_time())
         self.columns = self.attrs["units"]
@@ -33,7 +33,7 @@ class Profile:
 
     def update(self, update_object_properties=True):
         "Returns value at the current timestep in the given profile"
-        self.time = copy.deepcopy(self.solver.get_time())
+        self.time = copy.deepcopy(self.solver.get_time()).astimezone(None)
         if self.time < self.stime or self.time > self.etime:
             value = np.array([0] * len(self.profile[0]))
             value1 = np.array([0] * len(self.profile[0]))
@@ -43,7 +43,7 @@ class Profile:
             value = np.array(list(self.profile[n]))
             try:
                 valuen1 = np.array(list(self.profile[n + 1]))
-            except:
+            except Exception as _:
                 valuen1 = value
 
             dt2 = (

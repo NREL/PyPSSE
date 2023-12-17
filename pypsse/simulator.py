@@ -18,10 +18,7 @@ import toml
 import pypsse.contingencies as c
 import pypsse.custom_logger as logger
 import pypsse.simulation_controller as sc
-from pypsse.common import (
-    EXPORTS_SETTINGS_FILENAME,
-    LOGS_FOLDER,
-)
+from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS
 from pypsse.helics_interface import HelicsInterface
 from pypsse.models import ExportFileOptions, SimulationModes, SimulationSettings
 from pypsse.parsers import gic_parser as gp
@@ -39,12 +36,11 @@ class Simulator:
         "Load a valid PyPSSE project and sets up simulation"
 
         settings = self.read_settings(settings_toml_path)
-        self.settings = SimulationSettings.validate(settings)
-
+        self.settings = SimulationSettings.model_validate(settings)
         export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
         assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
         export_settings = self.read_settings(export_settings_path)
-        self.export_settings = ExportFileOptions.validate(export_settings)
+        self.export_settings = ExportFileOptions.model_validate(export_settings)
 
         log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
         self.logger = logger.get_logger("pyPSSE", log_path, logger_options=self.settings.log)
@@ -58,34 +54,30 @@ class Simulator:
             sys.path.append(str(self.settings.simulation.psse_path))
             os.environ["PATH"] += ";" + str(self.settings.simulation.psse_path)
 
-        try:
-            n_bus = 200000
-            if "psse34" in str(self.settings.simulation.psse_path).lower():
-                self.logger.debug("Instantiating psse version 34")
-                import psse34
-            elif "psse35" in str(self.settings.simulation.psse_path).lower():
-                self.logger.debug("Instantiating psse version 35")
-                import psse35
-            else:
-                self.logger.debug("Instantiating psse version 36")
-                import psse36
-            import dyntools
-            import psspy
+        n_bus = 200000
+        if "psse34" in str(self.settings.simulation.psse_path).lower():
+            self.logger.debug("Instantiating psse version 34")
+            import psse34  # noqa: F401
+        elif "psse35" in str(self.settings.simulation.psse_path).lower():
+            self.logger.debug("Instantiating psse version 35")
+            import psse35  # noqa: F401
+        else:
+            self.logger.debug("Instantiating psse version 36")
+            import psse36  # noqa: F401
+        import dyntools
+        import psspy
 
-            self.dyntools = dyntools
-            self.psse = psspy
-            # self.logger.debug('Initializing PSS/E. connecting to license server')
-            ierr = self.psse.psseinit(n_bus)
-            assert ierr == 0, f"Error code: {ierr}"
-            self.psse.psseinit(n_bus)
-            self.initComplete = True
-            self.message = "success"
+        self.dyntools = dyntools
+        self.psse = psspy
+        # self.logger.debug('Initializing PSS/E. connecting to license server')
+        ierr = self.psse.psseinit(n_bus)
+        assert ierr == 0, f"Error code: {ierr}"
+        self.psse.psseinit(n_bus)
+        self.initComplete = True
+        self.message = "success"
 
-            self.start_simulation()
-            self.init()
-        except:
-            msg = "A valid PSS/E license not found. License may currently be in use."
-            raise Exception(msg)
+        self.start_simulation()
+        self.init()
 
     def dump_settings(self, dest_dir):
         setting_toml_file = os.path.join(os.path.dirname(__file__), "defaults", "pyPSSE_settings.toml")
@@ -98,8 +90,6 @@ class Simulator:
 
         self.hi = None
         self.simStartTime = time.time()
-
-        # ** Initialize PSSE modules
 
         if self.settings.simulation.case_study.exists():
             self.psse.case(str(self.settings.simulation.case_study))
@@ -184,7 +174,7 @@ class Simulator:
         bus_subsystems_dict = {}
         bus_subsystems = self.get_bus_indices()
         # valid bus subsystem ID. Valid bus subsystem IDs range from 0 to 11 (PSSE documentation)
-        if len(bus_subsystems) > 12:
+        if len(bus_subsystems) > MAX_PSSE_BUSSYSTEMS:
             msg = "Number of subsystems can not be more that 12. See PSSE documentation"
             raise Exception(msg)
 
@@ -243,10 +233,10 @@ class Simulator:
 
         if self.sim.initialization_complete:
             if self.settings.plots and self.settings.plots.enable_dynamic_plots:
-                bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)
+                bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)  # noqa: S603,S607
             else:
                 bokeh_server_proc = None
-            # self.initialize_loads()
+
             self.logger.debug(
                 f"Running dynamic simulation for time {self.settings.simulation.simulation_time.total_seconds()} sec"
             )
@@ -351,7 +341,7 @@ class Simulator:
         to_bus = []
         to_bus2 = []
         for class_ppty, v_dict in results.items():
-            if len(class_ppty.split("_")) == 3:
+            if len(class_ppty.split("_")) == 3:  # noqa: PLR2004
                 c_name = class_ppty.split("_")[0] + "_" + class_ppty.split("_")[1]
                 p_name = class_ppty.split("_")[2]
             else:
@@ -370,14 +360,14 @@ class Simulator:
                 for k_raw in keys:
                     k = str(k_raw)
                     if "_" in k:
-                        if len(k.split("_")) == 2:
+                        if len(k.split("_")) == 2:  # noqa: PLR2004
                             bud_id.append(k.split("_")[1])
                             uuid.append(k.split("_")[0])
-                        if len(k.split("_")) == 3:
+                        if len(k.split("_")) == 3:  # noqa: PLR2004
                             bud_id.append(k.split("_")[0])
                             ckt_id.append(k.split("_")[2])
                             to_bus.append(k.split("_")[1])
-                        if len(k.split("_")) == 4:
+                        if len(k.split("_")) == 4:  # noqa: PLR2004
                             bud_id.append(k.split("_")[0])
                             ckt_id.append(k.split("_")[3])
                             to_bus.append(k.split("_")[1])
