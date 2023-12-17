@@ -245,26 +245,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../models/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Data models
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -275,10 +255,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -289,8 +269,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Interfaces
           </label>
@@ -363,10 +343,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -377,8 +357,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Co-design and co-simulation
           </label>
@@ -662,16 +642,103 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../reference/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     Reference manual
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data models
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enumerations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Enumerations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PyPSSE package
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1388,7 +1455,13 @@
 <span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
-<span class="normal">378</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HelicsInterface</span><span class="p">:</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HelicsInterface</span><span class="p">:</span>
     <span class="s2">&quot;Implements the HEILCS interface for PyPSSE&quot;</span>
     <span class="n">all_sub_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">all_pub_results</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1476,7 +1549,8 @@
             <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">model_properties</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">managed_properties</span><span class="p">):</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;One or more publication property defined for class &#39;</span><span class="si">{</span><span class="n">elm_class</span><span class="si">}</span><span class="s2">&#39; is invalid. Properties defined </span><span class="si">{</span><span class="n">properties</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;One or more publication property defined for class &#39;</span><span class="si">{</span><span class="n">elm_class</span><span class="si">}</span><span class="s2">&#39; is invalid.&quot;</span>
+                <span class="s2">&quot; Properties defined </span><span class="si">{properties}</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Valid properties for class &#39;</span><span class="si">{</span><span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; are &#39;</span><span class="si">{</span><span class="n">managed_properties</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -1533,12 +1607,12 @@
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sub_data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_property&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_property&quot;</span><span class="p">])</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">row</span><span class="p">[</span><span class="s2">&quot;scaler&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;scaler&quot;</span><span class="p">])</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_type&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PROFILE_VALIDATION</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Subscription file error: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;element_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not a valid element_type.&quot;</span>
@@ -1593,7 +1667,8 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">psse_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;bus&quot;</span><span class="p">]][</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_type&quot;</span><span class="p">]][</span><span class="n">element_id</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">request_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
-        <span class="s2">&quot;Enables time increment of the federate ina  co-simulation. Works for both loosely ans tightly coupled co-simulations&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enables time increment of the federate ina  co-simulation.&quot;</span>
+<span class="sd">        Works for both loosely ans tightly coupled co-simulations&quot;&quot;&quot;</span>
         <span class="n">r_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_total_seconds</span><span class="p">()</span>  <span class="c1"># - self._dss_solver.GetStepResolutionSeconds()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_sub_results</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">all_sub_results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1606,7 +1681,7 @@
             <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_seconds</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">itr</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-6</span>
+
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">c_seconds</span><span class="p">,</span> <span class="n">itr_state</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">helicsFederateRequestTimeIterative</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psse_federate</span><span class="p">,</span> <span class="n">r_seconds</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">helics_iteration_request_iterate_if_needed</span>
@@ -1634,7 +1709,7 @@
                 <span class="n">itr</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">itr = </span><span class="si">{</span><span class="n">itr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">itr</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">max_coiterations</span> <span class="ow">or</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">itr</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">max_coiterations</span> <span class="ow">or</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">error_tolerance</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">c_seconds</span><span class="p">,</span> <span class="n">itr_state</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">helicsFederateRequestTimeIterative</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">psse_federate</span><span class="p">,</span> <span class="n">r_seconds</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">helics_iteration_request_no_iteration</span>
                     <span class="p">)</span>
@@ -1734,7 +1809,11 @@
                         <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
 
                     <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">vx</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">vx</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-                    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">is_empty</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mf">1e6</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">1e6</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="nb">sum</span><span class="p">(</span><span class="n">is_empty</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
+                        <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">VALUE_UPDATE_BOUND</span>
+                        <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">VALUE_UPDATE_BOUND</span>
+                    <span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">update_object</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1964,11 +2043,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\helics_interface.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fill_missing_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fill_missing_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="s2">&quot;Fix values before model dispatch&quot;</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;realar</span><span class="si">{</span><span class="n">PROFILE_VALIDATION</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">d_type</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Columns</span><span class="p">]</span>
     <span class="n">x</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
@@ -1997,9 +2076,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\helics_interface.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
@@ -2012,7 +2089,9 @@
 <span class="normal">278</span>
 <span class="normal">279</span>
 <span class="normal">280</span>
-<span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_restructured_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_restructured_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
     <span class="s2">&quot;Quries PSSE results that are to be published each iteration.&quot;</span>
     <span class="n">results_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2052,9 +2131,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\helics_interface.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
@@ -2081,7 +2158,9 @@
 <span class="normal">309</span>
 <span class="normal">310</span>
 <span class="normal">311</span>
-<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">&quot;Publishes updated reslts each iteration&quot;</span>
     <span class="n">pub_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">quantities</span><span class="p">,</span> <span class="n">subsystem_buses</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pub_struc</span><span class="p">:</span>
@@ -2201,7 +2280,8 @@
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">register_publications</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_subsystems</span><span class="p">):</span>
+<span class="normal">143</span>
+<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">register_publications</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_subsystems</span><span class="p">):</span>
     <span class="s2">&quot;Creates a HELICS publications&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">publications</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pub_struc</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2223,7 +2303,8 @@
         <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">model_properties</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">managed_properties</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;One or more publication property defined for class &#39;</span><span class="si">{</span><span class="n">elm_class</span><span class="si">}</span><span class="s2">&#39; is invalid. Properties defined </span><span class="si">{</span><span class="n">properties</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;One or more publication property defined for class &#39;</span><span class="si">{</span><span class="n">elm_class</span><span class="si">}</span><span class="s2">&#39; is invalid.&quot;</span>
+            <span class="s2">&quot; Properties defined </span><span class="si">{properties}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;Valid properties for class &#39;</span><span class="si">{</span><span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; are &#39;</span><span class="si">{</span><span class="n">managed_properties</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -2292,8 +2373,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\helics_interface.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
-<span class="normal">146</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
@@ -2360,7 +2440,8 @@
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">register_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">register_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">&quot;Creates a HELICS subscriptions&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">assert</span> <span class="p">(</span>
@@ -2371,12 +2452,12 @@
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sub_data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_property&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_property&quot;</span><span class="p">])</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">row</span><span class="p">[</span><span class="s2">&quot;scaler&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;scaler&quot;</span><span class="p">])</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;element_type&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PROFILE_VALIDATION</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Subscription file error: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;element_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not a valid element_type.&quot;</span>
@@ -2449,12 +2530,12 @@
 
   <div class="doc doc-contents ">
   
-      <p>Enables time increment of the federate ina  co-simulation. Works for both loosely ans tightly coupled co-simulations</p>
+      <p>Enables time increment of the federate ina  co-simulation."
+Works for both loosely ans tightly coupled co-simulations</p>
 
           <details class="quote">
             <summary>Source code in <code>pypsse\helics_interface.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
-<span class="normal">216</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
@@ -2502,8 +2583,11 @@
 <span class="normal">261</span>
 <span class="normal">262</span>
 <span class="normal">263</span>
-<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">request_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
-    <span class="s2">&quot;Enables time increment of the federate ina  co-simulation. Works for both loosely ans tightly coupled co-simulations&quot;</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">request_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enables time increment of the federate ina  co-simulation.&quot;</span>
+<span class="sd">    Works for both loosely ans tightly coupled co-simulations&quot;&quot;&quot;</span>
     <span class="n">r_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_total_seconds</span><span class="p">()</span>  <span class="c1"># - self._dss_solver.GetStepResolutionSeconds()</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_sub_results</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_sub_results</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2516,7 +2600,7 @@
         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_seconds</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">itr</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-6</span>
+
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c_seconds</span><span class="p">,</span> <span class="n">itr_state</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">helicsFederateRequestTimeIterative</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psse_federate</span><span class="p">,</span> <span class="n">r_seconds</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">helics_iteration_request_iterate_if_needed</span>
@@ -2544,7 +2628,7 @@
             <span class="n">itr</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">itr = </span><span class="si">{</span><span class="n">itr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">itr</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">max_coiterations</span> <span class="ow">or</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">itr</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">max_coiterations</span> <span class="ow">or</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">error_tolerance</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">c_seconds</span><span class="p">,</span> <span class="n">itr_state</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">helicsFederateRequestTimeIterative</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psse_federate</span><span class="p">,</span> <span class="n">r_seconds</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">helics_iteration_request_no_iteration</span>
                 <span class="p">)</span>
@@ -2576,9 +2660,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\helics_interface.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
@@ -2627,7 +2709,13 @@
 <span class="normal">362</span>
 <span class="normal">363</span>
 <span class="normal">364</span>
-<span class="normal">365</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">&quot;Subscribes results each iteration and updates PSSE objects accordingly&quot;</span>
     <span class="k">for</span> <span class="n">sub_tag</span><span class="p">,</span> <span class="n">sub_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_data</span><span class="p">[</span><span class="s2">&quot;property&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
@@ -2670,7 +2758,11 @@
                     <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">vx</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">vx</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-                <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">is_empty</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mf">1e6</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">1e6</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">sum</span><span class="p">(</span><span class="n">is_empty</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
+                    <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">VALUE_UPDATE_BOUND</span>
+                    <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">VALUE_UPDATE_BOUND</span>
+                <span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">update_object</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 

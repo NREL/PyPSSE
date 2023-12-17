@@ -243,26 +243,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../models/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Data models
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -277,10 +257,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -291,8 +271,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Interfaces
           </label>
@@ -373,10 +353,10 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -387,8 +367,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Co-design and co-simulation
           </label>
@@ -449,16 +429,103 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../reference/" class="md-nav__link">
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     Reference manual
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data models
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enumerations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Enumerations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PyPSSE package
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -508,12 +575,10 @@
   -a, --autofill                  Attempt to auto fill settings. (Verify
                                   manually settings file is correct)
                                   [default: True]
-  -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml
-                                  file (used to map profile to PSSE
-                                  elements)
-  -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file
-                                  (Contains profiles for time series
-                                  simulations)
+  -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml file
+                                  (used to map profile to PSSE elements)
+  -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file (Contains
+                                  profiles for time series simulations)
   -e, --export-settings-file TEXT
                                   Export settings toml file path
   -f, --simulation-file TEXT      Simulation settings toml file path
@@ -527,9 +592,8 @@
 <div class="highlight"><pre><span></span><code>run [OPTIONS] PROJECT_PATH
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="highlight"><pre><span></span><code>  -s, --simulations-file TEXT  scenario toml file to run (over rides
-                               default)  [default:
-                               simulation_settings.toml]
+<div class="highlight"><pre><span></span><code>  -s, --simulations-file TEXT  scenario toml file to run (over rides default)
+                               [default: simulation_settings.toml]
   --help                       Show this message and exit.
 </code></pre></div>
 <h1 id="create-profiles">create-profiles</h1>
@@ -542,15 +606,14 @@
   -r, --profile-res FLOAT    Profile time resolution in seconds  [default:
                              1.0]
   -T, --start-time TEXT      Time index for the first time step, format =
-                             Y-m-d H:M:S.f  [default: 2020-01-01
-                             00:00:00.00]
+                             Y-m-d H:M:S.f  [default: 2020-01-01 00:00:00.00]
   -t, --profile-type TEXT    Profile type; Possible values: [&#39;Load&#39;,
                              &#39;Induction_machine&#39;, &#39;Machine&#39;, &#39;Plant&#39;]
                              [default: Load]
   -n, --profile-name TEXT    Profile name  [default: Default]
-  -p, --profile-folder TEXT  Path to folder containing csv profiles. CSV
-                             file names should follow the following
-                             format: {profile-type}_{profile-name}
+  -p, --profile-folder TEXT  Path to folder containing csv profiles. CSV file
+                             names should follow the following format:
+                             {profile-type}_{profile-name}
   -f, --csv-file-path TEXT   Path to a csv valid file
   --help                     Show this message and exit.
 </code></pre></div>

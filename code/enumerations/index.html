@@ -1,0 +1,2426 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../models/">
+      
+      
+        <link rel="next" href="../reference/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.2">
+    
+    
+      
+        <title>Enumerations - PYPSSE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../css/mkdocsoad.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#libray-enumerations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="PYPSSE" class="md-header__button md-logo" aria-label="PYPSSE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PYPSSE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Enumerations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="PYPSSE" class="md-nav__button md-logo" aria-label="PYPSSE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    PYPSSE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Interfaces
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Co-design and co-simulation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Co-design and co-simulation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helics_interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HELICS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mdao/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenMDAO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference manual
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Enumerations
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Enumerations
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#areaproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      AreaProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branchproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      BranchProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bulkwritemodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      BulkWriteModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#busproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      BusProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#channeltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChannelTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dclineproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      DCLineProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exportmodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ExportModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fixedshuntproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      FixedShuntProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helicscoretypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      HelicsCoreTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inductiongeneratorproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      InductionGeneratorProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intenum" class="md-nav__link">
+    <span class="md-ellipsis">
+      IntEnum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loadproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      LoadProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logginglevels" class="md-nav__link">
+    <span class="md-ellipsis">
+      LoggingLevels
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#machinesproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      MachinesProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulationmodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      SimulationModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stationproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      StationProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#streamedwritemodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      StreamedWriteModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptionfilerequiredcolumns" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubscriptionFileRequiredColumns
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switchedshuntproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      SwitchedShuntProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transformerproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      TransformerProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usemodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      UseModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zoneproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZoneProperties
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PyPSSE package
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#areaproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      AreaProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branchproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      BranchProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bulkwritemodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      BulkWriteModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#busproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      BusProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#channeltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChannelTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dclineproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      DCLineProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exportmodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ExportModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fixedshuntproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      FixedShuntProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helicscoretypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      HelicsCoreTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inductiongeneratorproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      InductionGeneratorProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intenum" class="md-nav__link">
+    <span class="md-ellipsis">
+      IntEnum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loadproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      LoadProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logginglevels" class="md-nav__link">
+    <span class="md-ellipsis">
+      LoggingLevels
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#machinesproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      MachinesProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulationmodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      SimulationModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stationproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      StationProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#streamedwritemodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      StreamedWriteModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptionfilerequiredcolumns" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubscriptionFileRequiredColumns
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switchedshuntproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      SwitchedShuntProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transformerproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      TransformerProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usemodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      UseModes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zoneproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZoneProperties
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="libray-enumerations">Libray Enumerations</h1>
+<p>This page provides details on the enumerated classes part of the PyPSSE library.Enumerations map directly to .</p>
+<h2 id="areaproperties">AreaProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.LOAD</td>
+<td style="text-align: left;">LOAD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.LOADID</td>
+<td style="text-align: left;">LOADID</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.LGDN</td>
+<td style="text-align: left;">LGDN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.LDGNLD</td>
+<td style="text-align: left;">LDGNLD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.GEN</td>
+<td style="text-align: left;">GEN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.AREANAME</td>
+<td style="text-align: left;">AREANAME</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.AreaProperties.AREANUMBER</td>
+<td style="text-align: left;">AREANUMBER</td>
+</tr>
+</tbody>
+</table>
+<h2 id="branchproperties">BranchProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RATEn</td>
+<td style="text-align: left;">RATEn</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RATEA</td>
+<td style="text-align: left;">RATEA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RATEB</td>
+<td style="text-align: left;">RATEB</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RATEC</td>
+<td style="text-align: left;">RATEC</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RATE</td>
+<td style="text-align: left;">RATE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.LENGTH</td>
+<td style="text-align: left;">LENGTH</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.CHARG</td>
+<td style="text-align: left;">CHARG</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.CHARGZ</td>
+<td style="text-align: left;">CHARGZ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.FRACT1</td>
+<td style="text-align: left;">FRACT1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.FRACT2</td>
+<td style="text-align: left;">FRACT2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.FRACT3</td>
+<td style="text-align: left;">FRACT3</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.FRACT4</td>
+<td style="text-align: left;">FRACT4</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RX</td>
+<td style="text-align: left;">RX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.ISHNT</td>
+<td style="text-align: left;">ISHNT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.JSHNT</td>
+<td style="text-align: left;">JSHNT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.RXZ</td>
+<td style="text-align: left;">RXZ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.ISHNTZ</td>
+<td style="text-align: left;">ISHNTZ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.JSHNTZ</td>
+<td style="text-align: left;">JSHNTZ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.LOSSES</td>
+<td style="text-align: left;">LOSSES</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.O_LOSSES</td>
+<td style="text-align: left;">O_LOSSES</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.MVA</td>
+<td style="text-align: left;">MVA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.AMPS</td>
+<td style="text-align: left;">AMPS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.PUCUR</td>
+<td style="text-align: left;">PUCUR</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.CURANG</td>
+<td style="text-align: left;">CURANG</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.P</td>
+<td style="text-align: left;">P</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.O_P</td>
+<td style="text-align: left;">O_P</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.Q</td>
+<td style="text-align: left;">Q</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.O_Q</td>
+<td style="text-align: left;">O_Q</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.PLOS</td>
+<td style="text-align: left;">PLOS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.O_PLOS</td>
+<td style="text-align: left;">O_PLOS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.QLOS</td>
+<td style="text-align: left;">QLOS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BranchProperties.O_QLOS</td>
+<td style="text-align: left;">O_QLOS</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bulkwritemodes">BulkWriteModes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BulkWriteModes.CSV</td>
+<td style="text-align: left;">csv</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BulkWriteModes.PKL</td>
+<td style="text-align: left;">pkl</td>
+</tr>
+</tbody>
+</table>
+<h2 id="busproperties">BusProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.BASE</td>
+<td style="text-align: left;">BASE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.FREQ</td>
+<td style="text-align: left;">FREQ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.PU</td>
+<td style="text-align: left;">PU</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.KV</td>
+<td style="text-align: left;">KV</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.ANGLE</td>
+<td style="text-align: left;">ANGLE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.ANGLED</td>
+<td style="text-align: left;">ANGLED</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.NVLMHI</td>
+<td style="text-align: left;">NVLMHI</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.NVLMLO</td>
+<td style="text-align: left;">NVLMLO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.EVLMHI</td>
+<td style="text-align: left;">EVLMHI</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.BusProperties.EVLMLO</td>
+<td style="text-align: left;">EVLMLO</td>
+</tr>
+</tbody>
+</table>
+<h2 id="channeltypes">ChannelTypes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ChannelTypes.BUSES</td>
+<td style="text-align: left;">buses</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ChannelTypes.LOADS</td>
+<td style="text-align: left;">loads</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ChannelTypes.MACHINES</td>
+<td style="text-align: left;">machines</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dclineproperties">DCLineProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.DCLINENAME</td>
+<td style="text-align: left;">DCLINENAME</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.MDC</td>
+<td style="text-align: left;">MDC</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.RECT</td>
+<td style="text-align: left;">RECT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.INV</td>
+<td style="text-align: left;">INV</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.METER</td>
+<td style="text-align: left;">METER</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.NBR</td>
+<td style="text-align: left;">NBR</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.NBI</td>
+<td style="text-align: left;">NBI</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.ICR</td>
+<td style="text-align: left;">ICR</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.ICI</td>
+<td style="text-align: left;">ICI</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.NDR</td>
+<td style="text-align: left;">NDR</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.DCLineProperties.NDI</td>
+<td style="text-align: left;">NDI</td>
+</tr>
+</tbody>
+</table>
+<h2 id="enum">Enum</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="exportmodes">ExportModes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ExportModes.CSV</td>
+<td style="text-align: left;">csv</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ExportModes.H5</td>
+<td style="text-align: left;">h5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fixedshuntproperties">FixedShuntProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.ACT</td>
+<td style="text-align: left;">ACT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.O_ACT</td>
+<td style="text-align: left;">O_ACT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.NOM</td>
+<td style="text-align: left;">NOM</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.O_NOM</td>
+<td style="text-align: left;">O_NOM</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.PQZERO</td>
+<td style="text-align: left;">PQZERO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.PQZ</td>
+<td style="text-align: left;">PQZ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.FixedShuntProperties.O_PQZ</td>
+<td style="text-align: left;">O_PQZ</td>
+</tr>
+</tbody>
+</table>
+<h2 id="helicscoretypes">HelicsCoreTypes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.HelicsCoreTypes.ZMQ</td>
+<td style="text-align: left;">zmq</td>
+</tr>
+</tbody>
+</table>
+<h2 id="inductiongeneratorproperties">InductionGeneratorProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.MBASE</td>
+<td style="text-align: left;">MBASE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.RATEKV</td>
+<td style="text-align: left;">RATEKV</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.PSET</td>
+<td style="text-align: left;">PSET</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.RA</td>
+<td style="text-align: left;">RA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.XA</td>
+<td style="text-align: left;">XA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.R1</td>
+<td style="text-align: left;">R1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.X1</td>
+<td style="text-align: left;">X1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.R2</td>
+<td style="text-align: left;">R2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.X2</td>
+<td style="text-align: left;">X2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.X3</td>
+<td style="text-align: left;">X3</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.E1</td>
+<td style="text-align: left;">E1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.SE1</td>
+<td style="text-align: left;">SE1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.E2</td>
+<td style="text-align: left;">E2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.SE2</td>
+<td style="text-align: left;">SE2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.IA1</td>
+<td style="text-align: left;">IA1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.IA2</td>
+<td style="text-align: left;">IA2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.XAMULT</td>
+<td style="text-align: left;">XAMULT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.TRQA</td>
+<td style="text-align: left;">TRQA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.TRQB</td>
+<td style="text-align: left;">TRQB</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.TRQD</td>
+<td style="text-align: left;">TRQD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.TRQE</td>
+<td style="text-align: left;">TRQE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.H</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.IRATIO</td>
+<td style="text-align: left;">IRATIO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.ROVERX</td>
+<td style="text-align: left;">ROVERX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.RZERO</td>
+<td style="text-align: left;">RZERO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.XZERO</td>
+<td style="text-align: left;">XZERO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.RGRND</td>
+<td style="text-align: left;">RGRND</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.XGRND</td>
+<td style="text-align: left;">XGRND</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.P</td>
+<td style="text-align: left;">P</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.O_P</td>
+<td style="text-align: left;">O_P</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.Q</td>
+<td style="text-align: left;">Q</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.O_Q</td>
+<td style="text-align: left;">O_Q</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.MVA</td>
+<td style="text-align: left;">MVA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.O_MVA</td>
+<td style="text-align: left;">O_MVA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.SLIP</td>
+<td style="text-align: left;">SLIP</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.ZA</td>
+<td style="text-align: left;">ZA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.Z1</td>
+<td style="text-align: left;">Z1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.Z2</td>
+<td style="text-align: left;">Z2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.ZZERO</td>
+<td style="text-align: left;">ZZERO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.ZGRND</td>
+<td style="text-align: left;">ZGRND</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.PQ</td>
+<td style="text-align: left;">PQ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.InductionGeneratorProperties.O_PQ</td>
+<td style="text-align: left;">O_PQ</td>
+</tr>
+</tbody>
+</table>
+<h2 id="intenum">IntEnum</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="loadproperties">LoadProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.MVA</td>
+<td style="text-align: left;">MVA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.IL</td>
+<td style="text-align: left;">IL</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.YL</td>
+<td style="text-align: left;">YL</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.TOTAL</td>
+<td style="text-align: left;">TOTAL</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.YNEG</td>
+<td style="text-align: left;">YNEG</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.YZERO</td>
+<td style="text-align: left;">YZERO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.FmA</td>
+<td style="text-align: left;">FmA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.FmB</td>
+<td style="text-align: left;">FmB</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.FmC</td>
+<td style="text-align: left;">FmC</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.FmD</td>
+<td style="text-align: left;">FmD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.Fel</td>
+<td style="text-align: left;">Fel</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.PFel</td>
+<td style="text-align: left;">PFel</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.TD</td>
+<td style="text-align: left;">TD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoadProperties.TC</td>
+<td style="text-align: left;">TC</td>
+</tr>
+</tbody>
+</table>
+<h2 id="logginglevels">LoggingLevels</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoggingLevels.NOTSET</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoggingLevels.DEBUG</td>
+<td style="text-align: left;">10</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoggingLevels.INFO</td>
+<td style="text-align: left;">20</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoggingLevels.WARN</td>
+<td style="text-align: left;">30</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoggingLevels.ERROR</td>
+<td style="text-align: left;">40</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.LoggingLevels.CRITICAL</td>
+<td style="text-align: left;">50</td>
+</tr>
+</tbody>
+</table>
+<h2 id="machinesproperties">MachinesProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.QMAX</td>
+<td style="text-align: left;">QMAX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_QMAX</td>
+<td style="text-align: left;">O_QMAX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.QMIN</td>
+<td style="text-align: left;">QMIN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_QMIN</td>
+<td style="text-align: left;">O_QMIN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.PMAX</td>
+<td style="text-align: left;">PMAX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_PMAX</td>
+<td style="text-align: left;">O_PMAX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.PMIN</td>
+<td style="text-align: left;">PMIN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_PMIN</td>
+<td style="text-align: left;">O_PMIN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.MBASE</td>
+<td style="text-align: left;">MBASE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.MVA</td>
+<td style="text-align: left;">MVA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_MVA</td>
+<td style="text-align: left;">O_MVA</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.P</td>
+<td style="text-align: left;">P</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_P</td>
+<td style="text-align: left;">O_P</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.Q</td>
+<td style="text-align: left;">Q</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_Q</td>
+<td style="text-align: left;">O_Q</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.PERCENT</td>
+<td style="text-align: left;">PERCENT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.GENTAP</td>
+<td style="text-align: left;">GENTAP</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.VSCHED</td>
+<td style="text-align: left;">VSCHED</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.WPF</td>
+<td style="text-align: left;">WPF</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.RMPCT</td>
+<td style="text-align: left;">RMPCT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.RPOS</td>
+<td style="text-align: left;">RPOS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.XSUBTR</td>
+<td style="text-align: left;">XSUBTR</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.XTRANS</td>
+<td style="text-align: left;">XTRANS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.XSYNCH</td>
+<td style="text-align: left;">XSYNCH</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.PQ</td>
+<td style="text-align: left;">PQ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.O_PQ</td>
+<td style="text-align: left;">O_PQ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.ZSORCE</td>
+<td style="text-align: left;">ZSORCE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.XTRAN</td>
+<td style="text-align: left;">XTRAN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.ZPOS</td>
+<td style="text-align: left;">ZPOS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.ZNEG</td>
+<td style="text-align: left;">ZNEG</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.ZZERO</td>
+<td style="text-align: left;">ZZERO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.MachinesProperties.ZGRND</td>
+<td style="text-align: left;">ZGRND</td>
+</tr>
+</tbody>
+</table>
+<h2 id="modelproperties">ModelProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelProperties.PU</td>
+<td style="text-align: left;">PU</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelProperties.FREQ</td>
+<td style="text-align: left;">FREQ</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelProperties.ANGLE</td>
+<td style="text-align: left;">ANGLE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelProperties.ANGLED</td>
+<td style="text-align: left;">ANGLED</td>
+</tr>
+</tbody>
+</table>
+<h2 id="modeltypes">ModelTypes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.BUSES</td>
+<td style="text-align: left;">Buses</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.BRANCHES</td>
+<td style="text-align: left;">Branches</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.LOADS</td>
+<td style="text-align: left;">Loads</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.GENERATORS</td>
+<td style="text-align: left;">Induction_generators</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.MACHINES</td>
+<td style="text-align: left;">Machines</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.FIXED_SHUNTS</td>
+<td style="text-align: left;">Fixed_shunts</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.SWITCHED_SHUNTS</td>
+<td style="text-align: left;">Switched_shunts</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.TRANSFORMERS</td>
+<td style="text-align: left;">Transformers</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.AREAS</td>
+<td style="text-align: left;">Areas</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.ZONES</td>
+<td style="text-align: left;">Zones</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.DC_LINES</td>
+<td style="text-align: left;">DCtransmissionlines</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ModelTypes.STATIONS</td>
+<td style="text-align: left;">Stations</td>
+</tr>
+</tbody>
+</table>
+<h2 id="simulationmodes">SimulationModes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SimulationModes.PCM</td>
+<td style="text-align: left;">PCM</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SimulationModes.SNAP</td>
+<td style="text-align: left;">Snap</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SimulationModes.STATIC</td>
+<td style="text-align: left;">Steady-state</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SimulationModes.DYNAMIC</td>
+<td style="text-align: left;">Dynamic</td>
+</tr>
+</tbody>
+</table>
+<h2 id="stationproperties">StationProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.SUBNAME</td>
+<td style="text-align: left;">SUBNAME</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.SUBNUMBER</td>
+<td style="text-align: left;">SUBNUMBER</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.BUSES</td>
+<td style="text-align: left;">BUSES</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.GENERATORS</td>
+<td style="text-align: left;">GENERATORS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.TRANSFORMERS</td>
+<td style="text-align: left;">TRANSFORMERS</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.NOMKV</td>
+<td style="text-align: left;">NOMKV</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.LOADMW</td>
+<td style="text-align: left;">LOADMW</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StationProperties.GENMW</td>
+<td style="text-align: left;">GENMW</td>
+</tr>
+</tbody>
+</table>
+<h2 id="streamedwritemodes">StreamedWriteModes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.StreamedWriteModes.H5</td>
+<td style="text-align: left;">h5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="subscriptionfilerequiredcolumns">SubscriptionFileRequiredColumns</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.bus_subsystem_id</td>
+<td style="text-align: left;">bus_subsystem_id</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.element_type</td>
+<td style="text-align: left;">element_type</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.element_id</td>
+<td style="text-align: left;">element_id</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.element_property</td>
+<td style="text-align: left;">element_property</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.sub_tag</td>
+<td style="text-align: left;">sub_tag</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.scaler</td>
+<td style="text-align: left;">scaler</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SubscriptionFileRequiredColumns.bus</td>
+<td style="text-align: left;">bus</td>
+</tr>
+</tbody>
+</table>
+<h2 id="switchedshuntproperties">SwitchedShuntProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SwitchedShuntProperties.VSWHI</td>
+<td style="text-align: left;">VSWHI</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SwitchedShuntProperties.VSWLO</td>
+<td style="text-align: left;">VSWLO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SwitchedShuntProperties.RMPCT</td>
+<td style="text-align: left;">RMPCT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SwitchedShuntProperties.BINIT</td>
+<td style="text-align: left;">BINIT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.SwitchedShuntProperties.O_BINIT</td>
+<td style="text-align: left;">O_BINIT</td>
+</tr>
+</tbody>
+</table>
+<h2 id="transformerproperties">TransformerProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RATIO</td>
+<td style="text-align: left;">RATIO</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RATIO2</td>
+<td style="text-align: left;">RATIO2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.ANGLE</td>
+<td style="text-align: left;">ANGLE</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RMAX</td>
+<td style="text-align: left;">RMAX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RMIN</td>
+<td style="text-align: left;">RMIN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.VMAX</td>
+<td style="text-align: left;">VMAX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.VMIN</td>
+<td style="text-align: left;">VMIN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.STEP</td>
+<td style="text-align: left;">STEP</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.CR</td>
+<td style="text-align: left;">CR</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.CX</td>
+<td style="text-align: left;">CX</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.CNXANG</td>
+<td style="text-align: left;">CNXANG</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.SBASE1</td>
+<td style="text-align: left;">SBASE1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.NOMV1</td>
+<td style="text-align: left;">NOMV1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.NOMV2</td>
+<td style="text-align: left;">NOMV2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.GMAGNT</td>
+<td style="text-align: left;">GMAGNT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.BMAGNT</td>
+<td style="text-align: left;">BMAGNT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RG1</td>
+<td style="text-align: left;">RG1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.XG1</td>
+<td style="text-align: left;">XG1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.R01</td>
+<td style="text-align: left;">R01</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.X01</td>
+<td style="text-align: left;">X01</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RG2</td>
+<td style="text-align: left;">RG2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.XG2</td>
+<td style="text-align: left;">XG2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.R02</td>
+<td style="text-align: left;">R02</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.X02</td>
+<td style="text-align: left;">X02</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RNUTRL</td>
+<td style="text-align: left;">RNUTRL</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.XNUTRL</td>
+<td style="text-align: left;">XNUTRL</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RX1_2</td>
+<td style="text-align: left;">RX1-2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RX2_3</td>
+<td style="text-align: left;">RX2-3</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.RX3_1</td>
+<td style="text-align: left;">RX3-1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.YMAGNT</td>
+<td style="text-align: left;">YMAGNT</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.ZG1</td>
+<td style="text-align: left;">ZG1</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.Z01</td>
+<td style="text-align: left;">Z01</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.ZG2</td>
+<td style="text-align: left;">ZG2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.Z02</td>
+<td style="text-align: left;">Z02</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.ZG3</td>
+<td style="text-align: left;">ZG3</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.Z03</td>
+<td style="text-align: left;">Z03</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.TransformerProperties.ZNUTRL</td>
+<td style="text-align: left;">ZNUTRL</td>
+</tr>
+</tbody>
+</table>
+<h2 id="usemodes">UseModes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.UseModes.REGEX</td>
+<td style="text-align: left;">regex</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.UseModes.LIST</td>
+<td style="text-align: left;">list</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.UseModes.ALL</td>
+<td style="text-align: left;">all</td>
+</tr>
+</tbody>
+</table>
+<h2 id="zoneproperties">ZoneProperties</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.LOAD</td>
+<td style="text-align: left;">LOAD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.LOADID</td>
+<td style="text-align: left;">LOADID</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.LGDN</td>
+<td style="text-align: left;">LGDN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.LDGNLD</td>
+<td style="text-align: left;">LDGNLD</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.GEN</td>
+<td style="text-align: left;">GEN</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.ZONENAME</td>
+<td style="text-align: left;">ZONENAME</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ZoneProperties.ZONENUMBER</td>
+<td style="text-align: left;">ZONENUMBER</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

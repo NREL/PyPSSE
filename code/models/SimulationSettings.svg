@@ -220,7 +220,7 @@
 <!-- pypsse.models.PublicationDefination -->
 <g id="node8" class="node">
 <title>pypsse.models.PublicationDefination</title>
-<g id="a_node8"><a xlink:title="pypsse.models.PublicationDefination&#10;&#10;Publication setting model defination&#10;&#10;Attributes:&#10; &#160;&#160;&#160;bus_subsystems (list(int)): Description of `attr1`.&#10; &#160;&#160;&#160;model_type (ModelTypes): asdsad.&#10; &#160;&#160;&#160;attmodel_typer2 (List, optional): Description of `attr2`.&#10;">
+<g id="a_node8"><a xlink:title="pypsse.models.PublicationDefination&#10;&#10;Publication setting model defination&#10; &#160;&#160;&#160;&#10;">
 <polygon fill="none" stroke="black" points="1125,-1492.5 1125,-1514.5 1394,-1514.5 1394,-1492.5 1125,-1492.5"/>
 <text text-anchor="start" x="1196.12" y="-1499.2" font-family="Times New Roman,serif" font-weight="bold" font-size="14.00">PublicationDefination</text>
 <polygon fill="none" stroke="black" points="1125,-1470.5 1125,-1492.5 1226,-1492.5 1226,-1470.5 1125,-1470.5"/>

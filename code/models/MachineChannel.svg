@@ -14,28 +14,28 @@
 <g id="node1" class="node">
 <title>pypsse.models.MachineChannel</title>
 <g id="a_node1"><a xlink:title="pypsse.models.MachineChannel&#10;&#10;Machine channel model defination&#10;">
-<polygon fill="none" stroke="black" points="40.75,-128.5 40.75,-150.5 225.75,-150.5 225.75,-128.5 40.75,-128.5"/>
+<polygon fill="none" stroke="black" points="24.25,-128.5 24.25,-150.5 242.25,-150.5 242.25,-128.5 24.25,-128.5"/>
 <text text-anchor="start" x="83.38" y="-135.2" font-family="Times New Roman,serif" font-weight="bold" font-size="14.00">MachineChannel</text>
-<polygon fill="none" stroke="black" points="40.75,-106.5 40.75,-128.5 100.75,-128.5 100.75,-106.5 40.75,-106.5"/>
-<text text-anchor="start" x="59.12" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">type</text>
-<polygon fill="none" stroke="black" points="100.75,-106.5 100.75,-128.5 225.75,-128.5 225.75,-106.5 100.75,-106.5"/>
-<text text-anchor="start" x="103.62" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">ChannelTypes(Enum)</text>
-<polygon fill="none" stroke="black" points="40.75,-84.5 40.75,-106.5 100.75,-106.5 100.75,-84.5 40.75,-84.5"/>
+<polygon fill="none" stroke="black" points="24.25,-106.5 24.25,-128.5 117.25,-128.5 117.25,-106.5 24.25,-106.5"/>
+<text text-anchor="start" x="42.62" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">asset_type</text>
+<polygon fill="none" stroke="black" points="117.25,-106.5 117.25,-128.5 242.25,-128.5 242.25,-106.5 117.25,-106.5"/>
+<text text-anchor="start" x="120.12" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">ChannelTypes(Enum)</text>
+<polygon fill="none" stroke="black" points="24.25,-84.5 24.25,-106.5 117.25,-106.5 117.25,-84.5 24.25,-84.5"/>
 <text text-anchor="start" x="61.75" y="-90.2" font-family="Times New Roman,serif" font-size="14.00">use</text>
-<polygon fill="none" stroke="black" points="100.75,-84.5 100.75,-106.5 225.75,-106.5 225.75,-84.5 100.75,-84.5"/>
-<text text-anchor="start" x="113" y="-90.2" font-family="Times New Roman,serif" font-size="14.00">UseModes(Enum)</text>
-<polygon fill="none" stroke="black" points="40.75,-62.5 40.75,-84.5 100.75,-84.5 100.75,-62.5 40.75,-62.5"/>
+<polygon fill="none" stroke="black" points="117.25,-84.5 117.25,-106.5 242.25,-106.5 242.25,-84.5 117.25,-84.5"/>
+<text text-anchor="start" x="129.5" y="-90.2" font-family="Times New Roman,serif" font-size="14.00">UseModes(Enum)</text>
+<polygon fill="none" stroke="black" points="24.25,-62.5 24.25,-84.5 117.25,-84.5 117.25,-62.5 24.25,-62.5"/>
 <text text-anchor="start" x="55.75" y="-68.2" font-family="Times New Roman,serif" font-size="14.00">regex</text>
-<polygon fill="none" stroke="black" points="100.75,-62.5 100.75,-84.5 225.75,-84.5 225.75,-62.5 100.75,-62.5"/>
-<text text-anchor="start" x="156.5" y="-68.2" font-family="Times New Roman,serif" font-size="14.00">str</text>
-<polygon fill="none" stroke="black" points="40.75,-40.5 40.75,-62.5 100.75,-62.5 100.75,-40.5 40.75,-40.5"/>
-<text text-anchor="start" x="62.5" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">list</text>
-<polygon fill="none" stroke="black" points="100.75,-40.5 100.75,-62.5 225.75,-62.5 225.75,-40.5 100.75,-40.5"/>
-<text text-anchor="start" x="126.5" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">List[List[str]]</text>
-<polygon fill="none" stroke="black" points="40.75,-18.5 40.75,-40.5 100.75,-40.5 100.75,-18.5 40.75,-18.5"/>
-<text text-anchor="start" x="43.75" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">properties</text>
-<polygon fill="none" stroke="black" points="100.75,-18.5 100.75,-40.5 225.75,-40.5 225.75,-18.5 100.75,-18.5"/>
-<text text-anchor="start" x="141.5" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">List[str]</text>
+<polygon fill="none" stroke="black" points="117.25,-62.5 117.25,-84.5 242.25,-84.5 242.25,-62.5 117.25,-62.5"/>
+<text text-anchor="start" x="173" y="-68.2" font-family="Times New Roman,serif" font-size="14.00">str</text>
+<polygon fill="none" stroke="black" points="24.25,-40.5 24.25,-62.5 117.25,-62.5 117.25,-40.5 24.25,-40.5"/>
+<text text-anchor="start" x="46" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">asset_list</text>
+<polygon fill="none" stroke="black" points="117.25,-40.5 117.25,-62.5 242.25,-62.5 242.25,-40.5 117.25,-40.5"/>
+<text text-anchor="start" x="143" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">List[List[str]]</text>
+<polygon fill="none" stroke="black" points="24.25,-18.5 24.25,-40.5 117.25,-40.5 117.25,-18.5 24.25,-18.5"/>
+<text text-anchor="start" x="27.25" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">asset_properties</text>
+<polygon fill="none" stroke="black" points="117.25,-18.5 117.25,-40.5 242.25,-40.5 242.25,-18.5 117.25,-18.5"/>
+<text text-anchor="start" x="158" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">List[str]</text>
 </a>
 </g>
 </g>
