@@ -19,9 +19,7 @@ plugins:
           options:
             show_symbol_type_heading: true
   - glightbox
-  - gen-files:
-      scripts:
-        - docs/code/doc_builder.py 
+
 
 nav:
   - Home : index.md

@@ -1,5 +1,12 @@
 from enum import Enum, IntEnum
 
+class ProjectFolders(Enum):
+    "Defines valid the project folder"
+    CASESTUDY = "case_study"
+    EXPORTS = "exports"
+    GISDATA = "gis_data" 
+    LOGS = "logs"
+    PROFILES = "profiles" 
 
 class BulkWriteModes(Enum):
     "Supported bulk writers"

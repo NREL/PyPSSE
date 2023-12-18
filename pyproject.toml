@@ -24,10 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "aiohttp",
-    "aiohttp_cors",
-    "aiohttp_swagger",
-    "aiohttp_swagger3",
+
     "click",
     "h5py",
     "helics",
@@ -77,12 +74,22 @@ doc = [
   "pygraphviz",
   "erdantic",
   "mdutils",
-  "mkdocs-glightbox"
+  "mkdocs-glightbox",
+  "mkdocs-click",
+  "mkdocs-table-reader-plugin",
+  "mkdocs-video",
+  "neoteroi-mkdocs",
 ]
 dev = [
   "pylint",
   "mypy",
   "black"
+]
+server = [
+  "aiohttp",
+  "aiohttp_cors",
+  "aiohttp_swagger",
+  "aiohttp_swagger3",
 ]
 
 [tool.hatch.envs.lint]

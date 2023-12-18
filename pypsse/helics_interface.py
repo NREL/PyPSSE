@@ -85,7 +85,7 @@ class HelicsInterface:
                 f"Valid subsystem IDs are  '{list(self.bus_subsystems.keys())}'."
                 raise Exception(msg)
 
-            elm_class = publication_dict.model_type.value
+            elm_class = publication_dict.asset_type.value
 
             if not hasattr(self.export_settings, elm_class.lower()):
                 msg = f"'{elm_class.lower()}' is not a valid class of elements. "
@@ -93,7 +93,7 @@ class HelicsInterface:
                 raise Exception(msg)
 
             managed_properties = [ptpy.value for ptpy in getattr(self.export_settings, elm_class.lower())]
-            properties = [p.value for p in publication_dict.model_properties]
+            properties = [p.value for p in publication_dict.asset_properties]
 
             if not set(properties).issubset(managed_properties):
                 msg = f"One or more publication property defined for class '{elm_class}' is invalid."

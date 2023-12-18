@@ -29,7 +29,9 @@ from pypsse.enumerations import (
     TransformerProperties,
     UseModes,
     ZoneProperties,
+    ProjectFolders,
 )
+
 
 
 class SimSettings(BaseModel):
@@ -72,7 +74,7 @@ class SimSettings(BaseModel):
         base_project_path = self.project_path
         for file in file_types:
             file_path = getattr(self, file)
-            if file_path:
+            if file_path and str(file_path) != ".":
                 file_path = base_project_path / CASESTUDY_FOLDER / file_path
                 setattr(self, file, file_path)
                 assert file_path.exists(), f"{file_path} does not exist"
@@ -81,7 +83,7 @@ class SimSettings(BaseModel):
     @model_validator(mode="after")
     def validate_subscription_file(self):
         base_project_path = self.project_path
-        if self.subscriptions_file:
+        if self.subscriptions_file and str(self.subscriptions_file) != ".":
             self.subscriptions_file = base_project_path / self.subscriptions_file
             assert self.subscriptions_file.exists(), f"{self.subscriptions_file} does not exist"
             data = pd.read_csv(self.subscriptions_file)
@@ -130,8 +132,8 @@ class PublicationDefination(BaseModel):
     bus_subsystems: List[int] = [
         0,
     ]
-    model_type: ModelTypes = "buses"
-    model_properties: List[ModelProperties] = ["FREQ", "PU"]
+    asset_type: ModelTypes = "buses"
+    asset_properties: List[ModelProperties] = ["FREQ", "PU"]
 
 
 class HelicsSettings(BaseModel):
@@ -344,3 +346,15 @@ class ExportFileOptions(ExportAssetTypes):
     export_results_using_channels: bool = False
     defined_subsystems_only: bool = True
     file_format: ExportModes = "h5"
+
+
+class ProjectDefination(BaseModel):
+    overwrite : bool = False
+    autofill: bool = True
+    project_name : str
+    project_folders : List[ProjectFolders] = [x for x in ProjectFolders]
+    simulation_settings : SimulationSettings
+    export_settings :ExportFileOptions
+    #profile_store: 
+    #profile_mappng:
+    

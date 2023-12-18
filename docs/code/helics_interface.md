@@ -33,8 +33,8 @@ PyPSSE allows publication of results stored in the simulation store. Publication
 ``` toml
 [[helics.publications]]
 bus_subsystems = [ 0,]
-model_type = "Buses"
-model_properties = [ "FREQ", "PU",]
+asset_type = "Buses"
+asset_properties = [ "FREQ", "PU",]
 ```
 
 All fields are validated against availble datasets in the simulation store. Valid model types and properties are documented [here](#models.md)

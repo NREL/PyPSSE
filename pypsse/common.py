@@ -11,15 +11,11 @@ PROFILES_FOLDER = "profiles"
 
 SIMULATION_SETTINGS_FILENAME = "simulation_settings.toml"
 EXPORTS_SETTINGS_FILENAME = "export_settings.toml"
-DEFAULT_SUBSCRIPTION_FILENAMES = "Subscriptions.csv"
-DEFAULT_PROFILE_MAPPING_FILENAME = "Profile_mapping.toml"
-DEFAULT_PROFILE_STORE_FILENAME = "Profiles.hdf5"
-PROJECT_FOLDERS = ["Case_study", "Exports", "GIS_data", "Logs", "Profiles", "Settings"]
-REQUIRED_GLOBAL = ["PSSE_path", "Project Path", ["Case study", "Raw file"]]
-REQUIRED_DYNAMIC = ["Dyr file"]
-REQUIRED_NETWORKX = ["GIC file"]
-REQUIRED_HELICS = ["Subscriptions file"]
-SUBSCRIPTION_FIELDS = {"bus_subsystem_id", "bus_id", "load_id", "load_type", "sub_tag"}
+DEFAULT_SUBSCRIPTION_FILENAME = "subscriptions.csv"
+DEFAULT_PROFILE_MAPPING_FILENAME = "profile_mapping.toml"
+DEFAULT_PROFILE_STORE_FILENAME = "profiles.hdf5"
+
+DEFAULTS_FOLDER = "defaults"
 
 MAPPED_CLASS_NAMES = {
     "buses": "Buses",

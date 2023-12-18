@@ -37,8 +37,8 @@ broker_port = 23404
 disable_generation_on_coupled_buses = true
 [[helics.publications]]
 bus_subsystems = [ 0,]
-model_type = "Buses"
-model_properties = [ "FREQ", "PU",]
+asset_type = "Buses"
+asset_properties = [ "FREQ", "PU",]
 
 [log]
 disable_psse_logging = true
