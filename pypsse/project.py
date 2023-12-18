@@ -18,6 +18,13 @@ from pypsse.common import (
     PROFILES_FOLDER,
     SIMULATION_SETTINGS_FILENAME,
     CASESTUDY_FOLDER,
+    DEFAULT_OUT_FILE,
+    DEFAULT_OUTX_FILE,
+    DEFAULT_EXCEL_FILE,
+    DEFAULT_LOG_FILE,
+    DEFAULT_GRAPH_FILE,
+    DEFAULT_COORDINATES_FILE
+    
 )
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.models import ExportFileOptions, SimulationSettings, ProjectDefination
@@ -80,7 +87,16 @@ class Project:
         if autofill:
             self._autofill_settings(psse_files, profile_store_file, profile_mapping_file)
         
+        self._update_export_files()
         self._write_setting_files()
+
+    def _update_export_files(self):
+        self.project.simulation_settings.export.out_file = DEFAULT_OUT_FILE
+        self.project.simulation_settings.export.outx_file = DEFAULT_OUTX_FILE
+        self.project.simulation_settings.export.log_file = DEFAULT_LOG_FILE
+        self.project.simulation_settings.export.excel_file = DEFAULT_EXCEL_FILE
+        self.project.simulation_settings.export.coordinate_file = DEFAULT_COORDINATES_FILE
+        self.project.simulation_settings.export.networkx_graph_file = DEFAULT_GRAPH_FILE
 
     def _psse_project_file_dict(self, path):
         "Creates a mapping of all PyPSSE project files"
@@ -201,30 +217,5 @@ class Project:
             logging.warning(f"No file with extension '{f_type}'")
         return 
 
-    
-    def _update_settings(self, settings, export_settings):
-        "Unables update of an existing settings file"
-        default_settings = toml.load(os.path.join(self.basepath, "pypsse", "defaults", SIMULATION_SETTINGS_FILENAME))
-        default_exports = toml.load(os.path.join(self.basepath, "pypsse", "defaults", EXPORTS_SETTINGS_FILENAME))
-        default_settings.update(settings)
-        default_exports.update(export_settings)
-        return default_settings, default_exports
 
     
-
-
-        
-        # project_path = os.path.join(path, project_name)
-        # if os.path.exists(project_path) and overwrite:
-        #     rmtree(project_path)
-        # elif os.path.exists(project_path) and not overwrite:
-        #     msg = "Project already exists. Set 'overwrite' to true to overwrite existing project."
-        #     raise Exception(msg)
-
-        # self.make_dir(project_path)
-        # for f in PROJECT_FOLDERS:
-        #     self.make_dir(os.path.join(project_path, f))
-
-    def make_dir(self, path):
-        # try:
-        os.mkdir(path)

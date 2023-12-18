@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Annotated, Literal
 
 import pandas as pd
 from pydantic import BaseModel, Field, model_validator
@@ -294,7 +294,7 @@ class SimulationSettings(BaseModel):
 class BusChannel(BaseModel):
     "Bus channel model defination"
 
-    asset_type: ChannelTypes = ChannelTypes.BUSES
+    asset_type: Literal[ChannelTypes.BUSES.value] 
     use: UseModes = UseModes.LIST
     regex: str = ""
     asset_list: List[int] = []
@@ -304,7 +304,7 @@ class BusChannel(BaseModel):
 class LoadChannel(BaseModel):
     "Load channel model defination"
 
-    asset_type: ChannelTypes = ChannelTypes.LOADS
+    asset_type: Literal[ChannelTypes.LOADS.value]
     use: UseModes = UseModes.LIST
     regex: str = ""
     asset_list: List[List[str]] = [[]]
@@ -314,12 +314,13 @@ class LoadChannel(BaseModel):
 class MachineChannel(BaseModel):
     "Machine channel model defination"
 
-    asset_type: ChannelTypes = ChannelTypes.MACHINES
+    asset_type: Literal[ChannelTypes.MACHINES.value]
     use: UseModes = UseModes.LIST
     regex: str = ""
     asset_list: List[List[str]] = [[]]
     asset_properties: List[str] = ["PELEC", "QELEC", "SPEED"]
 
+channel_types = Annotated[Union[BusChannel, LoadChannel, MachineChannel], Field(discriminator = "asset_type")]
 
 class ExportAssetTypes(BaseModel):
     "Valid export models and associated options"
@@ -337,7 +338,7 @@ class ExportAssetTypes(BaseModel):
     induction_generators: Optional[List[InductionGeneratorProperties]] = None
     machines: Optional[List[MachinesProperties]] = None
     channels: Optional[List[str]] = None
-    channel_setup: Optional[List[Union[BusChannel, LoadChannel, MachineChannel]]] = None
+    channel_setup: Optional[List[channel_types]] = None
 
 
 class ExportFileOptions(ExportAssetTypes):

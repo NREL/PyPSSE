@@ -8,6 +8,7 @@ SETTINGS_FOLDER = "settings"
 EXPORTS_FOLDER = "exports"
 LOGS_FOLDER = "logs"
 PROFILES_FOLDER = "profiles"
+DEFAULTS_FOLDER = "defaults"
 
 SIMULATION_SETTINGS_FILENAME = "simulation_settings.toml"
 EXPORTS_SETTINGS_FILENAME = "export_settings.toml"
@@ -15,7 +16,12 @@ DEFAULT_SUBSCRIPTION_FILENAME = "subscriptions.csv"
 DEFAULT_PROFILE_MAPPING_FILENAME = "profile_mapping.toml"
 DEFAULT_PROFILE_STORE_FILENAME = "profiles.hdf5"
 
-DEFAULTS_FOLDER = "defaults"
+DEFAULT_OUT_FILE = "results.out"
+DEFAULT_OUTX_FILE = "results.outx"
+DEFAULT_EXCEL_FILE = "results.xls"
+DEFAULT_LOG_FILE= "psse.log"
+DEFAULT_GRAPH_FILE= "network.gpickle"
+DEFAULT_COORDINATES_FILE = "profiles.hdf5"
 
 MAPPED_CLASS_NAMES = {
     "buses": "Buses",
@@ -31,7 +37,6 @@ MAPPED_CLASS_NAMES = {
     "induction_generators": "Induction_generators",
     "dctransmissionlines": "DCtransmissionlines",
 }
-
 
 MACHINE_CHANNELS = {
     "ANGLE": 1,
