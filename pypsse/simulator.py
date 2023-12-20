@@ -285,20 +285,25 @@ class Simulator:
         if self.inc_time:
             self.sim.step(t)
         else:
-            self.sim.resolve_step(t)
+            self.sim.resolve_step()
 
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             self.publish_data()
+        
+        curr_results = self.update_result_container(t)
+        
+            # curr_results = self.sim.read(self.exp_vars, self.raw_data)
+        return curr_results
+
+    def update_result_container(self, t):
         if self.export_settings.defined_subsystems_only:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
-            # curr_results = self.sim.read(self.exp_vars, self.raw_data)
-
+            
         if not USING_NAERM:
-            if self.inc_time and not self.export_settings.export_results_using_channels:
-                self.results.update(curr_results, t, self.sim.get_time())
-
+            if not self.export_settings.export_results_using_channels:
+                self.results.update(curr_results, t, self.sim.get_time(), self.sim.has_converged())
         return curr_results
 
     def update_subscriptions(self):

@@ -24,6 +24,6 @@ class DataWriter:
         "Sets up a data writer as per user input"
         self.writer = self.modes[formatnm](log_dir, column_length)
 
-    def write(self, currenttime, powerflow_output):
+    def write(self, currenttime, powerflow_output, convergence):
         "Enables incremental write to the data writer object"
-        self.writer.write(currenttime, powerflow_output)
+        self.writer.write(currenttime, powerflow_output, convergence)

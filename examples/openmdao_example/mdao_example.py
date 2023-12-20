@@ -26,7 +26,7 @@ prob = om.Problem(model)
 
 
 prob.driver = om.DifferentialEvolutionDriver()
-prob.driver.options['max_gen'] = 200
+prob.driver.options['max_gen'] = 100
 prob.driver.options['pop_size'] = 20
 
 

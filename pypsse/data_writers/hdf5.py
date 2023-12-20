@@ -24,6 +24,16 @@ class HDF5Writer:
         self.chunkRows = 1
         self.step = 0
         self.dfs = {}
+        self.convergence = self.store.create_dataset(
+            "Convergence",
+            shape=(self.column_length,),
+            maxshape=(None,),
+            chunks=True,
+            compression="gzip",
+            compression_opts=4,
+            shuffle=True,
+            dtype= np.int16,
+        )
         self.Timestamp = self.store.create_dataset(
             "Time stamp",
             shape=(self.column_length,),
@@ -36,7 +46,7 @@ class HDF5Writer:
         )
         # Create arrow writer for each object type
 
-    def write(self, currenttime, powerflow_output):
+    def write(self, currenttime, powerflow_output, convergence):
         """
         Writes the status of BES assets at a particular timestep to an
             arrow file.
@@ -81,9 +91,16 @@ class HDF5Writer:
                 si = int(self.step / self.chunkRows) * self.chunkRows
                 ei = si + self.chunkRows
                 for col_name in powerflow_output[obj_type].keys():
+                    r = self.store_datasets[obj_type][col_name].shape[0]
+                    if ei >= r:
+                        self.store_datasets[obj_type][col_name].resize((ei, ))
                     self.store_datasets[obj_type][col_name][si:ei] = self.dfs[obj_type][col_name]
                 self.dfs[obj_type] = None
-            #self.Timestamp[self.step - 1] = np.string_(str(currenttime))
+            if self.step >= len(self.Timestamp):
+                self.Timestamp.resize((len(self.Timestamp)+1, ))
+                self.convergence.resize((len(self.convergence)+1, ))
+            self.Timestamp[self.step - 1] = np.string_(str(currenttime))
+            self.convergence[self.step - 1] = convergence
             # Add object status data to a DataFrame
             self.store.flush()
         self.step += 1

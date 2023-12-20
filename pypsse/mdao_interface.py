@@ -110,6 +110,7 @@ class PSSE:
 
     def solve_step(self):
         "Solves for the current time set and incremetn in time"
+        self.psse_obj.inc_time = False
         self.current_result = self.psse_obj.step(self.time_counter)
         
         

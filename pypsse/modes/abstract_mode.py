@@ -975,26 +975,6 @@ class AbstractMode:
                 self.psse.conl(0, 1, 3, [0, 0], [p1, p2, q1, q2])  # postprocessing housekeeping.
 
     def update_object(self, dtype, bus, element_id, values: dict):
-
-        # from pypsse.models import MdaoInput, MdaoProblem
-
-        # if not hasattr(self, "test"):
-        #     self.test=[]
-        
-        # self.test.append(
-        #     MdaoInput(
-        #         asset_type=dtype,
-        #         asset_bus=int(bus),
-        #         asset_id=element_id,
-        #         attributes=values
-        #     )
-        # )
-        # m = MdaoProblem(inputs=self.test)
-        # import json, toml
-        # c = json.loads(m.model_dump_json())
-        # toml.dump(c, open("test.toml", "w"))
-
-
         val = sum(list(values.values()))
         if val > -VALUE_UPDATE_BOUND and val < VALUE_UPDATE_BOUND:
             if dtype == WritableModelTypes.LOAD.value:
@@ -1012,3 +992,6 @@ class AbstractMode:
                 self.logger.info(f"Profile Manager: {dtype} '{element_id}' on bus '{bus}' has been updated. {values}")
             else:
                 self.logger.error(f"Profile Manager: Error updating {dtype} '{element_id}' on bus '{bus}'.")
+
+    def has_converged(self):
+        return self.psse.solved()

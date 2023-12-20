@@ -65,10 +65,10 @@ class Container:
         "Queries and return results from the current timestep"
         return self.export_vars
 
-    def update(self, bus_data, _, time):
+    def update(self, bus_data, _, time, has_converged):
         "Updates the results cotainer"
         if self.export_settings.file_format not in self.BULK_WRITE_MODES:
-            self.dataWriter.write(time, bus_data)
+            self.dataWriter.write(time, bus_data, has_converged)
         else:
             for variable_name, _ in bus_data.items():
                 if not isinstance(self.results[f"{variable_name}"], pd.DataFrame):
