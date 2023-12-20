@@ -170,7 +170,7 @@ class DC2ACconverter:
             # gen data from PSSE
             self.pfdt.getdata()
             ad_pq_genbus, ad_pq_gen_q, ad_pq_gen_q_abs, ad_pv_genbus, ad_pv_gen_q = self.get_added_generators(
-                pfdt, ad_pq_busid, ad_pv_busid
+                self.pfdt, ad_pq_busid, ad_pv_busid
             )
 
             self.logger.info("Trying to remove added generators..")
@@ -266,32 +266,32 @@ class DC2ACconverter:
             outfile = outfile.replace("input", "dc2ac_output\\solved")
             if option2 == 1:
                 outfile = outfile[0 : len(outfile) - 4] + """_solved.raw"""
-            if option2 == 2:
+            elif option2 == 2:
                 outfile = outfile[0 : len(outfile) - 4] + """_addgen_remgen_solved.raw"""
 
-        if option == 2:
+        elif option == 2:
             outfile = outfile.replace("input", "dc2ac_output\\solvedwQ")
             outfile = outfile[0 : len(outfile) - 4] + """_step3_addgen_solved.raw"""
 
-        if option == 3:
+        elif option == 3:
             outfile = outfile.replace("input", "dc2ac_output\\unsolved")
             if option2 == 2:
                 outfile = outfile[0 : len(outfile) - 4] + """_step2_addgen_unsolved.raw"""
-            if option2 == 2.1:
+            elif option2 == 2.1:
                 outfile = outfile[0 : len(outfile) - 4] + """_step2_addgen_solved_""" + perc + """.raw"""
 
-        if option == 4:
+        elif option == 4:
             outfile = outfile.replace("input", "temp")
             if option2 == 1:
                 outfile = outfile[0 : len(outfile) - 4] + """_step1_addgen.raw"""
-            if option2 == 2:
+            elif option2 == 2:
                 outfile = outfile[0 : len(outfile) - 4] + """_step2_addgen_redP.raw"""
-            if option2 == 2.1:
+            elif option2 == 2.1:
                 outfile = outfile[0 : len(outfile) - 4] + """_step2_addgen_solved.raw"""
-            if option2 == 3:
+            elif option2 == 3:
                 outfile = outfile[0 : len(outfile) - 4] + """_step3_addgen_remgen.raw"""
 
-        if option == 5:
+        elif option == 5:
             outfile = outfile.replace("input", "dc2ac_output\\solved_Vadju")
             outfile = outfile[0 : len(outfile) - 4] + """_step4_unlimQ.raw"""
 

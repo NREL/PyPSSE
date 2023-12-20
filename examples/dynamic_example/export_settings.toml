@@ -13,28 +13,28 @@ machines = ["MVA", "PERCENT"]
 channels = ["ANGLE = false machine relative rotor angle (degrees)." , "flow (P)." ]
 
 [[channel_setup]]
-type = "buses"
+asset_type = "buses"
 use = "list" # "regex", "list", "all"
 regex = ""
-list = [153, 154, 203, 205, 3005, 3007, 3008]
-properties = ["voltage_and_angle", "frequency"]
+asset_list = [153, 154, 203, 205, 3005, 3007, 3008]
+asset_properties = ["voltage_and_angle", "frequency"]
 
 [[channel_setup]]
-type = "buses"
+asset_type = "buses"
 use = "list" # "regex", "list", "all"
 regex = ""
-list = [206, 3018]
+asset_list = [206, 3018]
 properties = ["voltage_and_angle"]
 
 [[channel_setup]]
-type = "loads"
+asset_type = "loads"
 use = "list" # "regex", "list", "all"
 regex = ""
-list = [["1", "153"], ["2", "154"], ["1", "203"], ["1", "205"], ["1", "3005"], ["1", "3007"], ["1", "3008"]]
+asset_list = [["1", "153"], ["2", "154"], ["1", "203"], ["1", "205"], ["1", "3005"], ["1", "3007"], ["1", "3008"]]
 
 [[channel_setup]]
-type = "machines"
+asset_type = "machines"
 use = "list" # "regex", "list", "all"
 regex = ""
-list = [["1", "101"], ["1", "102"], ["1", "206"], ["1", "211"], ["1", "3011"], ["1", "3018"]]
-properties = ["PELEC", "QELEC", "SPEED"]
+asset_list = [["1", "101"], ["1", "102"], ["1", "206"], ["1", "211"], ["1", "3011"], ["1", "3018"]]
+asset_properties = ["PELEC", "QELEC", "SPEED"]

@@ -19,8 +19,8 @@ DEFAULT_PROFILE_STORE_FILENAME = "profiles.hdf5"
 DEFAULT_OUT_FILE = "results.out"
 DEFAULT_OUTX_FILE = "results.outx"
 DEFAULT_EXCEL_FILE = "results.xls"
-DEFAULT_LOG_FILE= "psse.log"
-DEFAULT_GRAPH_FILE= "network.gpickle"
+DEFAULT_LOG_FILE = "psse.log"
+DEFAULT_GRAPH_FILE = "network.gpickle"
 DEFAULT_COORDINATES_FILE = "profiles.hdf5"
 
 MAPPED_CLASS_NAMES = {

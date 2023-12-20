@@ -1,34 +1,32 @@
-from distutils.dir_util import copy_tree
-from shutil import copy, rmtree
-from pathlib import Path
-import logging
 import json
+import logging
 import os
-
+from distutils.dir_util import copy_tree
+from pathlib import Path
+from shutil import copy
 
 import pandas as pd
 import toml
 
-import pypsse
 from pypsse.common import (
-    DEFAULTS_FOLDER,
+    CASESTUDY_FOLDER,
+    DEFAULT_COORDINATES_FILE,
+    DEFAULT_EXCEL_FILE,
+    DEFAULT_GRAPH_FILE,
+    DEFAULT_LOG_FILE,
+    DEFAULT_OUT_FILE,
+    DEFAULT_OUTX_FILE,
     DEFAULT_PROFILE_MAPPING_FILENAME,
     DEFAULT_SUBSCRIPTION_FILENAME,
+    DEFAULTS_FOLDER,
     EXPORTS_SETTINGS_FILENAME,
     PROFILES_FOLDER,
     SIMULATION_SETTINGS_FILENAME,
-    CASESTUDY_FOLDER,
-    DEFAULT_OUT_FILE,
-    DEFAULT_OUTX_FILE,
-    DEFAULT_EXCEL_FILE,
-    DEFAULT_LOG_FILE,
-    DEFAULT_GRAPH_FILE,
-    DEFAULT_COORDINATES_FILE
-    
 )
-from pypsse.profile_manager.profile_store import ProfileManager
-from pypsse.models import ExportFileOptions, SimulationSettings, ProjectDefination
 from pypsse.enumerations import SubscriptionFileRequiredColumns
+from pypsse.models import ExportFileOptions, ProjectDefination, SimulationSettings
+from pypsse.profile_manager.profile_store import ProfileManager
+
 
 class Project:
     "This class defines the structure of a PyPSSE project"
@@ -36,7 +34,6 @@ class Project:
     def __init__(self):
         logging.root.setLevel("DEBUG")
         self.basepath = Path(__file__).parent
-
 
     def create(
         self,
@@ -51,42 +48,43 @@ class Project:
         autofill=True,
     ):
         "The methods creates a new PyPSSE project"
-        
-        exports_dict  = toml.load(self.basepath / DEFAULTS_FOLDER / EXPORTS_SETTINGS_FILENAME)
+
+        exports_dict = toml.load(self.basepath / DEFAULTS_FOLDER / EXPORTS_SETTINGS_FILENAME)
         export_settings = ExportFileOptions(**exports_dict)
-        
+
         if export_settings_file:
-            export_settings_file = Path(export_settings_file)   
+            export_settings_file = Path(export_settings_file)
             assert export_settings_file.exists(), f"Export file '{export_settings_file}' does not exist"
             new_export_settings = toml.load(export_settings_file)
             export_settings.update(**new_export_settings)
-  
-        sim_setting_dict  = toml.load(self.basepath / DEFAULTS_FOLDER / SIMULATION_SETTINGS_FILENAME)
+
+        sim_setting_dict = toml.load(self.basepath / DEFAULTS_FOLDER / SIMULATION_SETTINGS_FILENAME)
         simulation_settings = SimulationSettings(**sim_setting_dict)
-        
+
         if simulation_settings_file:
-            simulation_settings_file = Path(simulation_settings_file)   
+            simulation_settings_file = Path(simulation_settings_file)
             assert simulation_settings_file.exists(), f"Export file '{simulation_settings_file}' does not exist"
-            sim_setting_dict  = toml.load(simulation_settings_file)
+            sim_setting_dict = toml.load(simulation_settings_file)
             simulation_settings.update(**sim_setting_dict)
 
         simulation_settings.simulation.project_path = Path(parent_path) / project_name
-            
+
         self.project = ProjectDefination(
             project_name=project_name,
-            simulation_settings = simulation_settings,
-            export_settings = export_settings,
-            overwrite = overwrite,
-            autofill = autofill
+            simulation_settings=simulation_settings,
+            export_settings=export_settings,
+            overwrite=overwrite,
+            autofill=autofill,
         )
         self.project_path = Path(parent_path) / project_name
-        
+
         self._create_folders()
-        
-        psse_files = self._copy_psse_project_files(psse_folder)
-        if autofill:
-            self._autofill_settings(psse_files, profile_store_file, profile_mapping_file)
-        
+
+        if psse_folder:
+            psse_files = self._copy_psse_project_files(psse_folder)
+            if autofill and psse_files:
+                self._autofill_settings(psse_files, profile_store_file, profile_mapping_file)
+
         self._update_export_files()
         self._write_setting_files()
 
@@ -114,8 +112,7 @@ class Project:
         "Copies PSSE file to the new project folder"
         psse_folder = Path(psse_folder)
         if psse_folder.exists():
-            project_path = self.project.simulation_settings.simulation.project_path
-            new_path = project_path / self.project.project_name / CASESTUDY_FOLDER
+            new_path = self.project_path / CASESTUDY_FOLDER
             copy_tree(str(psse_folder.absolute()), str(new_path.absolute()))
             psse_files = self._psse_project_file_dict(new_path)
         else:
@@ -124,43 +121,41 @@ class Project:
         return psse_files
 
     def _write_setting_files(self):
-        project_path = self.project.simulation_settings.simulation.project_path
-        
         sim_file_path = self.project_path / SIMULATION_SETTINGS_FILENAME
         with open(sim_file_path, "w") as f:
             toml.dump(json.loads(self.project.simulation_settings.model_dump_json()), f)
 
-        export_file_path = self.project_path/ EXPORTS_SETTINGS_FILENAME
+        export_file_path = self.project_path / EXPORTS_SETTINGS_FILENAME
         with open(export_file_path, "w") as f:
             toml.dump(json.loads(self.project.export_settings.model_dump_json()), f)
 
     def _create_folders(self):
         "Creates folder structure for a new project. Older project can be over-written"
-        
+
         for folder in self.project.project_folders:
             project_folder = self.project_path / folder.value
             if project_folder.exists() and not self.project.overwrite:
-                raise Exception("Project folder already exists. Set overwrite=true to overwrite existing projects")
-            elif  not project_folder.exists():
+                msg = "Project folder already exists. Set overwrite=true to overwrite existing projects"
+                raise Exception(msg)
+            elif not project_folder.exists():
                 project_folder.mkdir(parents=True, exist_ok=True)
 
     def _autofill_settings(self, psse_files, profile_store_file, profile_mapping_file):
         "The method auto populates fields for a new PyPSSE project"
 
-        self.project.simulation_settings.simulation
         self._update_setting("sav", "case_study", psse_files)
         self._update_setting("raw", "raw_file", psse_files)
         self._update_setting("snp", "snp_file", psse_files)
         self._update_setting("dyr", "dyr_file", psse_files)
         self._update_setting("gic", "gic_file", psse_files)
         self._update_setting("rwm", "rwm_file", psse_files)
-        
+
         if "dll" in psse_files:
             self.project.simulation_settings.simulation.user_models = psse_files["dll"]
             logging.info(f"user_models={psse_files['dll']}")
         else:
-            logging.info(f"No DLL files found in project path")
-            
+            logging.info("No DLL files found in project path")
+
         if "idv" in psse_files:
             self.project.simulation_settings.simulation.setup_files = psse_files["idv"]
             logging.info(
@@ -168,18 +163,17 @@ class Project:
                 f"\nSequence of IDV setup files is important. Manually change in TOML file if needed"
             )
         else:
-            logging.info(f"No IDV files found in project path")
+            logging.info("No IDV files found in project path")
 
-        
         store_path = self.project_path / PROFILES_FOLDER
         if profile_store_file and Path(profile_store_file).exists():
-            assert  Path(profile_store_file).suffix.lower() == '.hdf5', "Store file should be a valid hdf5 file"
+            assert Path(profile_store_file).suffix.lower() == ".hdf5", "Store file should be a valid hdf5 file"
             copy(profile_store_file, store_path)
         else:
             ProfileManager(None, None, self.project.simulation_settings, logging)
 
         if profile_mapping_file and Path(profile_mapping_file).exists():
-            assert  Path(profile_mapping_file).suffix.lower() == '.toml', "Profile mapping should be a valid toml file"
+            assert Path(profile_mapping_file).suffix.lower() == ".toml", "Profile mapping should be a valid toml file"
             copy(profile_mapping_file, store_path)
             self.project.simulation_settings.simulation.use_profile_manager = True
         else:
@@ -187,25 +181,21 @@ class Project:
             with open(os.path.join(store_path, DEFAULT_PROFILE_MAPPING_FILENAME), "w") as _:
                 pass
             self.project.simulation_settings.simulation.use_profile_manager = False
-            
+
         self._create_default_sub_file()
-        return 
 
     def _create_default_sub_file(self):
         "Method creates a subscription file for the HELICS interface"
         subscription_fields = [x.value for x in SubscriptionFileRequiredColumns]
         data = pd.DataFrame({}, columns=list(subscription_fields))
         data.to_csv(self.project_path / DEFAULT_SUBSCRIPTION_FILENAME, index=False)
-        logging.info(
-            f"Creating subscription template"
-        )
+        logging.info("Creating subscription template")
         self.project.simulation_settings.simulation.subscriptions_file = DEFAULT_SUBSCRIPTION_FILENAME
-        return 
 
     def _update_setting(self, f_type, key, psse_files):
         if f_type in psse_files:
             relevent_files = psse_files[f_type]
-            setattr(self.project.simulation_settings.simulation, key, relevent_files[0]) 
+            setattr(self.project.simulation_settings.simulation, key, relevent_files[0])
             logging.info(f"Settings:{key}={relevent_files[0]}")
             if len(relevent_files) > 1:
                 logging.warning(
@@ -215,7 +205,3 @@ class Project:
                 )
         else:
             logging.warning(f"No file with extension '{f_type}'")
-        return 
-
-
-    

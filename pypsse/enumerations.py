@@ -1,12 +1,14 @@
 from enum import Enum, IntEnum
 
+
 class ProjectFolders(Enum):
     "Defines valid the project folder"
     CASESTUDY = "case_study"
     EXPORTS = "exports"
-    GISDATA = "gis_data" 
+    GISDATA = "gis_data"
     LOGS = "logs"
-    PROFILES = "profiles" 
+    PROFILES = "profiles"
+
 
 class BulkWriteModes(Enum):
     "Supported bulk writers"
@@ -28,10 +30,16 @@ class SimulationModes(Enum):
 
 
 class HelicsCoreTypes(Enum):
-    "HILICS core types"
+    "HELICS core types"
     ZMQ = "zmq"
 
-
+class WritableModelTypes(Enum):
+    "Writable data ty[es]"
+    LOAD = "Load"
+    PLANT = "Plant"
+    MACHINE = "Machine"
+    GENERATOR = "Induction_machine"
+    
 class ModelTypes(Enum):
     "Supported asset tpyes in PyPSSE"
     BUSES = "Buses"
@@ -46,6 +54,7 @@ class ModelTypes(Enum):
     ZONES = "Zones"
     DC_LINES = "DCtransmissionlines"
     STATIONS = "Stations"
+
 
 
 class ModelProperties(Enum):

@@ -278,7 +278,7 @@ class DynamicUtils:
             return
 
         for channel in self.export_settings.channel_setup:
-            method_type = channel.asset_type.value
+            method_type = channel.asset_type
             if method_type == "buses":
                 self.setup_bus_channels(channel.asset_list, channel.asset_properties)
             elif method_type == "loads":

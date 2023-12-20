@@ -311,6 +311,18 @@ This page provides details on the enumerated classes part of the PyPSSE library.
 |pypsse.enumerations.ModelTypes.DC_LINES|DCtransmissionlines|
 |pypsse.enumerations.ModelTypes.STATIONS|Stations|
  
+## ProjectFolders
+ 
+  
+
+|Key|Value|
+| :--- | :--- |
+|pypsse.enumerations.ProjectFolders.CASESTUDY|case_study|
+|pypsse.enumerations.ProjectFolders.EXPORTS|exports|
+|pypsse.enumerations.ProjectFolders.GISDATA|gis_data|
+|pypsse.enumerations.ProjectFolders.LOGS|logs|
+|pypsse.enumerations.ProjectFolders.PROFILES|profiles|
+ 
 ## SimulationModes
  
   

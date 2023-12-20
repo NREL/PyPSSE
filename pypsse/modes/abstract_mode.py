@@ -5,7 +5,7 @@ import numpy as np
 from pypsse.common import CASESTUDY_FOLDER, VALUE_UPDATE_BOUND
 from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
 from pypsse.modes.constants import converter
-
+from pypsse.enumerations import WritableModelTypes, ModelTypes
 
 class AbstractMode:
     def __init__(
@@ -36,7 +36,7 @@ class AbstractMode:
         self.settings = settings
         self.export_settings = export_settings
         self.func_options = {
-            "Buses": {
+            ModelTypes.BUSES.value: {
                 "busdat": ["BASE", "PU", "KV", "ANGLE", "ANGLED", "NVLMHI", "NVLMLO", "EVLMHI", "EVLMLO"],
                 "busdt2": ["TOTAL", "FX_TOTAL", "SC_TOTAL", "YS", "YSW"],  # requires string2 input
                 "busint": ["STATION", "TYPE", "AREA", "ZONE", "OWNER", "DUMMY"],
@@ -48,19 +48,19 @@ class AbstractMode:
                 "busnofunc": ["NUMBER", "ISLOADBUS"],
                 "frequency": ["FREQ"],
             },
-            "Stations": {
+            ModelTypes.STATIONS.value: {
                 "stanofunc": ["SUBNAME", "SUBNUMBER", "BUSES", "GENERATORS", "TRANSFORMERS", "NOMKV", "LOADMW", "GENMW"]
             },
-            "Areas": {"arenofunc": ["AREANAME", "AREANUMBER"], "ardat": ["LOAD", "LOADLD", "LDGN", "LDGNLD", "GEN"]},
-            "Zones": {
+            ModelTypes.AREAS.value: {"arenofunc": ["AREANAME", "AREANUMBER"], "ardat": ["LOAD", "LOADLD", "LDGN", "LDGNLD", "GEN"]},
+            ModelTypes.ZONES.value: {
                 "zonnofunc": ["ZONENAME", "ZONENUMBER"],
                 "zndat": ["LOAD", "LOADID", "LDGN", "LDGNLD", "GEN", "LOSS"],
             },
-            "DCtransmissionlines": {
+            ModelTypes.DC_LINES.value: {
                 "dctnofunc": ["DCLINENAME"],
                 "dc2int_2": ["MDC", "RECT", "INV", "METER", "NBR", "NBI", "ICR", "ICI", "NDR", "NDI"],
             },
-            "Branches": {
+            ModelTypes.BRANCHES.value: {
                 "brndat": [
                     "RATEn",
                     "RATEA",
@@ -121,7 +121,7 @@ class AbstractMode:
                     "BY",
                 ],
             },
-            "Induction_generators": {
+            ModelTypes.GENERATORS.value: {
                 "inddt1": [
                     "MBASE",
                     "RATEKV",
@@ -162,12 +162,12 @@ class AbstractMode:
                 "inddt2": ["ZA", "Z1", "Z2", "ZZERO", "ZGRND", "PQ", "O_PQ"],
                 "indnofunc": ["INDID", "BUSNUM", "BUSNAME"],
             },
-            "Loads": {
+            ModelTypes.LOADS.value: {
                 "loddt2": ["MVA", "IL", "YL", "TOTAL", "YNEG", "YZERO"],  # required string 2 input
                 "lodnofunc": ["LOADID", "BUSNUM", "BUSNAME"],
                 "lodint": ["STATION", "SECTION", "STATUS", "AREA", "ZONE", "OWNER", "SCALE", "CGR"],
             },
-            "Machines": {
+            ModelTypes.MACHINES.value: {
                 "macdat": [
                     "QMAX",
                     "O_QMAX",
@@ -198,15 +198,15 @@ class AbstractMode:
                 "macnofunc": ["MACID", "BUSNUM", "BUSNAME", "SUBNUMBER", "SUBLATITUDE", "SUBLONGITUDE", "AREANUMBER"],
                 "macint": ["STATION", "SECTION", "STATUS", "IREG", "NREG", "OWNERS", "WMOD", "PERCENT", "CZG"],
             },
-            "Fixed_shunts": {
+            ModelTypes.FIXED_SHUNTS.value: {
                 "fxsdt2": ["ACT", "O_ACT", "NOM", "O_NOM", "PQZERO", "PQZ", "O_PQZ"],
                 "fxsnofunc": ["FXSHID", "BUSNUM", "BUSNAME"],
             },
-            "Switched_shunts": {
+            ModelTypes.SWITCHED_SHUNTS.value: {
                 "swsdt1": ["VSWHI", "VSWLO", "RMPCT", "BINIT", "O_BINIT"],
                 "swsnofunc": ["BUSNUM", "BUSNAME"],
             },
-            "Transformers": {
+            ModelTypes.TRANSFORMERS.value: {
                 "xfrdat": [
                     "RATIO",
                     "RATIO2",
@@ -253,27 +253,9 @@ class AbstractMode:
                 ],
             },
         }
-        # self.
-        # ()
         self.initialization_complete = False
-
-    # def disable_load_models_for_coupled_buses(self):
-    #     if self.settings['HELICS']['Cosimulation mode']:
-    #         sub_data = pd.read_csv(
-    #         os.path.join(
-    #             self.settings["Simulation"]["Project Path"], 'Settings', self.settings["HELICS"]["Subscriptions file"]
-    #         )
-    #     )
-    #
-    #     sub_data = sub_data[sub_data['element_type'] == 'Load']
-    #
-    #     self.psse_dict = {}
-    #     for ix, row in sub_data.iterrows():
-    #         bus = row['bus']
-    #         load = row['element_id']
-    #         ierr = self.psse.ldmod_status(0,int(bus),str(load),1,0)
-    #         self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
-
+        
+        
     def save_model(self):
         export_path = self.settings.simulation.project_path / CASESTUDY_FOLDER
 
@@ -532,7 +514,7 @@ class AbstractMode:
                                     new_v = mapping_dict[class_name][id_]
                                     q = f"{class_name}_{new_v}"
 
-                            if class_name == "Areas":
+                            if class_name == ModelTypes.AREAS.value:
                                 for arr_num in area_numbers:
                                     if func_name in ["arenofunc"]:
                                         if v == "AREANUMBER":
@@ -542,7 +524,7 @@ class AbstractMode:
 
                                             results = self.add_result(results, q, val, arr_num)
 
-                            elif class_name == "Stations":
+                            elif class_name == ModelTypes.STATIONS.value:
                                 for sub_num in substation_numbers:
                                     if func_name in ["stanofunc"]:
                                         if v == "SUBNUMBER":
@@ -572,7 +554,7 @@ class AbstractMode:
                                             val = self.get_a_genmw_in_substation(sub_num, subsystem_buses)
                                             results = self.add_result(results, q, val, sub_num)
 
-                            elif class_name == "Zones":
+                            elif class_name == ModelTypes.ZONES.value:
                                 for zn_num in zone_numbers:
                                     if func_name in ["zonnofunc"]:
                                         if v == "ZONENUMBER":
@@ -582,7 +564,7 @@ class AbstractMode:
 
                                             results = self.add_result(results, q, val, zn_num)
 
-                            elif class_name == "DCtransmissionlines":
+                            elif class_name == ModelTypes.DC_LINES.value:
                                 for dcline in dctr_lines:
                                     if func_name == "dctnofunc":
                                         if v == "DCLINENAME":
@@ -993,15 +975,35 @@ class AbstractMode:
                 self.psse.conl(0, 1, 3, [0, 0], [p1, p2, q1, q2])  # postprocessing housekeeping.
 
     def update_object(self, dtype, bus, element_id, values: dict):
+
+        # from pypsse.models import MdaoInput, MdaoProblem
+
+        # if not hasattr(self, "test"):
+        #     self.test=[]
+        
+        # self.test.append(
+        #     MdaoInput(
+        #         asset_type=dtype,
+        #         asset_bus=int(bus),
+        #         asset_id=element_id,
+        #         attributes=values
+        #     )
+        # )
+        # m = MdaoProblem(inputs=self.test)
+        # import json, toml
+        # c = json.loads(m.model_dump_json())
+        # toml.dump(c, open("test.toml", "w"))
+
+
         val = sum(list(values.values()))
         if val > -VALUE_UPDATE_BOUND and val < VALUE_UPDATE_BOUND:
-            if dtype == "Load":
+            if dtype == WritableModelTypes.LOAD.value:
                 ierr = self.psse.load_chng_5(ibus=int(bus), id=element_id, **values)
-            elif dtype == "Induction_machine":
+            elif dtype == WritableModelTypes.GENERATOR.value:
                 ierr = self.psse.induction_machine_data(ibus=int(bus), id=element_id, **values)
-            elif dtype == "Machine":
+            elif dtype == WritableModelTypes.MACHINE.value:
                 ierr = self.psse.machine_data_2(i=int(bus), id=element_id, **values)
-            elif dtype == "Plant":
+            elif dtype == WritableModelTypes.PLANT.value:
                 ierr = self.psse.plant_data_4(ibus=int(bus), inode=element_id, **values)
             else:
                 ierr = 1

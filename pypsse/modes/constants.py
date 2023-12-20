@@ -141,8 +141,25 @@ STANDARD_FORMAT = {
 
 def converter(func):
     def wrapper(*args, **kwargs):
+        
         new_args = list(args)
-        quantities = new_args[1]
+        
+        def return_data_type(data_list, cls_type):
+            for data in data_list:
+                if isinstance(data, cls_type):
+                    return data
+        
+        if 'quantities' in kwargs:
+            quantities = kwargs['quantities']
+        else:
+            quantities =  return_data_type(new_args, dict)
+        
+        if 'subsystem_buses' in kwargs:
+            buses = kwargs['subsystem_buses'] 
+        else:
+            buses = return_data_type(new_args, list)
+        
+        new_args = [new_args[0], quantities, buses]
 
         """ Map NAERM keys to PyPSSE keys """
         ext_string2_info = {}
@@ -173,11 +190,8 @@ def converter(func):
 
         kwargs["ext_string2_info"].update(ext_string2_info)
         kwargs["mapping_dict"] = mapping_dict
-        new_args[1] = quantities
-        new_args = tuple(new_args)
-
-        """ call the core function """
-        result_dict = func(*new_args, **kwargs)
+  
+        result_dict = func(*args, **kwargs)
 
         """ Convert complex values """
 

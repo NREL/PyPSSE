@@ -9,8 +9,7 @@ import pandas as pd
 
 
 class HDF5Writer:
-    """Class that handles writing simulation results to arrow
-    files.
+    """Class that handles writing simulation results to hdf5 files.
     """
 
     def __init__(self, log_dir, column_length):
@@ -21,6 +20,7 @@ class HDF5Writer:
         self.store_datasets = {}
         self.row = {}
         self.column_length = column_length
+
         self.chunkRows = 1
         self.step = 0
         self.dfs = {}
@@ -41,8 +41,6 @@ class HDF5Writer:
         Writes the status of BES assets at a particular timestep to an
             arrow file.
 
-        :param fed_name: name of BES federate
-        :param log_fields: list of objects to log
         :param currenttime: simulation timestep
         :param powerflow_output: Powerflow solver timestep output as a dict
         """
@@ -85,7 +83,7 @@ class HDF5Writer:
                 for col_name in powerflow_output[obj_type].keys():
                     self.store_datasets[obj_type][col_name][si:ei] = self.dfs[obj_type][col_name]
                 self.dfs[obj_type] = None
-            self.Timestamp[self.step - 1] = np.string_(str(currenttime))
+            #self.Timestamp[self.step - 1] = np.string_(str(currenttime))
             # Add object status data to a DataFrame
             self.store.flush()
         self.step += 1

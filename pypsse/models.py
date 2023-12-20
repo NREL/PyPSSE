@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional, Union, Annotated, Literal
+from typing import Annotated, List, Literal, Optional, Union, Dict
 
 import pandas as pd
 from pydantic import BaseModel, Field, model_validator
@@ -22,6 +22,7 @@ from pypsse.enumerations import (
     MachinesProperties,
     ModelProperties,
     ModelTypes,
+    ProjectFolders,
     SimulationModes,
     StationProperties,
     SubscriptionFileRequiredColumns,
@@ -29,9 +30,8 @@ from pypsse.enumerations import (
     TransformerProperties,
     UseModes,
     ZoneProperties,
-    ProjectFolders,
+    WritableModelTypes
 )
-
 
 
 class SimSettings(BaseModel):
@@ -126,8 +126,7 @@ class ExportSettings(BaseModel):
 
 
 class PublicationDefination(BaseModel):
-    """Publication setting model defination
-    """
+    """Publication setting model defination"""
 
     bus_subsystems: List[int] = [
         0,
@@ -294,7 +293,7 @@ class SimulationSettings(BaseModel):
 class BusChannel(BaseModel):
     "Bus channel model defination"
 
-    asset_type: Literal[ChannelTypes.BUSES.value] 
+    asset_type: Literal[ChannelTypes.BUSES.value]
     use: UseModes = UseModes.LIST
     regex: str = ""
     asset_list: List[int] = []
@@ -320,7 +319,9 @@ class MachineChannel(BaseModel):
     asset_list: List[List[str]] = [[]]
     asset_properties: List[str] = ["PELEC", "QELEC", "SPEED"]
 
-channel_types = Annotated[Union[BusChannel, LoadChannel, MachineChannel], Field(discriminator = "asset_type")]
+
+channel_types = Annotated[Union[BusChannel, LoadChannel, MachineChannel], Field(discriminator="asset_type")]
+
 
 class ExportAssetTypes(BaseModel):
     "Valid export models and associated options"
@@ -337,25 +338,36 @@ class ExportAssetTypes(BaseModel):
     branches: Optional[List[BranchProperties]] = None
     induction_generators: Optional[List[InductionGeneratorProperties]] = None
     machines: Optional[List[MachinesProperties]] = None
-    channels: Optional[List[str]] = None
-    channel_setup: Optional[List[channel_types]] = None
-
-
+    
 class ExportFileOptions(ExportAssetTypes):
-    "Exoprt settings for a PyPSSE project"
+    "Export settings for a PyPSSE project"
 
     export_results_using_channels: bool = False
     defined_subsystems_only: bool = True
     file_format: ExportModes = "h5"
+    channels: Optional[List[str]] = None
+    channel_setup: Optional[List[channel_types]] = None
 
 
 class ProjectDefination(BaseModel):
-    overwrite : bool = False
+    "PyPSSE project defination"
+    overwrite: bool = False
     autofill: bool = True
-    project_name : str
-    project_folders : List[ProjectFolders] = [x for x in ProjectFolders]
-    simulation_settings : SimulationSettings
-    export_settings :ExportFileOptions
-    #profile_store: 
-    #profile_mappng:
+    project_name: str
+    project_folders: List[ProjectFolders] = [x for x in ProjectFolders]
+    simulation_settings: SimulationSettings
+    export_settings: ExportFileOptions
+
+class MdaoOutput(BaseModel):
+    buses : List[int]
+    quantities: Dict[ModelTypes, List[str]]
+
+class MdaoInput(BaseModel):
+    asset_type: WritableModelTypes
+    asset_bus: int
+    asset_id: str
+    attributes: Dict
     
+class MdaoProblem(BaseModel):
+    outputs : MdaoOutput
+    inputs : List[MdaoInput]

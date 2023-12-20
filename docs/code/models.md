@@ -104,6 +104,11 @@ This page provides details on the data models part of the PyPSSE library.
  
 
 
+<img src="ProjectDefination.svg" /> 
+::: pypsse.models.ProjectDefination
+ 
+
+
 <img src="PublicationDefination.svg" /> 
 ::: pypsse.models.PublicationDefination
  

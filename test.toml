@@ -1,0 +1,86 @@
+[[inputs]]
+asset_type = "Load"
+asset_bus = 153
+asset_id = "1"
+
+[inputs.attributes]
+realar1 = 0.456644421
+realar2 = 0.912801034
+realar3 = 0.901336623
+realar4 = 0.226931937
+realar5 = 0.269768745
+realar6 = 0.205076007
+[[inputs]]
+asset_type = "Load"
+asset_bus = 154
+asset_id = "1"
+
+[inputs.attributes]
+realar1 = 0.9601096288076424
+realar2 = 1.985514386023511
+realar3 = 1.8079617837160955
+realar4 = 0.4546202857793288
+realar5 = 0.5463710090325551
+realar6 = 0.41253831257889245
+[[inputs]]
+asset_type = "Load"
+asset_bus = 154
+asset_id = "2"
+
+[inputs.attributes]
+realar1 = 0.456644421
+realar2 = 0.912801034
+realar3 = 0.901336623
+realar4 = 0.226931937
+realar5 = 0.269768745
+realar6 = 0.205076007
+[[inputs]]
+asset_type = "Machine"
+asset_bus = 101
+asset_id = "1"
+
+[inputs.attributes]
+realar1 = 717.6339285714286
+[[inputs]]
+asset_type = "Load"
+asset_bus = 153
+asset_id = "1"
+
+[inputs.attributes]
+realar1 = 0.456644421
+realar2 = 0.912801034
+realar3 = 0.901336623
+realar4 = 0.226931937
+realar5 = 0.269768745
+realar6 = 0.205076007
+[[inputs]]
+asset_type = "Load"
+asset_bus = 154
+asset_id = "1"
+
+[inputs.attributes]
+realar1 = 0.9601096288076424
+realar2 = 1.985514386023511
+realar3 = 1.8079617837160955
+realar4 = 0.4546202857793288
+realar5 = 0.5463710090325551
+realar6 = 0.41253831257889245
+[[inputs]]
+asset_type = "Load"
+asset_bus = 154
+asset_id = "2"
+
+[inputs.attributes]
+realar1 = 0.456644421
+realar2 = 0.912801034
+realar3 = 0.901336623
+realar4 = 0.226931937
+realar5 = 0.269768745
+realar6 = 0.205076007
+[[inputs]]
+asset_type = "Machine"
+asset_bus = 101
+asset_id = "1"
+
+[inputs.attributes]
+realar1 = 717.6339285714286
