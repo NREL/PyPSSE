@@ -1035,8 +1035,8 @@
 <p>PyPSSE allows publication of results stored in the simulation store. Publications are set up directly in  <code>simulation_settings.toml</code> file in the PyPSSE project structure.</p>
 <div class="highlight"><pre><span></span><code><span class="k">[[helics.publications]]</span>
 <span class="n">bus_subsystems</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mi">0</span><span class="p">,]</span>
-<span class="n">model_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Buses"</span>
-<span class="n">model_properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s">"FREQ"</span><span class="p">,</span><span class="w"> </span><span class="s">"PU"</span><span class="p">,]</span>
+<span class="n">asset_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Buses"</span>
+<span class="n">asset_properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s">"FREQ"</span><span class="p">,</span><span class="w"> </span><span class="s">"PU"</span><span class="p">,]</span>
 </code></pre></div>
 <p>All fields are validated against availble datasets in the simulation store. Valid model types and properties are documented <a href="#models.md">here</a></p>
 <p><a class="glightbox" href="../models/PublicationDefination.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="../models/PublicationDefination.svg"></a></p>
@@ -1538,7 +1538,7 @@
                 <span class="sa">f</span><span class="s2">"Valid subsystem IDs are  '</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bus_subsystems</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">'."</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-            <span class="n">elm_class</span> <span class="o">=</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">elm_class</span> <span class="o">=</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">asset_type</span><span class="o">.</span><span class="n">value</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="p">,</span> <span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">' is not a valid class of elements. "</span>
@@ -1546,7 +1546,7 @@
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="n">managed_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">ptpy</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">ptpy</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="p">,</span> <span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">())]</span>
-            <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">model_properties</span><span class="p">]</span>
+            <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">asset_properties</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">managed_properties</span><span class="p">):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"One or more publication property defined for class '</span><span class="si">{</span><span class="n">elm_class</span><span class="si">}</span><span class="s2">' is invalid."</span>
@@ -2292,7 +2292,7 @@
             <span class="sa">f</span><span class="s2">"Valid subsystem IDs are  '</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bus_subsystems</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">'."</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="n">elm_class</span> <span class="o">=</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">elm_class</span> <span class="o">=</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">asset_type</span><span class="o">.</span><span class="n">value</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="p">,</span> <span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">' is not a valid class of elements. "</span>
@@ -2300,7 +2300,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">managed_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">ptpy</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">ptpy</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="p">,</span> <span class="n">elm_class</span><span class="o">.</span><span class="n">lower</span><span class="p">())]</span>
-        <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">model_properties</span><span class="p">]</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">publication_dict</span><span class="o">.</span><span class="n">asset_properties</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">managed_properties</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"One or more publication property defined for class '</span><span class="si">{</span><span class="n">elm_class</span><span class="si">}</span><span class="s2">' is invalid."</span>

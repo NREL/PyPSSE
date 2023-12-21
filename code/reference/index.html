@@ -3255,8 +3255,7 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
-<span class="normal"> 33</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
@@ -3633,12 +3632,20 @@
 <span class="normal">407</span>
 <span class="normal">408</span>
 <span class="normal">409</span>
-<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Simulator</span><span class="p">:</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Simulator</span><span class="p">:</span>
     <span class="s2">"Base class for the simulator"</span>
+
+    <span class="n">_status</span><span class="p">:</span><span class="n">SimulationStatus</span><span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">NOT_INITIALIZED</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_toml_path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">psse_path</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
         <span class="s2">"Load a valid PyPSSE project and sets up simulation"</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">STARTING_INSTANCE</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_settings</span><span class="p">(</span><span class="n">settings_toml_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
         <span class="n">export_settings_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span>
@@ -3677,11 +3684,10 @@
         <span class="n">ierr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse</span><span class="o">.</span><span class="n">psseinit</span><span class="p">(</span><span class="n">n_bus</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">ierr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Error code: </span><span class="si">{</span><span class="n">ierr</span><span class="si">}</span><span class="s2">"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psse</span><span class="o">.</span><span class="n">psseinit</span><span class="p">(</span><span class="n">n_bus</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initComplete</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">"success"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">=</span><span class="n">SimulationStatus</span><span class="o">.</span><span class="n">INITIALIZATION_COMPLETE</span>
 
     <span class="k">def</span> <span class="nf">dump_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_dir</span><span class="p">):</span>
         <span class="n">setting_toml_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">"defaults"</span><span class="p">,</span> <span class="s2">"pyPSSE_settings.toml"</span><span class="p">)</span>
@@ -3691,7 +3697,6 @@
 
     <span class="k">def</span> <span class="nf">start_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">"Starts a loaded simulation"</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">hi</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simStartTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -3834,7 +3839,7 @@
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">"Launches the simulation"</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">RUNNING_SIMULATION</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">initialization_complete</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">plots</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">enable_dynamic_plots</span><span class="p">:</span>
                 <span class="n">bokeh_server_proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">"bokeh"</span><span class="p">,</span> <span class="s2">"serve"</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>  <span class="c1"># noqa: S603,S607</span>
@@ -3863,6 +3868,7 @@
                 <span class="n">bokeh_server_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Run init() command to initialize models before running the simulation"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span><span class="s2">"Simulation complete"</span>
 
     <span class="k">def</span> <span class="nf">get_bus_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">"Returns bus IDs"</span>
@@ -3873,7 +3879,6 @@
 
     <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="s2">"Steps through a single simulation time step. Is called iteratively to increment the simualtion"</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">update_contingencies</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">use_profile_manager</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pm</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
@@ -3889,20 +3894,23 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_time</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">resolve_step</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">resolve_step</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">cosimulation_mode</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">publish_data</span><span class="p">()</span>
+
+        <span class="n">curr_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_result_container</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">curr_results</span>
+
+    <span class="k">def</span> <span class="nf">update_result_container</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">defined_subsystems_only</span><span class="p">:</span>
             <span class="n">curr_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subsysten_buses</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">curr_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">buses</span><span class="p">)</span>
-            <span class="c1"># curr_results = self.sim.read(self.exp_vars, self.raw_data)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">USING_NAERM</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_time</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">export_results_using_channels</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">curr_results</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">())</span>
-
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">export_results_using_channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">curr_results</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">has_converged</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">curr_results</span>
 
     <span class="k">def</span> <span class="nf">update_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3922,16 +3930,18 @@
 
     <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="s2">"Returns queried simulation results"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">STARTING_RESULT_EXPORT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">update_export_variables</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
         <span class="n">curr_results</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subsysten_buses</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">defined_subsystems_only</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">buses</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="c1"># class_name = list(params.keys())[0]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationModes</span><span class="o">.</span><span class="n">RESULT_EXPORT_COMPLETE</span>
         <span class="k">return</span> <span class="n">curr_results</span>
-        <span class="c1"># restruct_results = self.restructure_results(curr_results, class_name)</span>
-        <span class="c1"># return curr_results, restruct_results</span>
+
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">restructure_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">class_name</span><span class="p">):</span>
         <span class="s2">"Restructure results for the improved user experience"</span>
@@ -4045,10 +4055,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
@@ -4090,9 +4097,11 @@
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
-<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_toml_path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">psse_path</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_toml_path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">psse_path</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
     <span class="s2">"Load a valid PyPSSE project and sets up simulation"</span>
-
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">STARTING_INSTANCE</span>
     <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_settings</span><span class="p">(</span><span class="n">settings_toml_path</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
     <span class="n">export_settings_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span>
@@ -4131,11 +4140,10 @@
     <span class="n">ierr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse</span><span class="o">.</span><span class="n">psseinit</span><span class="p">(</span><span class="n">n_bus</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ierr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Error code: </span><span class="si">{</span><span class="n">ierr</span><span class="si">}</span><span class="s2">"</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">psse</span><span class="o">.</span><span class="n">psseinit</span><span class="p">(</span><span class="n">n_bus</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">initComplete</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">"success"</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">=</span><span class="n">SimulationStatus</span><span class="o">.</span><span class="n">INITIALIZATION_COMPLETE</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -4160,11 +4168,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_contingencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_contingencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Builds user defined contengingies"</span>
 
     <span class="n">contingencies</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">build_contingencies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
@@ -4193,8 +4201,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
-<span class="normal">172</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
@@ -4224,7 +4231,8 @@
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_bus_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_bus_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Defines a bussystem in the loaded PSSE model"</span>
 
     <span class="n">bus_subsystems_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -4280,13 +4288,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
 <span class="normal">389</span>
@@ -4295,7 +4297,13 @@
 <span class="normal">392</span>
 <span class="normal">393</span>
 <span class="normal">394</span>
-<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bus_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">bus_subsystem_id</span><span class="p">):</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bus_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">bus_subsystem_id</span><span class="p">):</span>
     <span class="s2">"Return bus data"</span>
 
     <span class="n">bus_data_formated</span> <span class="o">=</span> <span class="p">[]</span>
@@ -4335,12 +4343,12 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
-<span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bus_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bus_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Returns bus IDs"</span>
 
     <span class="n">ierr</span><span class="p">,</span> <span class="n">iarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psse</span><span class="o">.</span><span class="n">abusint</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"NUMBER"</span><span class="p">)</span>
@@ -4370,8 +4378,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
-<span class="normal">205</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
@@ -4384,7 +4391,8 @@
 <span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span>
-<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bus_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">218</span>
+<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bus_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Retuens bus indices for bus subsystems"</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">bus_subsystems</span><span class="o">.</span><span class="n">from_file</span><span class="p">:</span>
@@ -4423,24 +4431,26 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
 <span class="normal">327</span>
-<span class="normal">328</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
     <span class="s2">"Returns queried simulation results"</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">STARTING_RESULT_EXPORT</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">update_export_variables</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     <span class="n">curr_results</span> <span class="o">=</span> <span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subsysten_buses</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">defined_subsystems_only</span>
         <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">buses</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="c1"># class_name = list(params.keys())[0]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationModes</span><span class="o">.</span><span class="n">RESULT_EXPORT_COMPLETE</span>
     <span class="k">return</span> <span class="n">curr_results</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -4466,8 +4476,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
-<span class="normal">155</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
@@ -4475,7 +4484,8 @@
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">163</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Initializes the model"</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bus_subsystems</span><span class="p">)</span>
@@ -4509,11 +4519,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
-<span class="normal">166</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
-<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_gic_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">169</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_gic_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Parses the GIC file (if included in the project)"</span>
 
     <span class="n">gicdata</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">GICParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
@@ -4542,9 +4552,9 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">publish_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">publish_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Updates publications (co-simulation mode only)"</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">hi</span><span class="o">.</span><span class="n">publish</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -4571,8 +4581,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
-<span class="normal">221</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
 <span class="normal">224</span>
@@ -4580,7 +4589,8 @@
 <span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
-<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_toml_path</span><span class="p">):</span>
+<span class="normal">229</span>
+<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_toml_path</span><span class="p">):</span>
     <span class="s2">"Read the user defined settings"</span>
 
     <span class="n">settings_text</span> <span class="o">=</span> <span class="s2">""</span>
@@ -4614,13 +4624,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
@@ -4660,7 +4664,13 @@
 <span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
-<span class="normal">378</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">restructure_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">class_name</span><span class="p">):</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">restructure_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">class_name</span><span class="p">):</span>
     <span class="s2">"Restructure results for the improved user experience"</span>
 
     <span class="c1"># c_names = []</span>
@@ -4731,8 +4741,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
-<span class="normal">232</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
@@ -4761,9 +4770,11 @@
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
-<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Launches the simulation"</span>
-
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">RUNNING_SIMULATION</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">initialization_complete</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">plots</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">enable_dynamic_plots</span><span class="p">:</span>
             <span class="n">bokeh_server_proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">"bokeh"</span><span class="p">,</span> <span class="s2">"serve"</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>  <span class="c1"># noqa: S603,S607</span>
@@ -4792,6 +4803,7 @@
             <span class="n">bokeh_server_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Run init() command to initialize models before running the simulation"</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span><span class="s2">"Simulation complete"</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -4816,9 +4828,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
 <span class="normal"> 93</span>
@@ -4880,9 +4890,9 @@
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">start_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">152</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">start_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Starts a loaded simulation"</span>
-
     <span class="bp">self</span><span class="o">.</span><span class="n">hi</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">simStartTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -4969,9 +4979,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
@@ -4994,16 +5002,8 @@
 <span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="s2">"Steps through a single simulation time step. Is called iteratively to increment the simualtion"</span>
-
     <span class="bp">self</span><span class="o">.</span><span class="n">update_contingencies</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">use_profile_manager</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pm</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
@@ -5019,20 +5019,12 @@
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_time</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">resolve_step</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">resolve_step</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">helics</span><span class="o">.</span><span class="n">cosimulation_mode</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">publish_data</span><span class="p">()</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">defined_subsystems_only</span><span class="p">:</span>
-        <span class="n">curr_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subsysten_buses</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">curr_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">read_subsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">buses</span><span class="p">)</span>
-        <span class="c1"># curr_results = self.sim.read(self.exp_vars, self.raw_data)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">USING_NAERM</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_time</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">export_results_using_channels</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">curr_results</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_time</span><span class="p">())</span>
-
+    <span class="n">curr_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_result_container</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">curr_results</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -5058,10 +5050,10 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_contingencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_contingencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="s2">"Updates contingencies during the simualtion run"</span>
     <span class="k">for</span> <span class="n">contingency</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contingencies</span><span class="p">:</span>
         <span class="n">contingency</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -5089,11 +5081,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_federate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_federate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="s2">"Makes a time request to teh HELICS broker (co-simulation mode only)"</span>
 
     <span class="n">inc_time</span><span class="p">,</span> <span class="n">curr_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hi</span><span class="o">.</span><span class="n">request_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -5122,10 +5114,10 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\simulator.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Updates subscriptions (co-simulation mode only)"</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">hi</span><span class="o">.</span><span class="n">subscribe</span><span class="p">()</span>
@@ -5155,17 +5147,7 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\project.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
 <span class="normal"> 32</span>
 <span class="normal"> 33</span>
 <span class="normal"> 34</span>
@@ -5334,130 +5316,80 @@
 <span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
-<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Project</span><span class="p">:</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Project</span><span class="p">:</span>
     <span class="s2">"This class defines the structure of a PyPSSE project"</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s2">"DEBUG"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pypsse</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">path</span><span class="p">,</span>
+        <span class="n">parent_path</span><span class="p">,</span>
         <span class="n">project_name</span><span class="p">,</span>
         <span class="n">psse_folder</span><span class="p">,</span>
-        <span class="n">settings</span><span class="p">,</span>
-        <span class="n">export_settings</span><span class="p">,</span>
-        <span class="n">profile_store</span><span class="p">,</span>
-        <span class="n">profile_mapping</span><span class="p">,</span>
+        <span class="n">simulation_settings_file</span><span class="p">,</span>
+        <span class="n">export_settings_file</span><span class="p">,</span>
+        <span class="n">profile_store_file</span><span class="p">,</span>
+        <span class="n">profile_mapping_file</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">autofill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="s2">"The methods creates a new PyPSSE project"</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_create_folders</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
-            <span class="n">u_settings</span><span class="p">,</span> <span class="n">u_exports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">export_settings</span><span class="p">)</span>
-            <span class="n">u_settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Project Path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">)</span>
 
-            <span class="n">psse_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_psse_project_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">psse_folder</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">autofill</span><span class="p">:</span>
-                <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autofill_settings</span><span class="p">(</span>
-                    <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">profile_store</span><span class="p">,</span> <span class="n">profile_mapping</span>
-                <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_setting_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">u_exports</span><span class="p">)</span>
+        <span class="n">exports_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">/</span> <span class="n">DEFAULTS_FOLDER</span> <span class="o">/</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span><span class="p">)</span>
+        <span class="n">export_settings</span> <span class="o">=</span> <span class="n">ExportFileOptions</span><span class="p">(</span><span class="o">**</span><span class="n">exports_dict</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Path provided does not exist (</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">)"</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">export_settings_file</span><span class="p">:</span>
+            <span class="n">export_settings_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">export_settings_file</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">export_settings_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"Export file '</span><span class="si">{</span><span class="n">export_settings_file</span><span class="si">}</span><span class="s2">' does not exist"</span>
+            <span class="n">new_export_settings</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">export_settings_file</span><span class="p">)</span>
+            <span class="n">export_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">new_export_settings</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_autofill_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">profile_store</span><span class="p">,</span> <span class="n">profile_mapping</span><span class="p">):</span>
-        <span class="s2">"The method auto populates fields for a new PyPSSE project"</span>
-        <span class="n">psse_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="s2">"Case_study"</span><span class="p">)</span>
+        <span class="n">sim_setting_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">/</span> <span class="n">DEFAULTS_FOLDER</span> <span class="o">/</span> <span class="n">SIMULATION_SETTINGS_FILENAME</span><span class="p">)</span>
+        <span class="n">simulation_settings</span> <span class="o">=</span> <span class="n">SimulationSettings</span><span class="p">(</span><span class="o">**</span><span class="n">sim_setting_dict</span><span class="p">)</span>
 
-        <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_file</span><span class="p">(</span><span class="s2">"sav"</span><span class="p">,</span> <span class="s2">"Case study"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
-        <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_file</span><span class="p">(</span><span class="s2">"raw"</span><span class="p">,</span> <span class="s2">"Raw file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
-        <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_file</span><span class="p">(</span><span class="s2">"snp"</span><span class="p">,</span> <span class="s2">"Snp file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
-        <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_file</span><span class="p">(</span><span class="s2">"dyr"</span><span class="p">,</span> <span class="s2">"Dyr file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
-        <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_file</span><span class="p">(</span><span class="s2">"gic"</span><span class="p">,</span> <span class="s2">"GIC file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
-        <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_file</span><span class="p">(</span><span class="s2">"rwm"</span><span class="p">,</span> <span class="s2">"Rwm file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">"dll"</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
-            <span class="n">u_settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"User models"</span><span class="p">]</span> <span class="o">=</span> <span class="n">psse_files</span><span class="p">[</span><span class="s2">"dll"</span><span class="p">]</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Settings:User models=</span><span class="si">{</span><span class="n">psse_files</span><span class="p">[</span><span class="s1">'dll'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No DLL files found in path </span><span class="si">{</span><span class="n">psse_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">"idv"</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
-            <span class="n">u_settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Setup files"</span><span class="p">]</span> <span class="o">=</span> <span class="n">psse_files</span><span class="p">[</span><span class="s2">"idv"</span><span class="p">]</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Settings:Setup files=</span><span class="si">{</span><span class="n">psse_files</span><span class="p">[</span><span class="s1">'idv'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Sequence of IDV setup files is important. Manually change in TOML file f needed"</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No IDV files found in path </span><span class="si">{</span><span class="n">psse_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">simulation_settings_file</span><span class="p">:</span>
+            <span class="n">simulation_settings_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">simulation_settings_file</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">simulation_settings_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"Export file '</span><span class="si">{</span><span class="n">simulation_settings_file</span><span class="si">}</span><span class="s2">' does not exist"</span>
+            <span class="n">sim_setting_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">simulation_settings_file</span><span class="p">)</span>
+            <span class="n">simulation_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">sim_setting_dict</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">"csv"</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
-            <span class="n">subscripton_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_subscriptions_file</span><span class="p">(</span><span class="n">psse_files</span><span class="p">[</span><span class="s2">"csv"</span><span class="p">],</span> <span class="n">psse_path</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">subscripton_file</span><span class="p">:</span>
-                <span class="n">u_settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Subscriptions file"</span><span class="p">]</span> <span class="o">=</span> <span class="n">subscripton_file</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Settings:Subscriptions file=</span><span class="si">{</span><span class="n">subscripton_file</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_default_sub_file</span><span class="p">(</span><span class="n">psse_path</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_default_sub_file</span><span class="p">(</span><span class="n">psse_path</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">)</span>
+        <span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">project_name</span>
 
-        <span class="n">store_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="s2">"Profiles"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">profile_store</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">profile_store</span><span class="p">):</span>
-            <span class="n">copy</span><span class="p">(</span><span class="n">profile_store</span><span class="p">,</span> <span class="n">store_path</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ProfileManager</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">logging</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">profile_mapping</span><span class="p">):</span>
-            <span class="n">copy</span><span class="p">(</span><span class="n">profile_mapping</span><span class="p">,</span> <span class="n">store_path</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># TODO: auto generate mapping file from bus subsystem files</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">DEFAULT_PROFILE_MAPPING_FILENAME</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
-                <span class="k">pass</span>
-
-        <span class="k">return</span> <span class="n">u_settings</span>
-
-    <span class="k">def</span> <span class="nf">_create_default_sub_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">):</span>
-        <span class="s2">"Method creates a subscription file for the HELICS interface"</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({},</span> <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">SUBSCRIPTION_FIELDS</span><span class="p">))</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">psse_path</span><span class="p">,</span> <span class="n">DEFAULT_SUBSCRIPTION_FILENAMES</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"No valid HELICS subscriptions file found in path </span><span class="si">{</span><span class="n">psse_path</span><span class="si">}</span><span class="s2">."</span>
-            <span class="sa">f</span><span class="s2">"Creating empty </span><span class="si">{</span><span class="n">DEFAULT_SUBSCRIPTION_FILENAMES</span><span class="si">}</span><span class="s2"> file"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">ProjectDefination</span><span class="p">(</span>
+            <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+            <span class="n">simulation_settings</span><span class="o">=</span><span class="n">simulation_settings</span><span class="p">,</span>
+            <span class="n">export_settings</span><span class="o">=</span><span class="n">export_settings</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="n">autofill</span><span class="o">=</span><span class="n">autofill</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">u_settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Subscriptions file"</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_SUBSCRIPTION_FILENAMES</span>
-        <span class="k">return</span> <span class="n">u_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">project_name</span>
 
-    <span class="k">def</span> <span class="nf">_find_subscriptions_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_list</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">):</span>
-        <span class="s2">"Validates an existing subscription file for the HELICS interface"</span>
-        <span class="n">s_file</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
-            <span class="n">f_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">psse_path</span><span class="p">,</span> <span class="n">fi</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-            <span class="n">l_data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">SUBSCRIPTION_FIELDS</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">l_data</span><span class="p">):</span>
-                <span class="n">s_file</span> <span class="o">=</span> <span class="n">fi</span>
-                <span class="k">break</span>
-        <span class="k">return</span> <span class="n">s_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_folders</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f_type</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">settings_dict</span><span class="p">,</span> <span class="n">psse_path</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">f_type</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
-            <span class="n">relevent_files</span> <span class="o">=</span> <span class="n">psse_files</span><span class="p">[</span><span class="n">f_type</span><span class="p">]</span>
-            <span class="n">settings_dict</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">relevent_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Settings:</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">relevent_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">relevent_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"More than one file with extension </span><span class="si">{</span><span class="n">f_type</span><span class="si">}</span><span class="s2"> exist."</span>
-                    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Files found: </span><span class="si">{</span><span class="n">relevent_files</span><span class="si">}</span><span class="s2">"</span>
-                    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Manually update the settings toml file"</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No file with extension '</span><span class="si">{</span><span class="n">f_type</span><span class="si">}</span><span class="s2">' in path </span><span class="si">{</span><span class="n">psse_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">settings_dict</span>
+        <span class="k">if</span> <span class="n">psse_folder</span><span class="p">:</span>
+            <span class="n">psse_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_psse_project_files</span><span class="p">(</span><span class="n">psse_folder</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">autofill</span> <span class="ow">and</span> <span class="n">psse_files</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_autofill_settings</span><span class="p">(</span><span class="n">psse_files</span><span class="p">,</span> <span class="n">profile_store_file</span><span class="p">,</span> <span class="n">profile_mapping_file</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_export_files</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_setting_files</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_export_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="n">DEFAULT_OUT_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span> <span class="o">=</span> <span class="n">DEFAULT_OUTX_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="n">DEFAULT_LOG_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">excel_file</span> <span class="o">=</span> <span class="n">DEFAULT_EXCEL_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">coordinate_file</span> <span class="o">=</span> <span class="n">DEFAULT_COORDINATES_FILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">networkx_graph_file</span> <span class="o">=</span> <span class="n">DEFAULT_GRAPH_FILE</span>
 
     <span class="k">def</span> <span class="nf">_psse_project_file_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="s2">"Creates a mapping of all PyPSSE project files"</span>
@@ -5471,49 +5403,103 @@
                     <span class="n">file_dict</span><span class="p">[</span><span class="n">ext</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">file_dict</span>
 
-    <span class="k">def</span> <span class="nf">_copy_psse_project_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">psse_folder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_copy_psse_project_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psse_folder</span><span class="p">):</span>
         <span class="s2">"Copies PSSE file to the new project folder"</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">psse_folder</span><span class="p">):</span>
-            <span class="n">new_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="s2">"Case_study"</span><span class="p">)</span>
-            <span class="n">copy_tree</span><span class="p">(</span><span class="n">psse_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">))</span>
+        <span class="n">psse_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">psse_folder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">psse_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">new_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">CASESTUDY_FOLDER</span>
+            <span class="n">copy_tree</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">psse_folder</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()))</span>
             <span class="n">psse_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psse_project_file_dict</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"PSSE project path does not exist. (</span><span class="si">{</span><span class="n">psse_folder</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">psse_files</span>
 
-    <span class="k">def</span> <span class="nf">_update_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">export_settings</span><span class="p">):</span>
-        <span class="s2">"Unables update of an existing settings file"</span>
-        <span class="n">default_settings</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span><span class="p">,</span> <span class="s2">"pypsse"</span><span class="p">,</span> <span class="s2">"defaults"</span><span class="p">,</span> <span class="n">SIMULATION_SETTINGS_FILENAME</span><span class="p">))</span>
-        <span class="n">default_exports</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span><span class="p">,</span> <span class="s2">"pypsse"</span><span class="p">,</span> <span class="s2">"defaults"</span><span class="p">,</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span><span class="p">))</span>
-        <span class="n">default_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
-        <span class="n">default_exports</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">export_settings</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">default_settings</span><span class="p">,</span> <span class="n">default_exports</span>
+    <span class="k">def</span> <span class="nf">_write_setting_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sim_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">SIMULATION_SETTINGS_FILENAME</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sim_file_path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">()),</span> <span class="n">f</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_write_setting_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">exports</span><span class="p">):</span>
-        <span class="s2">"Creats a new settings file"</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="s2">"Settings"</span><span class="p">,</span> <span class="n">SIMULATION_SETTINGS_FILENAME</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">export_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">export_file_path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">()),</span> <span class="n">f</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="s2">"Settings"</span><span class="p">,</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">exports</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_create_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">"Creates folder structure for a new project. Older project can be over-written"</span>
-        <span class="n">project_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="n">rmtree</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Project already exists. Set 'overwrite' to true to overwrite existing project."</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">make_dir</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">PROJECT_FOLDERS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">make_dir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_path</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">project_folders</span><span class="p">:</span>
+            <span class="n">project_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">folder</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">project_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Project folder already exists. Set overwrite=true to overwrite existing projects"</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">project_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">project_folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">make_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="c1"># try:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_autofill_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">,</span> <span class="n">profile_store_file</span><span class="p">,</span> <span class="n">profile_mapping_file</span><span class="p">):</span>
+        <span class="s2">"The method auto populates fields for a new PyPSSE project"</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_setting</span><span class="p">(</span><span class="s2">"sav"</span><span class="p">,</span> <span class="s2">"case_study"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_setting</span><span class="p">(</span><span class="s2">"raw"</span><span class="p">,</span> <span class="s2">"raw_file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_setting</span><span class="p">(</span><span class="s2">"snp"</span><span class="p">,</span> <span class="s2">"snp_file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_setting</span><span class="p">(</span><span class="s2">"dyr"</span><span class="p">,</span> <span class="s2">"dyr_file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_setting</span><span class="p">(</span><span class="s2">"gic"</span><span class="p">,</span> <span class="s2">"gic_file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_setting</span><span class="p">(</span><span class="s2">"rwm"</span><span class="p">,</span> <span class="s2">"rwm_file"</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">"dll"</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">user_models</span> <span class="o">=</span> <span class="n">psse_files</span><span class="p">[</span><span class="s2">"dll"</span><span class="p">]</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"user_models=</span><span class="si">{</span><span class="n">psse_files</span><span class="p">[</span><span class="s1">'dll'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No DLL files found in project path"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">"idv"</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">setup_files</span> <span class="o">=</span> <span class="n">psse_files</span><span class="p">[</span><span class="s2">"idv"</span><span class="p">]</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"setup_files=</span><span class="si">{</span><span class="n">psse_files</span><span class="p">[</span><span class="s1">'idv'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Sequence of IDV setup files is important. Manually change in TOML file if needed"</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No IDV files found in project path"</span><span class="p">)</span>
+
+        <span class="n">store_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">PROFILES_FOLDER</span>
+        <span class="k">if</span> <span class="n">profile_store_file</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">profile_store_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">Path</span><span class="p">(</span><span class="n">profile_store_file</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">".hdf5"</span><span class="p">,</span> <span class="s2">"Store file should be a valid hdf5 file"</span>
+            <span class="n">copy</span><span class="p">(</span><span class="n">profile_store_file</span><span class="p">,</span> <span class="n">store_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ProfileManager</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="p">,</span> <span class="n">logging</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">profile_mapping_file</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">profile_mapping_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">Path</span><span class="p">(</span><span class="n">profile_mapping_file</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">".toml"</span><span class="p">,</span> <span class="s2">"Profile mapping should be a valid toml file"</span>
+            <span class="n">copy</span><span class="p">(</span><span class="n">profile_mapping_file</span><span class="p">,</span> <span class="n">store_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">use_profile_manager</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO: auto generate mapping file from bus subsystem files</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">DEFAULT_PROFILE_MAPPING_FILENAME</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">use_profile_manager</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_default_sub_file</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_default_sub_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">"Method creates a subscription file for the HELICS interface"</span>
+        <span class="n">subscription_fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">SubscriptionFileRequiredColumns</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({},</span> <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">subscription_fields</span><span class="p">))</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">/</span> <span class="n">DEFAULT_SUBSCRIPTION_FILENAME</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Creating subscription template"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">subscriptions_file</span> <span class="o">=</span> <span class="n">DEFAULT_SUBSCRIPTION_FILENAME</span>
+
+    <span class="k">def</span> <span class="nf">_update_setting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f_type</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">psse_files</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">f_type</span> <span class="ow">in</span> <span class="n">psse_files</span><span class="p">:</span>
+            <span class="n">relevent_files</span> <span class="o">=</span> <span class="n">psse_files</span><span class="p">[</span><span class="n">f_type</span><span class="p">]</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">relevent_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Settings:</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">relevent_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">relevent_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"More than one file with extension </span><span class="si">{</span><span class="n">f_type</span><span class="si">}</span><span class="s2"> exist."</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Files found: </span><span class="si">{</span><span class="n">relevent_files</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Manually update the settings toml file"</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No file with extension '</span><span class="si">{</span><span class="n">f_type</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -5536,7 +5522,7 @@
 
 
 <h3 id="pypsse.project.Project.create" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">create</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">psse_folder</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">export_settings</span><span class="p">,</span> <span class="n">profile_store</span><span class="p">,</span> <span class="n">profile_mapping</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autofill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">create</span><span class="p">(</span><span class="n">parent_path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">psse_folder</span><span class="p">,</span> <span class="n">simulation_settings_file</span><span class="p">,</span> <span class="n">export_settings_file</span><span class="p">,</span> <span class="n">profile_store_file</span><span class="p">,</span> <span class="n">profile_mapping_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autofill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 </h3>
 
@@ -5547,16 +5533,7 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\project.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
@@ -5574,34 +5551,91 @@
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">,</span>
+    <span class="n">parent_path</span><span class="p">,</span>
     <span class="n">project_name</span><span class="p">,</span>
     <span class="n">psse_folder</span><span class="p">,</span>
-    <span class="n">settings</span><span class="p">,</span>
-    <span class="n">export_settings</span><span class="p">,</span>
-    <span class="n">profile_store</span><span class="p">,</span>
-    <span class="n">profile_mapping</span><span class="p">,</span>
+    <span class="n">simulation_settings_file</span><span class="p">,</span>
+    <span class="n">export_settings_file</span><span class="p">,</span>
+    <span class="n">profile_store_file</span><span class="p">,</span>
+    <span class="n">profile_mapping_file</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">autofill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="s2">"The methods creates a new PyPSSE project"</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_create_folders</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
-        <span class="n">u_settings</span><span class="p">,</span> <span class="n">u_exports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">export_settings</span><span class="p">)</span>
-        <span class="n">u_settings</span><span class="p">[</span><span class="s2">"Simulation"</span><span class="p">][</span><span class="s2">"Project Path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">)</span>
 
-        <span class="n">psse_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_psse_project_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">psse_folder</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">autofill</span><span class="p">:</span>
-            <span class="n">u_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autofill_settings</span><span class="p">(</span>
-                <span class="n">psse_files</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">profile_store</span><span class="p">,</span> <span class="n">profile_mapping</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_setting_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">u_settings</span><span class="p">,</span> <span class="n">u_exports</span><span class="p">)</span>
+    <span class="n">exports_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">/</span> <span class="n">DEFAULTS_FOLDER</span> <span class="o">/</span> <span class="n">EXPORTS_SETTINGS_FILENAME</span><span class="p">)</span>
+    <span class="n">export_settings</span> <span class="o">=</span> <span class="n">ExportFileOptions</span><span class="p">(</span><span class="o">**</span><span class="n">exports_dict</span><span class="p">)</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Path provided does not exist (</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">)"</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">export_settings_file</span><span class="p">:</span>
+        <span class="n">export_settings_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">export_settings_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">export_settings_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"Export file '</span><span class="si">{</span><span class="n">export_settings_file</span><span class="si">}</span><span class="s2">' does not exist"</span>
+        <span class="n">new_export_settings</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">export_settings_file</span><span class="p">)</span>
+        <span class="n">export_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">new_export_settings</span><span class="p">)</span>
+
+    <span class="n">sim_setting_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepath</span> <span class="o">/</span> <span class="n">DEFAULTS_FOLDER</span> <span class="o">/</span> <span class="n">SIMULATION_SETTINGS_FILENAME</span><span class="p">)</span>
+    <span class="n">simulation_settings</span> <span class="o">=</span> <span class="n">SimulationSettings</span><span class="p">(</span><span class="o">**</span><span class="n">sim_setting_dict</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">simulation_settings_file</span><span class="p">:</span>
+        <span class="n">simulation_settings_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">simulation_settings_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">simulation_settings_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"Export file '</span><span class="si">{</span><span class="n">simulation_settings_file</span><span class="si">}</span><span class="s2">' does not exist"</span>
+        <span class="n">sim_setting_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">simulation_settings_file</span><span class="p">)</span>
+        <span class="n">simulation_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">sim_setting_dict</span><span class="p">)</span>
+
+    <span class="n">simulation_settings</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">project_name</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">ProjectDefination</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+        <span class="n">simulation_settings</span><span class="o">=</span><span class="n">simulation_settings</span><span class="p">,</span>
+        <span class="n">export_settings</span><span class="o">=</span><span class="n">export_settings</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="n">autofill</span><span class="o">=</span><span class="n">autofill</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">project_name</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_create_folders</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">psse_folder</span><span class="p">:</span>
+        <span class="n">psse_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_psse_project_files</span><span class="p">(</span><span class="n">psse_folder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">autofill</span> <span class="ow">and</span> <span class="n">psse_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_autofill_settings</span><span class="p">(</span><span class="n">psse_files</span><span class="p">,</span> <span class="n">profile_store_file</span><span class="p">,</span> <span class="n">profile_mapping_file</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_update_export_files</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_write_setting_files</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -5628,7 +5662,11 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\result_container.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -5710,11 +5748,7 @@
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
     <span class="s2">"Class defination for the simulation result container"</span>
 
     <span class="n">BULK_WRITE_MODES</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">BulkWriteModes</span><span class="p">]</span>
@@ -5773,10 +5807,10 @@
         <span class="s2">"Queries and return results from the current timestep"</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_vars</span>
 
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">has_converged</span><span class="p">):</span>
         <span class="s2">"Updates the results cotainer"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">file_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BULK_WRITE_MODES</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataWriter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataWriter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">,</span> <span class="n">has_converged</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">bus_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">variable_name</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
@@ -5834,7 +5868,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\result_container.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -5854,11 +5892,7 @@
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">SimulationSettings</span><span class="p">,</span> <span class="n">export_settings</span><span class="p">:</span> <span class="n">ExportAssetTypes</span><span class="p">):</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">SimulationSettings</span><span class="p">,</span> <span class="n">export_settings</span><span class="p">:</span> <span class="n">ExportAssetTypes</span><span class="p">):</span>
     <span class="s2">"Sets up the result container object"</span>
 
     <span class="n">export__list</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ModelTypes</span><span class="p">]</span>
@@ -5907,7 +5941,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\result_container.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
 <span class="normal">89</span>
@@ -5916,11 +5954,7 @@
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">export_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">export_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Exports all results stored to an external file."</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">file_format</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BULK_WRITE_MODES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">df_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -5958,9 +5992,9 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\result_container.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_export_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_export_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s2">"Queries and return results from the current timestep"</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_vars</span>
 </code></pre></div></td></tr></table></div>
@@ -5976,7 +6010,7 @@
 
 
 <h3 id="pypsse.result_container.Container.update" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="n">bus_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="n">bus_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">has_converged</span><span class="p">)</span></code>
 
 </h3>
 
@@ -5987,7 +6021,11 @@
 
           <details class="quote">
             <summary>Source code in <code>pypsse\result_container.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
@@ -5995,14 +6033,10 @@
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">has_converged</span><span class="p">):</span>
     <span class="s2">"Updates the results cotainer"</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">file_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BULK_WRITE_MODES</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataWriter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataWriter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">bus_data</span><span class="p">,</span> <span class="n">has_converged</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">bus_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">variable_name</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
@@ -6037,7 +6071,11 @@ Method is called iteratively to store results as a simulation executes</p>
 
           <details class="quote">
             <summary>Source code in <code>pypsse\result_container.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
@@ -6054,11 +6092,7 @@ Method is called iteratively to store results as a simulation executes</p>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_export_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_export_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Updates the container with current system state.</span>
 <span class="sd">    Method is called iteratively to store results as a simulation executes"""</span>
 
@@ -11025,8 +11059,7 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">"-p"</span><span class="p">,</span>
     <span class="s2">"--port"</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="mi">9090</span><span class="p">,</span>
@@ -11045,8 +11078,7 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
 <span class="w">    </span><span class="sd">"""Run a PyPSSE RESTful API server."""</span>
     <span class="n">timestamp_format</span> <span class="o">=</span> <span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">"</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">timestamp_format</span><span class="p">)</span>
-    <span class="n">pydss</span> <span class="o">=</span> <span class="n">PSSEServer</span><span class="p">(</span><span class="n">host_ip</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-    <span class="n">web</span><span class="o">.</span><span class="n">run_app</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">pydss</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">run_server</span><span class="p">(</span><span class="n">host_ip</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -11127,9 +11159,9 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
         <span class="s2">"Sets up a data writer as per user input"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">formatnm</span><span class="p">](</span><span class="n">log_dir</span><span class="p">,</span> <span class="n">column_length</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">,</span> <span class="n">convergence</span><span class="p">):</span>
         <span class="s2">"Enables incremental write to the data writer object"</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">,</span> <span class="n">convergence</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -11181,7 +11213,7 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
 
 
 <h4 id="pypsse.data_writers.data_writer.DataWriter.write" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">write</span><span class="p">(</span><span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">write</span><span class="p">(</span><span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">,</span> <span class="n">convergence</span><span class="p">)</span></code>
 
 </h4>
 
@@ -11194,9 +11226,9 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
             <summary>Source code in <code>pypsse\data_writers\data_writer.py</code></summary>
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">):</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">,</span> <span class="n">convergence</span><span class="p">):</span>
     <span class="s2">"Enables incremental write to the data writer object"</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">currenttime</span><span class="p">,</span> <span class="n">powerflow_output</span><span class="p">,</span> <span class="n">convergence</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -12400,7 +12432,7 @@ files.</p>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">channel_setup</span><span class="p">:</span>
-            <span class="n">method_type</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">asset_type</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">method_type</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">asset_type</span>
             <span class="k">if</span> <span class="n">method_type</span> <span class="o">==</span> <span class="s2">"buses"</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">setup_bus_channels</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">asset_list</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">asset_properties</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">method_type</span> <span class="o">==</span> <span class="s2">"loads"</span><span class="p">:</span>
@@ -12734,7 +12766,7 @@ files.</p>
         <span class="k">return</span>
 
     <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span><span class="o">.</span><span class="n">channel_setup</span><span class="p">:</span>
-        <span class="n">method_type</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">asset_type</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">method_type</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">asset_type</span>
         <span class="k">if</span> <span class="n">method_type</span> <span class="o">==</span> <span class="s2">"buses"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setup_bus_channels</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">asset_list</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">asset_properties</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">method_type</span> <span class="o">==</span> <span class="s2">"loads"</span><span class="p">:</span>
