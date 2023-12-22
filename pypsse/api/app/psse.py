@@ -6,11 +6,11 @@ import logging
 from multiprocessing import current_process
 from queue import Empty
 
-from pypsse.modes.constants import dyn_only_options
 from pypsse.simulator import Simulator
 from pypsse.models import ApiPssePostRequest, ApiPsseReply
+from pypsse.enumerations import ApiCommands
 from pypsse.api.common import BASE_PROJECT_PATH
-from pypsse.common import SIMULATION_SETTINGS_FILENAME
+from pypsse.common import SIMULATION_SETTINGS_FILENAME, MAPPED_CLASS_NAMES
 
 from http import HTTPStatus
 
@@ -18,8 +18,12 @@ logger = logging.getLogger(__name__)
 # Make sure to change the PSSE path
 
 class PSSE:
+    
     def __init__(self, shutdown_event=None, to_psse_queue=None, from_psse_queue=None, params:ApiPssePostRequest=None):
         super().__init__()
+        
+        self._validate_methods()
+    
         self.uuid = current_process().name
         logger.info(f"{self.uuid} - psse uuid init time")
         self.shutdownevent = shutdown_event
@@ -70,19 +74,15 @@ class PSSE:
                         )
 
                     command_name = task.pop("command")
-                    print(command_name)
+
                     if hasattr(self, command_name):
                         command = getattr(self, command_name)
-        
-                        
                         try:
                             if "parameters" in list(signature(command).parameters):
-                                print("Has parameters")
                                 command_return = command(parameters=task["parameters"])
                             else:
-                                print("Has no parameters")
                                 command_return = command()
-                            
+                            print(command_name, command_return)
                             result = ApiPsseReply(
                                 status = HTTPStatus.OK,
                                 message= command_return
@@ -96,7 +96,7 @@ class PSSE:
                     else:
                         result = ApiPsseReply(
                                 status = HTTPStatus.UNPROCESSABLE_ENTITY,
-                                message= f"Command {command_str} does not exist."
+                                message= f"Command {command_name} does not exist."
                             )
                          
                 self.from_psse_queue.put(result)
@@ -113,29 +113,25 @@ class PSSE:
         logger.info(msg)
         self.from_psse_queue.put(result)
 
-    def update_settings(self, new_dict: dict):
-        for key, value in new_dict.items():
-            if key in self.psse_obj.settings:
-                self.psse_obj.settings[key].update(value)
-            else:
-                logger.warning(f"{key} not present in settings.toml file")
-
-    def get_results(self, parameters):
-        print("RESULTING")
-        results = self.psse_obj.get_results(parameters)
-        print(results)
-        return results
-
+    def close_case(self):
+        self.psse_obj.PSSE.pssehalt_2()
+        del self.psse_obj
+        logger.info(f"PSSE case {self.uuid} closed.")
+    
+    def status(self):
+        print(self.psse_obj._status)
+        return self.psse_obj._status
+     
     def run_simulation(self):
         self.psse_obj.run()
 
     def run_step(self):
-        print("RUNNING STEP")
         t = (self.time - self.psse_obj.settings.simulation.start_time).total_seconds()
         self.current_result = self.psse_obj.step(t)
         self.time += self.psse_obj.settings.simulation.simulation_step_resolution
-        return self.current_result
-
+        self._restructure_results()
+        return self.psse_obj._status
+    
     def export_result(self):
         self.psse_obj.PSSE.pssehalt_2()
         if not self.psse_obj.export_settings.export_results_using_channels:
@@ -143,33 +139,61 @@ class PSSE:
         else:
             self.psse_obj.sim.export()
 
-    def ingest_subscription(self, key_obj: dict, bes_asset_id: list, value):
-        if key_obj["asset_type"] == "bus":
-            if key_obj["parameter_name"] == "power_real":
-                self.psse_obj.load_chng_5(ibus=bes_asset_id[0], id=bes_asset_id[1], realar1=value)
-            if key_obj["parameter_name"] == "power_imag":
-                self.psse_obj.load_chng_5(ibus=bes_asset_id[0], id=bes_asset_id[1], realar2=value)
+    def update_model(self, parameters):
+        ...
+    
+    def update_settings(self, parameters):
+        for key, value in parameters.items():
+            if key in self.psse_obj.settings:
+                self.psse_obj.settings[key].update(value)
+            else:
+                logger.warning(f"{key} not present in settings.toml file")
 
-    def query_param(self, key_obj=None):
-        if key_obj is None:
-            key_obj = {}
+    def query_asset_list(self):
+        results = {}
+        for asset_type, asset_info in self.results_by_id.items():
+            if asset_type not in results:
+                results[asset_type] = [asset_id for asset_id in asset_info]
+        return results
+        
+    def query_all(self):
+        results = self.results_by_ppty
+        return results
+    
+    def query_by_asset(self, parameters ):
+        assert 'asset_type' in parameters and 'asset_id' in parameters,'Reqired keys: asset_type, asset_id'
+        inv_map = {v: k for k, v in MAPPED_CLASS_NAMES.items()}
+        asset_id = parameters['asset_id']
+        asset_type = inv_map[parameters['asset_type']] 
+        return self.results_by_id[asset_type][asset_id]
+        
+    def query_by_ppty(self, parameters):
+        assert 'asset_type' in parameters and 'asset_property' in parameters,'Reqired keys: asset_type, asset_property'
+        inv_map = {v: k for k, v in MAPPED_CLASS_NAMES.items()}
+        asset_type = inv_map[parameters['asset_type']] 
+        asset_property = parameters['asset_property']
+        return self.results_by_ppty[asset_type][asset_property]
 
-        rval = False
-        if key_obj["asset_type"] == "bus":
-            if key_obj["parameter_name"] == "voltage" and key_obj["parameter_unit"] == "pu":
-                rval = self.current_result["Buses_PU"].get(key_obj["asset_name"])
-            elif key_obj["parameter_name"] == "voltage_angle" and key_obj["parameter_unit"] == "deg":
-                rval = self.current_result["Buses_ANGLED"].get(key_obj["asset_name"])
-            if key_obj["parameter_name"] == "power_mismatch" and key_obj["parameter_unit"] == "mw":
-                rval = self.current_result["Buses_MISMATCH"].get(key_obj["asset_name"])
-        logger.info(f"Query return value is {rval} for {key_obj['parameter_name']}")
-        if rval is None:
-            return False
-        else:
-            return rval
+    def _validate_methods(self):
+        for command in ApiCommands:
+            assert hasattr(self, command.value)
 
-    def close_case(self):
-        print("CLOSING")
-        self.psse_obj.PSSE.pssehalt_2()
-        del self.psse_obj
-        logger.info(f"PSSE case {self.uuid} closed.")
+    def _restructure_results(self):
+        inv_map = {v: k for k, v in MAPPED_CLASS_NAMES.items()}
+        self.results_by_id = {}
+        self.results_by_ppty = {}
+        for info, val_dict in self.current_result.items():
+            asset_type, asset_property = info.split("_")
+            new_asset_type = inv_map[asset_type]      
+            for asset_id, value in val_dict.items():
+                if new_asset_type not in self.results_by_id:
+                    self.results_by_id[new_asset_type] = {}
+                    self.results_by_ppty[new_asset_type] = {}
+                if asset_id not in self.results_by_id[new_asset_type]:
+                    self.results_by_id[new_asset_type][asset_id] = {}
+                if asset_property not in self.results_by_ppty[new_asset_type]:
+                    self.results_by_ppty[new_asset_type][asset_property] = {}
+                
+                self.results_by_id[new_asset_type][asset_id][asset_property] = value
+                self.results_by_ppty[new_asset_type][asset_property][asset_id] = value
+        return 

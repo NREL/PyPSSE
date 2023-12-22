@@ -422,9 +422,13 @@ class ApiCommands(str, Enum):
     RUN = "run_simulation"
     STATUS = "status"
     SOLVE = "run_step"
-    RESULTS = "get_results"
     CLOSE = "close_case"
-    
+    UDPATE_MODEL = "update_model"
+    UPDATE_PARAMETERS = "update_settings"
+    QUERY_ALL = "query_all"
+    QUERY_BY_ID = "query_by_asset"
+    QUERY_BY_PPTY = "query_by_ppty"
+    QUERY_ASSET_LIST = "query_asset_list"
     
 class SimulationStatus(str, Enum):
     NOT_INITIALIZED = "Instance not initialized"

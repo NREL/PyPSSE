@@ -46,7 +46,7 @@ class Container:
         self.results = {}
         self.export_vars = {}
 
-        class_assets = ExportAssetTypes.validate(params) if params else self.export_settings
+        class_assets = ExportAssetTypes(**params) if params else self.export_settings
 
         for class_name in export__list:
             if class_name in params:

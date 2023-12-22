@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pssepy"
+name = "NREL-pypsse"
 dynamic = ["version"]
 description = "A high-level python interface for PSS/E"
 readme = "README.md"

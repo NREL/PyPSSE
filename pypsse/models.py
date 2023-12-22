@@ -340,7 +340,7 @@ class ExportAssetTypes(BaseModel):
     branches: Optional[List[BranchProperties]] = None
     induction_generators: Optional[List[InductionGeneratorProperties]] = None
     machines: Optional[List[MachinesProperties]] = None
-    
+
 class ExportFileOptions(ExportAssetTypes):
     "Export settings for a PyPSSE project"
 
@@ -388,11 +388,24 @@ class ApiPsseReplyInstances(BaseModel):
     message: str
     simulators: List[UUID4] = []
 
+class ApiAssetQuery(BaseModel):
+    asset_type: ModelTypes
+    asset_property: Optional[Union[
+        BusProperties, AreaProperties, ZoneProperties, StationProperties, DCLineProperties, LoadProperties, FixedShuntProperties,SwitchedShuntProperties,
+        TransformerProperties, BranchProperties, InductionGeneratorProperties, MachinesProperties
+    ]] = None
+    asset_id: Optional[str] = None
+    
+    @model_validator(mode="after")
+    def define_atleast_one(self):
+        assert not (self.asset_id is None and self.asset_property is None), f"Atleast one 'asset_id' or 'asset_property' should be defined"
+        return self
+
 class ApiPssePutRequest(BaseModel):
     uuid:UUID4
     command: ApiCommands
-    parameters: Union[ExportAssetTypes, None] 
+    parameters: Optional[ApiAssetQuery] = None
 
-
+    
 class ApiPssePostRequest(BaseModel):
     project_name: str = "static_example"

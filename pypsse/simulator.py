@@ -332,6 +332,7 @@ class Simulator:
         self._status = SimulationModes.RESULT_EXPORT_COMPLETE
         return curr_results
 
+
     def status(self):
         return self._status.value
 

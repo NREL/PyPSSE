@@ -104,59 +104,31 @@ class Handler:
                 uuid=psse_uuid,
             )
         except Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail=ApiPsseException(
-                message= str(e),
-                uuid=psse_uuid,
-            ))  
+            self._base_error(HTTPStatus.INTERNAL_SERVER_ERROR, str(e), psse_uuid)
   
     async def put_psse(self, request:ApiPssePutRequest):
     
         logger.info(f"Running command :{request.model_dump_json()}")
+        self._error_invalid_uuid(request.uuid)
+        if not hasattr(request, "command")  or not hasattr(request, "parameters"):            
+            self._base_error(HTTPStatus.NOT_FOUND, 'Please provide a command and parameters', request.uuid)
 
-        if not hasattr(request, "command")  or not hasattr(request, "parameters"):
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message='Please provide a command and parameters',
-                    uuid=request.uuid,
-                    )
-                )  
-            
-        if request.uuid and str(request.uuid) in self.psse_instances:
-            psse_t = self.loop.run_in_executor(self.pool, self._post_put_background_task, request.uuid)
-            psse_t.add_done_callback(self._post_put_callback)
+        #psse_t = self.loop.run_in_executor(self.pool, self._post_put_background_task, request.uuid)
+        #psse_t.add_done_callback(self._post_put_callback)
 
-            logger.info(f"Submitted data to psse :{request.model_dump_json()}")
-            self.psse_instances[str(request.uuid)]["to_psse_queue"].put(request.model_dump_json())
+        logger.info(f"Submitted data to psse :{request.model_dump_json()}")
+        self.psse_instances[str(request.uuid)]["to_psse_queue"].put(request.model_dump_json())
+        results = self.psse_instances[str(request.uuid)]["from_psse_queue"].get()
 
-            return ApiPsseReply(
-                status='',
-                message=f"{request.command} command submitted, awaiting response ",
-                uuid=request.uuid
-            )
-        else:
-            msg = f"UUID={request.uuid} not found in the PSSE instances"
-            logger.error(f"{msg}")
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message=msg,
-                    uuid=request.uuid,
-                    )
-                )  
-            
+        return ApiPsseReply(
+            status='',
+            message=f"{results}",
+            uuid=request.uuid
+        )
+        
     async def delete_psse(self, uuid:UUID4):
         """Delete an instance of simulation"""
-        if str(uuid) not in self.psse_instances.keys():
-            param = "UUID={psse_uuid} not found in the PSSE instances"
-            logger.error(f"{param}")
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message=param,
-                    uuid=uuid,
-                    )
-                )
+        self._error_invalid_uuid(uuid)
         try:
             psse_t = self.loop.run_in_executor(self.pool, self._delete_background_task, uuid)
             psse_t.add_done_callback(self._delete_callback)
@@ -171,13 +143,7 @@ class Handler:
         except Exception:
             msg = f"Error closing in PSSE instance {uuid}"
             logger.error(msg)
-            raise HTTPException(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR , 
-                detail=ApiPsseException(
-                    message=msg,
-                    uuid=uuid,
-                    )
-                )
+            self._base_error(HTTPStatus.INTERNAL_SERVER_ERROR, f"Error closing in PyPSSE instance", uuid)
     
     async def get_instance_uuids(self):
         """Get all running simulation uuids"""
@@ -190,40 +156,21 @@ class Handler:
 
     async def get_instance_status(self, uuid:UUID4):
         """Get status of the current provided simuation instance"""
-        if uuid and str(uuid) in self.psse_instances:
-            msg = "UUID exists, status - "
-        else:
-            msg = "UUID does not exist"
-
-        return ApiPsseReply(
-                status=HTTPStatus.OK,
-                message=msg,
-                uuid=uuid
-            )
-        
+        self._error_invalid_uuid(uuid)
+        return ApiPsseReplyInstances(
+            status= HTTPStatus.OK,
+            message="UUID exists",
+            uuid=str(uuid),
+        ) 
+           
     async def get_download_results(self, uuid:UUID4):
         """Download results from a simulation instance"""
-        if str(uuid) not in self.psse_instances.keys():
-            param = "UUID={psse_uuid} not found in the PSSE instances"
-            logger.error(f"{param}")
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message=param,
-                    uuid=uuid,
-                    )
-                )
+        self._error_invalid_uuid(uuid)
         
         project_name = self.uuid_to_project_mapping[str(uuid)]
         results_file = BASE_PROJECT_PATH / project_name / EXPORTS_FOLDER / DEFAULT_RESULTS_FILENAME
         if not results_file.exists():
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message=f"File not found",
-                    uuid=str(uuid),
-                    )
-                )
+            self._base_error(HTTPStatus.NOT_FOUND, "File not found", uuid)
         
         return FileResponse(path=results_file, filename=DEFAULT_RESULTS_FILENAME, media_type='hdf5')
     
@@ -232,25 +179,12 @@ class Handler:
         if str(uuid) not in self.psse_instances.keys():
             param = "UUID={psse_uuid} not found in the PSSE instances"
             logger.error(f"{param}")
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message=param,
-                    uuid=uuid,
-                    )
-                )
-        
+            self._base_error(HTTPStatus.NOT_FOUND, param, uuid)
+                    
         project_name = self.uuid_to_project_mapping[str(uuid)]
         results_file = BASE_PROJECT_PATH / project_name / LOGS_FOLDER / DEFAULT_LOG_FILE
-        print(results_file)
         if not results_file.exists():
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND , 
-                detail=ApiPsseException(
-                    message=f"File not found - {results_file}",
-                    uuid=str(uuid),
-                    )
-                )
+            self._base_error(HTTPStatus.NOT_FOUND, f"File not found - {results_file}", uuid)
         
         return FileResponse(path=results_file, filename=DEFAULT_LOG_FILE, media_type='hdf5')
         
@@ -261,6 +195,7 @@ class Handler:
         return ans
 
     def _post_put_callback(self, return_value):
+        print(return_value)
         logger.info(f"{return_value.result()}")
 
     def _get_uuid(self, data):
@@ -284,3 +219,15 @@ class Handler:
     def _delete_callback(self, return_value):
         logger.info(f"{return_value.result()}")
 
+    def _error_invalid_uuid(self, uuid:UUID4):
+        if not uuid or str(uuid) not in self.psse_instances:
+            self._base_error(HTTPStatus.NOT_FOUND, "UUID does not exist", uuid)
+
+    def _base_error(self, status_code:HTTPStatus, message:str, uuid:UUID4):
+         raise HTTPException(
+            status_code=status_code, 
+            detail=ApiPsseException(
+                message=message,
+                uuid=uuid,
+                ).model_dump_json()
+            )
