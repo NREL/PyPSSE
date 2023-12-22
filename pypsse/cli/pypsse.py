@@ -9,15 +9,16 @@ from pypsse.cli.create_project import create_project
 from pypsse.cli.run import run
 
 logger = logging.getLogger(__name__)
+from pypsse.cli.serve import serve
+server_dependencies_installed = True
 
-try:
-    server_dependencies_installed = True
-    from pypsse.cli.serve import serve
-except ImportError:
-    server_dependencies_installed = False
-    logger.warning(
-        "Server dependencies not installed. Use 'pip install pssepy[server]' to install additonal dependencies"
-    )
+# try:
+#     from pypsse.cli.serve import serve
+# except ImportError:
+#     server_dependencies_installed = False
+#     logger.warning(
+#         "Server dependencies not installed. Use 'pip install pssepy[server]' to install additonal dependencies"
+#     )
 
 
 @click.group()

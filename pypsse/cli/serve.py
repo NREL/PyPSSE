@@ -7,7 +7,7 @@ import logging
 import click
 from aiohttp import web
 
-from pypsse.api.server import PSSEServer
+from pypsse.api.server import run_server
 
 logger = logging.getLogger(__name__)
 
@@ -31,5 +31,4 @@ def serve(host_ip="127.0.0.1", port=9090):
     """Run a PyPSSE RESTful API server."""
     timestamp_format = "%(asctime)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=timestamp_format)
-    pydss = PSSEServer(host_ip, port)
-    web.run_app(host=host_ip, port=port, app=pydss.app)
+    run_server(host_ip, port)

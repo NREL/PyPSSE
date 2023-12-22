@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Annotated, List, Literal, Optional, Union, Dict
+from typing import List, Literal, Optional, Union, Dict
+from typing_extensions import Annotated
 
 import pandas as pd
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, UUID4
 from pydantic.networks import IPvAnyAddress
 
 from pypsse.common import CASESTUDY_FOLDER, EXPORTS_FOLDER, LOGS_FOLDER
@@ -30,7 +31,8 @@ from pypsse.enumerations import (
     TransformerProperties,
     UseModes,
     ZoneProperties,
-    WritableModelTypes
+    WritableModelTypes,
+    ApiCommands,
 )
 
 
@@ -371,3 +373,26 @@ class MdaoInput(BaseModel):
 class MdaoProblem(BaseModel):
     outputs : MdaoOutput
     inputs : List[MdaoInput]
+
+class ApiPsseReply(BaseModel):
+    status: str
+    message: str
+    uuid: Union[UUID4, None]=None
+
+class ApiPsseException(BaseModel):
+    message: str
+    uuid: Union[UUID4, None]=None
+
+class ApiPsseReplyInstances(BaseModel):
+    status: str
+    message: str
+    simulators: List[UUID4] = []
+
+class ApiPssePutRequest(BaseModel):
+    uuid:UUID4
+    command: ApiCommands
+    parameters: Union[ExportAssetTypes, None] 
+
+
+class ApiPssePostRequest(BaseModel):
+    project_name: str = "static_example"

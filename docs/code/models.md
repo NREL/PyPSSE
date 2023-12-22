@@ -9,6 +9,31 @@ This page provides details on the data models part of the PyPSSE library.
 
 
 
+<img src="ApiPsseException.svg" /> 
+::: pypsse.models.ApiPsseException
+ 
+
+
+<img src="ApiPssePostRequest.svg" /> 
+::: pypsse.models.ApiPssePostRequest
+ 
+
+
+<img src="ApiPssePutRequest.svg" /> 
+::: pypsse.models.ApiPssePutRequest
+ 
+
+
+<img src="ApiPsseReply.svg" /> 
+::: pypsse.models.ApiPsseReply
+ 
+
+
+<img src="ApiPsseReplyInstances.svg" /> 
+::: pypsse.models.ApiPsseReplyInstances
+ 
+
+
 <img src="BusChannel.svg" /> 
 ::: pypsse.models.BusChannel
  
@@ -96,6 +121,21 @@ This page provides details on the data models part of the PyPSSE library.
 
 <img src="MachineTrip.svg" /> 
 ::: pypsse.models.MachineTrip
+ 
+
+
+<img src="MdaoInput.svg" /> 
+::: pypsse.models.MdaoInput
+ 
+
+
+<img src="MdaoOutput.svg" /> 
+::: pypsse.models.MdaoOutput
+ 
+
+
+<img src="MdaoProblem.svg" /> 
+::: pypsse.models.MdaoProblem
  
 
 

@@ -1,7 +1,7 @@
 from enum import Enum, IntEnum
 
 
-class ProjectFolders(Enum):
+class ProjectFolders(str, Enum):
     "Defines valid the project folder"
     CASESTUDY = "case_study"
     EXPORTS = "exports"
@@ -10,18 +10,18 @@ class ProjectFolders(Enum):
     PROFILES = "profiles"
 
 
-class BulkWriteModes(Enum):
+class BulkWriteModes(str, Enum):
     "Supported bulk writers"
     CSV = "csv"
     PKL = "pkl"
 
 
-class StreamedWriteModes(Enum):
+class StreamedWriteModes(str, Enum):
     "Supported stream writers"
     H5 = "h5"
 
 
-class SimulationModes(Enum):
+class SimulationModes(str, Enum):
     "Valid PyPSSE simulation modes"
     PCM = "PCM"
     SNAP = "Snap"
@@ -29,18 +29,18 @@ class SimulationModes(Enum):
     DYNAMIC = "Dynamic"
 
 
-class HelicsCoreTypes(Enum):
+class HelicsCoreTypes(str, Enum):
     "HELICS core types"
     ZMQ = "zmq"
 
-class WritableModelTypes(Enum):
+class WritableModelTypes(str, Enum):
     "Writable data ty[es]"
     LOAD = "Load"
     PLANT = "Plant"
     MACHINE = "Machine"
     GENERATOR = "Induction_machine"
     
-class ModelTypes(Enum):
+class ModelTypes(str, Enum):
     "Supported asset tpyes in PyPSSE"
     BUSES = "Buses"
     BRANCHES = "Branches"
@@ -57,7 +57,7 @@ class ModelTypes(Enum):
 
 
 
-class ModelProperties(Enum):
+class ModelProperties(str, Enum):
     "Support model properties"
     PU = "PU"
     FREQ = "FREQ"
@@ -75,7 +75,7 @@ class LoggingLevels(IntEnum):
     CRITICAL = 50
 
 
-class SubscriptionFileRequiredColumns(Enum):
+class SubscriptionFileRequiredColumns(str, Enum):
     "Subscription file requirements"
     bus_subsystem_id = "bus_subsystem_id"
     element_type = "element_type"
@@ -86,7 +86,7 @@ class SubscriptionFileRequiredColumns(Enum):
     bus = "bus"
 
 
-class BusProperties(Enum):
+class BusProperties(str, Enum):
     "Valid bus properties"
 
     BASE = "BASE"
@@ -101,7 +101,7 @@ class BusProperties(Enum):
     EVLMLO = "EVLMLO"
 
 
-class AreaProperties(Enum):
+class AreaProperties(str, Enum):
     "Valid area properties"
 
     LOAD = "LOAD"
@@ -113,7 +113,7 @@ class AreaProperties(Enum):
     AREANUMBER = "AREANUMBER"
 
 
-class ZoneProperties(Enum):
+class ZoneProperties(str, Enum):
     "Valid zone properties"
 
     LOAD = "LOAD"
@@ -125,7 +125,7 @@ class ZoneProperties(Enum):
     ZONENUMBER = "ZONENUMBER"
 
 
-class StationProperties(Enum):
+class StationProperties(str, Enum):
     "Valid station properties"
 
     SUBNAME = "SUBNAME"
@@ -138,7 +138,7 @@ class StationProperties(Enum):
     GENMW = "GENMW"
 
 
-class DCLineProperties(Enum):
+class DCLineProperties(str, Enum):
     "Valid DC line properties"
 
     DCLINENAME = "DCLINENAME"
@@ -154,7 +154,7 @@ class DCLineProperties(Enum):
     NDI = "NDI"
 
 
-class LoadProperties(Enum):
+class LoadProperties(str, Enum):
     "Valid load properties"
 
     MVA = "MVA"
@@ -173,7 +173,7 @@ class LoadProperties(Enum):
     TC = "TC"
 
 
-class FixedShuntProperties(Enum):
+class FixedShuntProperties(str, Enum):
     "Valid fixed shunt properties"
 
     ACT = "ACT"
@@ -185,7 +185,7 @@ class FixedShuntProperties(Enum):
     O_PQZ = "O_PQZ"
 
 
-class SwitchedShuntProperties(Enum):
+class SwitchedShuntProperties(str, Enum):
     "Valid switched shunt properties"
 
     VSWHI = "VSWHI"
@@ -195,7 +195,7 @@ class SwitchedShuntProperties(Enum):
     O_BINIT = "O_BINIT"
 
 
-class TransformerProperties(Enum):
+class TransformerProperties(str, Enum):
     "Valid transformer properties"
 
     RATIO = "RATIO"
@@ -237,7 +237,7 @@ class TransformerProperties(Enum):
     ZNUTRL = "ZNUTRL"
 
 
-class BranchProperties(Enum):
+class BranchProperties(str, Enum):
     "Valid branch properties"
 
     RATEn = "RATEn"
@@ -274,7 +274,7 @@ class BranchProperties(Enum):
     O_QLOS = "O_QLOS"
 
 
-class InductionGeneratorProperties(Enum):
+class InductionGeneratorProperties(str, Enum):
     "Valid induction generator properties"
 
     MBASE = "MBASE"
@@ -321,7 +321,7 @@ class InductionGeneratorProperties(Enum):
     O_PQ = "O_PQ"
 
 
-class MachinesProperties(Enum):
+class MachinesProperties(str, Enum):
     "Valid machine properties"
 
     QMAX = "QMAX"
@@ -396,14 +396,14 @@ Channels = {
 }
 
 
-class ExportModes(Enum):
+class ExportModes(str, Enum):
     "Valid export modes"
 
     CSV = "csv"
     H5 = "h5"
 
 
-class ChannelTypes(Enum):
+class ChannelTypes(str, Enum):
     "Valid channel types"
 
     BUSES = "buses"
@@ -411,9 +411,26 @@ class ChannelTypes(Enum):
     MACHINES = "machines"
 
 
-class UseModes(Enum):
+class UseModes(str, Enum):
     "Valid use modes"
 
     REGEX = "regex"
     LIST = "list"
     ALL = "all"
+
+class ApiCommands(str, Enum):
+    RUN = "run_simulation"
+    STATUS = "status"
+    SOLVE = "run_step"
+    RESULTS = "get_results"
+    CLOSE = "close_case"
+    
+    
+class SimulationStatus(str, Enum):
+    NOT_INITIALIZED = "Instance not initialized"
+    STARTING_INSTANCE = "Starting PyPSSE instance"
+    INITIALIZATION_COMPLETE = "PyPSSE initialization complete"
+    RUNNING_SIMULATION = "Running simulation"
+    SIMULATION_COMPLETE = "Simulation complete"
+    STARTING_RESULT_EXPORT = "Starting exports"
+    RESULT_EXPORT_COMPLETE = "Export coplete"

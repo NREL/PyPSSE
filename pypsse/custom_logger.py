@@ -2,7 +2,7 @@ import logging
 import os
 
 from pypsse.models import LogSettings
-
+from pypsse.common import DEFAULT_LOG_FILE
 
 def get_logger(name, path, logger_options: LogSettings = None):
     "Customizes the logger for PyPSSE"
@@ -25,7 +25,7 @@ def get_logger(name, path, logger_options: LogSettings = None):
     if logger_options.log_to_external_file:
         if not os.path.exists(path):
             os.mkdir(path)
-        handler2 = logging.FileHandler(filename=os.path.join(path, name + ".log"))
+        handler2 = logging.FileHandler(filename=os.path.join(path, DEFAULT_LOG_FILE))
         handler2.setFormatter(formatter)
         logger.addHandler(handler2)
     return logger

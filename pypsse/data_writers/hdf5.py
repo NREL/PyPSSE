@@ -7,6 +7,7 @@ import h5py
 import numpy as np
 import pandas as pd
 
+from pypsse.common import DEFAULT_RESULTS_FILENAME
 
 class HDF5Writer:
     """Class that handles writing simulation results to hdf5 files.
@@ -15,7 +16,7 @@ class HDF5Writer:
     def __init__(self, log_dir, column_length):
         """Constructor"""
         self.log_dir = log_dir
-        self.store = h5py.File(os.path.join(log_dir, "Simulation_results.hdf5"), "w")
+        self.store = h5py.File(os.path.join(log_dir, DEFAULT_RESULTS_FILENAME), "w")
         self.store_groups = {}
         self.store_datasets = {}
         self.row = {}

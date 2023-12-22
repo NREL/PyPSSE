@@ -8,4 +8,4 @@ The OpenMDAO framework enables multi-domain co-optimization by structuring the p
 
 
 
-::: pypsse.mdao
+::: pypsse.mdao_interface

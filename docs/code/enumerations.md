@@ -7,6 +7,18 @@
 
 This page provides details on the enumerated classes part of the PyPSSE library.Enumerations map directly to .
 
+## ApiCommands
+ 
+  
+
+|Key|Value|
+| :--- | :--- |
+|pypsse.enumerations.ApiCommands.RUN|run_simulation|
+|pypsse.enumerations.ApiCommands.STATUS|status|
+|pypsse.enumerations.ApiCommands.SOLVE|run_step|
+|pypsse.enumerations.ApiCommands.RESULTS|get_results|
+|pypsse.enumerations.ApiCommands.CLOSE|close_case|
+ 
 ## AreaProperties
  
   
@@ -334,6 +346,20 @@ This page provides details on the enumerated classes part of the PyPSSE library.
 |pypsse.enumerations.SimulationModes.STATIC|Steady-state|
 |pypsse.enumerations.SimulationModes.DYNAMIC|Dynamic|
  
+## SimulationStatus
+ 
+  
+
+|Key|Value|
+| :--- | :--- |
+|pypsse.enumerations.SimulationStatus.NOT_INITIALIZED|Instance not initialized|
+|pypsse.enumerations.SimulationStatus.STARTING_INSTANCE|Starting PyPSSE instance|
+|pypsse.enumerations.SimulationStatus.INITIALIZATION_COMPLETE|PyPSSE initialization complete|
+|pypsse.enumerations.SimulationStatus.RUNNING_SIMULATION|Running simulation|
+|pypsse.enumerations.SimulationStatus.SIMULATION_COMPLETE|Simulation complete|
+|pypsse.enumerations.SimulationStatus.STARTING_RESULT_EXPORT|Starting exports|
+|pypsse.enumerations.SimulationStatus.RESULT_EXPORT_COMPLETE|Export coplete|
+ 
 ## StationProperties
  
   
@@ -436,6 +462,17 @@ This page provides details on the enumerated classes part of the PyPSSE library.
 |pypsse.enumerations.UseModes.REGEX|regex|
 |pypsse.enumerations.UseModes.LIST|list|
 |pypsse.enumerations.UseModes.ALL|all|
+ 
+## WritableModelTypes
+ 
+  
+
+|Key|Value|
+| :--- | :--- |
+|pypsse.enumerations.WritableModelTypes.LOAD|Load|
+|pypsse.enumerations.WritableModelTypes.PLANT|Plant|
+|pypsse.enumerations.WritableModelTypes.MACHINE|Machine|
+|pypsse.enumerations.WritableModelTypes.GENERATOR|Induction_machine|
  
 ## ZoneProperties
  

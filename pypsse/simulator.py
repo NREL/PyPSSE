@@ -25,16 +25,19 @@ from pypsse.parsers import gic_parser as gp
 from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
+from pypsse.enumerations import SimulationStatus
 
 USING_NAERM = 0
 
 
 class Simulator:
     "Base class for the simulator"
+    
+    _status:SimulationStatus= SimulationStatus.NOT_INITIALIZED
 
     def __init__(self, settings_toml_path="", psse_path=""):
         "Load a valid PyPSSE project and sets up simulation"
-
+        self._status = SimulationStatus.STARTING_INSTANCE
         settings = self.read_settings(settings_toml_path)
         self.settings = SimulationSettings.model_validate(settings)
         export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
@@ -73,11 +76,10 @@ class Simulator:
         ierr = self.psse.psseinit(n_bus)
         assert ierr == 0, f"Error code: {ierr}"
         self.psse.psseinit(n_bus)
-        self.initComplete = True
-        self.message = "success"
-
+        
         self.start_simulation()
         self.init()
+        self._status=SimulationStatus.INITIALIZATION_COMPLETE
 
     def dump_settings(self, dest_dir):
         setting_toml_file = os.path.join(os.path.dirname(__file__), "defaults", "pyPSSE_settings.toml")
@@ -87,7 +89,6 @@ class Simulator:
 
     def start_simulation(self):
         "Starts a loaded simulation"
-
         self.hi = None
         self.simStartTime = time.time()
 
@@ -150,7 +151,7 @@ class Simulator:
         self.results = Container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
         self.inc_time = True
-
+        
     def init(self):
         "Initializes the model"
 
@@ -230,7 +231,7 @@ class Simulator:
 
     def run(self):
         "Launches the simulation"
-
+        self._status = SimulationStatus.RUNNING_SIMULATION
         if self.sim.initialization_complete:
             if self.settings.plots and self.settings.plots.enable_dynamic_plots:
                 bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)  # noqa: S603,S607
@@ -259,7 +260,8 @@ class Simulator:
                 bokeh_server_proc.terminate()
         else:
             self.logger.error("Run init() command to initialize models before running the simulation")
-
+        self._status ="Simulation complete"
+        
     def get_bus_ids(self):
         "Returns bus IDs"
 
@@ -269,7 +271,6 @@ class Simulator:
 
     def step(self, t):
         "Steps through a single simulation time step. Is called iteratively to increment the simualtion"
-
         self.update_contingencies(t)
         if self.settings.simulation.use_profile_manager:
             self.pm.update()
@@ -291,8 +292,6 @@ class Simulator:
             self.publish_data()
         
         curr_results = self.update_result_container(t)
-        
-            # curr_results = self.sim.read(self.exp_vars, self.raw_data)
         return curr_results
 
     def update_result_container(self, t):
@@ -323,16 +322,18 @@ class Simulator:
 
     def get_results(self, params):
         "Returns queried simulation results"
+        self._status = SimulationStatus.STARTING_RESULT_EXPORT
         self.exp_vars = self.results.update_export_variables(params)
         curr_results = (
             self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
             if self.export_settings.defined_subsystems_only
             else self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
         )
-        # class_name = list(params.keys())[0]
+        self._status = SimulationModes.RESULT_EXPORT_COMPLETE
         return curr_results
-        # restruct_results = self.restructure_results(curr_results, class_name)
-        # return curr_results, restruct_results
+
+    def status(self):
+        return self._status.value
 
     def restructure_results(self, results, class_name):
         "Restructure results for the improved user experience"

@@ -86,10 +86,10 @@ dev = [
   "black"
 ]
 server = [
-  "aiohttp",
-  "aiohttp_cors",
-  "aiohttp_swagger",
-  "aiohttp_swagger3",
+  "uvicorn[standard]",
+  "fastapi",
+  "websockets",
+  "python-multipart"
 ]
 
 [tool.hatch.envs.lint]
@@ -99,6 +99,9 @@ dependencies = [
   "mypy>=1.0.0",
   "ruff>=0.0.243",
 ]
+
+
+
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/autogradinglean tests}"
 style = [
