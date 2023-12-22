@@ -7,12 +7,15 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.svg
 # C extensions
 *.so
+*$hdf5
 
 # Distribution / packaging
 .Python
+reports/
+project/
 build/
 develop-eggs/
 dist/
@@ -58,6 +61,9 @@ pytestdebug.log
 # Translations
 *.mo
 *.pot
+
+*.tar.gz
+*.whl
 
 # Django stuff:
 *.log

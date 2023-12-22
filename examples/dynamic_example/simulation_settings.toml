@@ -7,9 +7,10 @@ simulation_mode = "Dynamic" # Dynamic, Snap
 use_profile_manager = false
 psse_path = "C:/Program Files/PTI/PSSE35/35.4/PSSPY39"
 project_path = "./examples/dynamic_example"
-case_study = "savnw.sav"
+case_study = "modified_steady_state_0.sav"
 raw_file = "savnw.raw"
 dyr_file = "savnw.dyr"
+snp_file = "modified_dynamic_0.snp"
 
 [export]
 outx_file = "Results.outx"

@@ -1,105 +1,82 @@
-[Simulation]
-"Simulation time (sec)" = 25
-"Step resolution (sec)" = 0.004166667
-"PSSE solver timestep (sec)" = 0.004166667
-"Start time" = "01/01/2020 00:00:00"
-"Simulation mode" = "Steady-state"
-"Use profile manager" = true
-"PSSE_path" = "C:/Program Files (x86)/PTI/PSSE34/PSSPY37"
-"Project Path" = ""
-"Case study" = "" 
-"Raw file" =  ""
-"Snp file" = ""
-"Dyr file" = ""
-"GIC file" = ""
-"Rwm file" = ""
+[simulation]
+simulation_time = 30.0
+simulation_step_resolution = 1.0
+psse_solver_timestep = 0.004166667
+start_time = "2020-01-01 00:00:00.0"
+simulation_mode = "Steady-state"
+use_profile_manager = false
+psse_path = "C:/Program Files/PTI/PSSE35/35.4/PSSPY39"
+project_path = "."
+case_study = ""
+raw_file = ""
+dyr_file = ""
+rwm_file = ""
+gic_file = ""
+snp_file = ""
+subscriptions_file = ""
 
-"User models" = [""]
-"Setup files" = []
+[export]
+outx_file = ""
+out_file = ""
+excel_file = ""
+log_file = ""
+coordinate_file = ""
+networkx_graph_file = ""
 
-[HELICS]
-"Cosimulation mode" = false
-"Federate name" = "psse"
-"Time delta" = 0.004166667
-"Core type" = "zmq"
-"Uninterruptible" = true
-"Helics logging level" = 5
-"Create subscriptions" = true
-"Iterative Mode" = false
-"Error tolerance" = 0.00001
-"Max co-iterations" = 15
+[helics]
+cosimulation_mode = false
+federate_name = "psse"
+time_delta = 0.00333333333
+core_type = "zmq"
+uninterruptible = true
+helics_logging_level = 5
+create_subscriptions = true
+iterative_mode = false
+error_tolerance = 1e-5
+max_coiterations = 15
+subscription_file = ""
+broker_ip = "127.0.0.1"
+broker_port = 23404
+disable_generation_on_coupled_buses = true
+[[helics.publications]]
+bus_subsystems = [ 0,]
+asset_type = "Buses"
+asset_properties = [ "FREQ", "PU",]
 
-[Export_settings]
-"Outx file" = "Results.outx"
-"Out file" = "Results.out"
-"Excel file" = "Results.xls"
-"Log file" = "Results.log"
-"Coordinate file" = "Coordinates.csv"
-"NetworkX graph file" = "Graph.gpickle"
+[log]
+disable_psse_logging = true
+logging_level = 10
+log_to_external_file = true
+display_on_screen = true
+clear_old_log_file = true
+pre_configured_logging = false
 
-[Logging]
-"Disable PSSE logging" = true
-"Logging Level" = "DEBUG"
-"Log to external file" = false
-"Display on screen" = true
-"Clear old log file" = true
-"Pre-configured logging" = false
-
-
-[Plotting]
-"Enable dynamic plots" = false
-"columns" = 2
-
-[GIC_export_settings]
-"include substation connections" = false
-"include transfomer connections" = false
-"include branch connections" = true
+[plots]
+enable_dynamic_plots = false
+columns = 2
 
 [bus_subsystems]
-"from_file" = false
-"bus_file" = ""
-"bus_subsystem_list" = []
-"publish_subsystems" = [0]
+from_file = false
+bus_file = ""
+bus_subsystem_list = [ [ 153, 154, 203, 205, 3005, 3007, 3008,],]
+publish_subsystems = [ 0,]
 
-[Loads]
-"Convert" = false
-[Loads.active_load]
-"% constant current" = 50.0
-"% constant admittance" = 50.0
-[Loads.reactive_load]
-"% constant current" = 50.0
-"% constant admittance" = 50.0
+[loads]
+convert = false
+[loads.active_load]
+constant_current_percentage = 0.0
+constant_admittance_percentage = 0.0
+[loads.reactive_load]
+constant_current_percentage = 0.0
+constant_admittance_percentage = 0.0
 
-[Generators]
-"Missing machine model" = 1 # 0: treat as a fatal error 1: replace with net machine power
+[generators]
+missing_machine_model = 1
 
-[MDAO]
-"use_microservices" = false
-
-# [contingencies.bus_fault.bf_1]
-# "time" = 1.0
-# "bus_id" = 25048#25824, 25059
-# "duration" = 0.1
-# "bus_trip" = true
-# "trip_delay" = 5.0
-# "fault_impedance" = [0.0001, 0.00000001]
-
-# [contingencies.machine_trip.mt_1]
-# "time" = 100.0
-# "bus_id" = 21528
-# "machine_id" = "1"
-
-# [contingencies.bus_trip.bt_1]
-# "time" = 100.0
-# "bus_id" = 50435
-
-# [contingencies.line_trip.lt_1]
-# "time" = 100.0
-# "bus_ids" = [21528, 21542]
-
-# [contingencies.line_fault.lf_1]
-# "time" = 100.0
-# "bus_ids" = [21528, 21542]
-# "duration" = 0.01667
-# "fault_impedance" = [0.3, 0.00000001]
-
+[[contingencies]]
+time = 87000.0
+bus_id = 102
+duration = 0.1
+bus_trip = false
+trip_delay = 0.05
+fault_impedance = [ 0.001, 0.001,]

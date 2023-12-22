@@ -1,0 +1,55 @@
+site_name: PYPSSE
+
+theme:
+  name: "material"
+
+extra_css:
+  - css/mkdocsoad.css
+
+plugins:
+  - search
+  - autorefs
+  - table-reader
+  - mkdocs-video
+  - neoteroi.mkdocsoad:
+      use_pymdownx: false
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_symbol_type_heading: true
+  - glightbox
+
+
+nav:
+  - Home : index.md
+  - Getting Started :
+      CLI interface: code/cli.md
+      API interface: code/api.md
+  - Tutorials : tutorials.md
+  - Co-design and co-simulation :
+      HELICS: code/helics_interface.md
+      OpenMDAO: code/mdao.md
+  - Reference manual: 
+      Data models : code/models.md
+      Enumerations : code/enumerations.md
+      PyPSSE package: code/reference.md
+
+  
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - mkdocs-click
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+hooks:
+  - docs/code/enumerations.py
+  - docs/code/endantic.py

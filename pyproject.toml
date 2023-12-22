@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pssepy"
+name = "NREL-pypsse"
 dynamic = ["version"]
 description = "A high-level python interface for PSS/E"
 readme = "README.md"
@@ -24,10 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "aiohttp",
-    "aiohttp_cors",
-    "aiohttp_swagger",
-    "aiohttp_swagger3",
+
     "click",
     "h5py",
     "helics",
@@ -35,7 +32,6 @@ dependencies = [
     "numpy",
     "pandas",
     "pydantic~=2.4",
-    "pytest",
     "PyYAML",
     "requests",
     "terminaltables",
@@ -52,6 +48,14 @@ Homepage = "http://www.github.com/nrel/pypsse"
 [tool.hatch.version]
 path = "pypsse/__init__.py"
 
+[tool.hatch.envs.test]
+dependencies = [
+  "coverage[toml]",
+  "pytest",
+  "pytest-cov",
+  "pytest-mock",
+]
+
 [tool.hatch.build.targets.sdist]
 include = [
     "/pypsse",
@@ -61,3 +65,117 @@ include = [
 packages = [
     "pypsse"
 ]
+
+[project.optional-dependencies]
+doc = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "pygraphviz",
+  "erdantic",
+  "mdutils",
+  "mkdocs-glightbox",
+  "mkdocs-click",
+  "mkdocs-table-reader-plugin",
+  "mkdocs-video",
+  "neoteroi-mkdocs",
+]
+dev = [
+  "pylint",
+  "mypy",
+  "black"
+]
+server = [
+  "uvicorn[standard]",
+  "fastapi",
+  "websockets",
+  "python-multipart"
+]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "black>=23.1.0",
+  "mypy>=1.0.0",
+  "ruff>=0.0.243",
+]
+
+
+
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:src/autogradinglean tests}"
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
+
+[tool.black]
+target-version = ["py37"]
+line-length = 120
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py37"
+line-length = 120
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S101", "S105", "S106", "S107", "RUF012", "PLR5501",
+  # Ignore complexity
+  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  "N805", "B006", "FBT002"
+
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.isort]
+known-first-party = ["autogradinglean"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]

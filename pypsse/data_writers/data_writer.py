@@ -1,25 +1,29 @@
-from pypsse.data_writers.hdf5 import hdf5Writer
-from pypsse.data_writers.csv import csvWriter
-from pypsse.data_writers.json import jsonWriter
+from pypsse.data_writers.csv import CSVWriter
+from pypsse.data_writers.hdf5 import HDF5Writer
+from pypsse.data_writers.json import JSONWriter
 
 
-class dummyWriter:
-    def __init__(self, log_dir, columnLength):
+class DummyWriter:
+    def __init__(self, *_, **__):
         return
 
-    def write(self, fed_name, currenttime, powerflow_output, index):
+    def write(self, *_, **__):
         return
+
 
 class DataWriter:
+    "Data writer class defination"
     modes = {
-        'h5': hdf5Writer,
-        'csv': csvWriter,
-        'json': jsonWriter,
-        'none': dummyWriter,
+        "h5": HDF5Writer,
+        "csv": CSVWriter,
+        "json": JSONWriter,
+        "none": DummyWriter,
     }
 
-    def __init__(self, log_dir, formatnm, columnLength):
-        self.writer = self.modes[formatnm](log_dir, columnLength)
+    def __init__(self, log_dir, formatnm, column_length):
+        "Sets up a data writer as per user input"
+        self.writer = self.modes[formatnm](log_dir, column_length)
 
-    def write(self, fed_name, currenttime, powerflow_output, index):
-        self.writer.write(fed_name, currenttime, powerflow_output, index)
+    def write(self, currenttime, powerflow_output, convergence):
+        "Enables incremental write to the data writer object"
+        self.writer.write(currenttime, powerflow_output, convergence)

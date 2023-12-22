@@ -4,7 +4,7 @@ simulation_step_resolution = 1.0
 psse_solver_timestep = 0.004166667
 start_time = "2020-01-01 00:00:00.0"
 simulation_mode = "Steady-state"
-use_profile_manager = true
+use_profile_manager = false
 psse_path = "C:/Program Files/PTI/PSSE35/35.4/PSSPY39"
 project_path = "./examples/static_example"
 case_study = "savnw.sav"
@@ -37,8 +37,8 @@ broker_port = 23404
 disable_generation_on_coupled_buses = true
 [[helics.publications]]
 bus_subsystems = [ 0,]
-model_type = "buses"
-model_properties = [ "FREQ", "PU",]
+asset_type = "Buses"
+asset_properties = [ "FREQ", "PU",]
 
 [log]
 disable_psse_logging = true

@@ -1,72 +1,117 @@
 # Builtin libraries
 import logging
-import os
-import time
-from http import HTTPStatus
-import threading
-import requests
-import json
 
+from fastapi import FastAPI
+from fastapi import WebSocket
+from fastapi import UploadFile
+from fastapi.exceptions import HTTPException
+from fastapi.responses import HTMLResponse
+import uvicorn
 # Internal libraries
 from pypsse.api.web.handler import Handler
-from aiohttp_swagger3 import *
-from aiohttp import web
+from pypsse.api.common import BASE_PROJECT_PATH
+
+from pypsse.models import ApiPsseReply
+from http import HTTPStatus
+
+from contextlib import asynccontextmanager
+
+import zipfile
 
 logger = logging.getLogger(__name__)
 
-def get_jsonschema(host,port):
-    path = os.path.join(os.path.dirname(__file__), '../api/PSSE.v2.json')
-    base_url = f"http://{host}:{port}"
-    url = base_url + "/docs/swagger.json"
-    is_valid = False
-    while not is_valid:
-        time.sleep(3)
-        response = requests.get(url)
-        is_valid = response.status_code == HTTPStatus.OK
-    with open(path, 'w') as outfile:
-        json.dump(response.json(), outfile, indent=4, sort_keys=True)
-    logger.info(f"Export the schema file to {path}")
-
 class PSSEServer:
-    def __init__(self, host, port):
-        self.port = port
-        self.host = host
+    def __init__(self):
+        logger.info("Start PyPSSE server")
         self.handler = Handler()
-        self.app = web.Application()
-        # setup_swagger(self.app,swagger_url="/api/doc")
-        self.swagger = SwaggerDocs(
-            self.app,
-            title='psse_service RESTful API documentation',
-            description="Create PyPSSE instance, run simulation, get status of running instance, delete running instance etc.",
-            swagger_ui_settings=SwaggerUiSettings(path='/docs/')
-        )
-        self.add_routes()
-        self.t = threading.Thread(name='model_generator_thread', target=get_jsonschema, args=(self.host,self.port))
-        self.t.start()
+        logger.info("Building web application")
+        self.app = FastAPI(lifespan=self.lifespan)
+        self.app.include_router(self.handler.router, prefix='/simulators')
+        self.app.add_api_route("/", self.get_main_page, methods=["GET"])
+        self.app.add_api_route("/upload_project", self.post_upload_zipped_project, methods=["POST"])
+        self.app.add_api_route("/list_projects", self.get_list_projects, methods=["GET"])
+        logger.info("Building API endpoints")
 
-    def add_routes(self):
+    async def get_main_page(self):
+        """Method to handle service info route."""
+        html = """
+        <h1>PyPSSE Server</h1>
+        
+        <h3>
+        PyPSSE is a Python wrapper around psspy—a Python application programming 
+        interface (API) for the Power System Simulator for Engineering (PSS/E)—to perform 
+        time series power flow and dynamic simulation for power systems.
+        </h3>
+        
+        <h3>
+        The PSS/E Python API psspy follows functional programming methodology. The API 
+        exposes thousands of methods and can be difficult for new users to work with. 
+        PyPSSE wraps around hundreds of function calls in a few methods. This functionality 
+        allows users to set up cosimulations with minimal effort.
+        </h3>
+        
+        <h3>For more information see check out the <a href="https://nrel.github.io/PyPSSE/">documentation</a></h3>
+        
+        <h3>For swagger documentation see: <a href="http://127.0.0.1:9090/docs/">SwaggerDocs</a></h3>
+        
+        <h3>For redoc documentation see: <a href="http://127.0.0.1:9090/redoc/">ReDoc</a></h3>
+        
         """
-        Methods to add all HTTP routes
-        """
-        # Websocket
-        self.app.router.add_get('/simulators/psse', self.handler.get_psse)
-        self.swagger.add_routes([
-            web.get('/simulators/psse/instances', self.handler.get_instance_uuids),
-            web.get('/simulators/psse/status/uuid/{uuid}', self.handler.get_instance_status),
-            web.put('/simulators/psse', self.handler.put_psse),
-            web.post('/simulators/psse', self.handler.post_psse),
-            web.delete('/simulators/psse/uuid/{uuid}', self.handler.delete_psse)
-        ])
-        # TODO: adding routes to print all commands /simulators/psse/get_available_commands
+        return HTMLResponse(html)
 
-    async def cleanup_background_tasks(self,app):
+    
+    @asynccontextmanager
+    async def lifespan(self, *args, **kwargs):
+        """Add logic for application startup and shutdown."""
+        yield
         logger.info("cleanup_background_tasks")
-        self.t.join()
         self.handler.shutdown_event.set()
 
+    async def get_list_projects(self):
+        folders = []
+        for x in BASE_PROJECT_PATH.iterdir():
+            if x.is_dir():
+                print(x)
+                folders.append(str(x.name))
+        return {"folders" : folders}
 
-if __name__ == "__main__":
-    FORMAT = '%(asctime)s -  %(levelname)s - %(message)s'
-    logging.basicConfig(level=logging.INFO,format=FORMAT)
-    #endpoints_file='app/endpoints.yaml'
+    async def post_upload_zipped_project(self, file:UploadFile):
+        """Upload a new zipped project to the server"""
+        
+        try:      
+            data = file.file.read()
+            if not file.filename.endswith(".zip"):
+                raise HTTPException(
+                    status_code=HTTPStatus.NOT_ACCEPTABLE, 
+                    detail="Invalid file type. Only zip files are accepted."
+                    )
+            zip_filepath = BASE_PROJECT_PATH / file.filename
+            project_path = BASE_PROJECT_PATH / file.filename.replace(".zip", "")
+            project_path.mkdir(parents=True, exist_ok=True)
+            
+            with open(zip_filepath, "wb") as f:
+                f.write(data)    
+                
+            with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
+                zip_ref.extractall(project_path)
+            
+            zip_filepath.unlink()
+            
+            #TODO: update project name and psse path in settings
+            
+        except Exception as e:
+            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail=str(e))  
+        return ApiPsseReply(
+            status=HTTPStatus.OK,
+            message=f"project upload to {project_path}"
+        )
+
+def run_server(host, port):
+    print(host, port)
+    FORMAT = "%(asctime)s -  %(levelname)s - %(message)s"
+    logging.basicConfig(level=logging.INFO, format=FORMAT)
+    # endpoints_file='app/endpoints.yaml'
     instance = PSSEServer()
+    uvicorn.run(instance.app, host=host, port=port)
+
+

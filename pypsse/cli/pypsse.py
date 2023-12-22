@@ -1,20 +1,33 @@
 """Main CLI command for PyDSS."""
 
+import logging
+
 import click
 
+from pypsse.cli.create_profiles import create_profiles
 from pypsse.cli.create_project import create_project
 from pypsse.cli.run import run
+
+logger = logging.getLogger(__name__)
 from pypsse.cli.serve import serve
-from pypsse.cli.reports import reports
-from pypsse.cli.create_profiles import create_profiles
+server_dependencies_installed = True
+
+# try:
+#     from pypsse.cli.serve import serve
+# except ImportError:
+#     server_dependencies_installed = False
+#     logger.warning(
+#         "Server dependencies not installed. Use 'pip install pssepy[server]' to install additonal dependencies"
+#     )
 
 
 @click.group()
 def cli():
     """PyPSSE commands"""
 
+
 cli.add_command(create_project)
 cli.add_command(run)
-cli.add_command(serve)
-cli.add_command(reports)
 cli.add_command(create_profiles)
+if server_dependencies_installed:
+    cli.add_command(serve)
