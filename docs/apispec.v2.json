@@ -1,1 +1,825 @@
-{"openapi":"3.1.0","info":{"title":"FastAPI","version":"0.1.0"},"paths":{"/simulators/psse":{"get":{"summary":"Get Psse","description":"Websocket handler for psse instance","operationId":"get_psse_simulators_psse_get","parameters":[{"name":"request","in":"query","required":true,"schema":{"title":"Request"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"post":{"summary":"Post Psse","description":"Create UUID and intialize and push to queue","operationId":"post_psse_simulators_psse_post","requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApiPssePostRequest"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"put":{"summary":"Put Psse","operationId":"put_psse_simulators_psse_put","requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApiPssePutRequest"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/simulators/psse/uuid/{uuid}":{"delete":{"summary":"Delete Psse","description":"Delete an instance of simulation","operationId":"delete_psse_simulators_psse_uuid__uuid__delete","parameters":[{"name":"uuid","in":"path","required":true,"schema":{"type":"string","format":"uuid4","title":"Uuid"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/simulators/get_instance_uuids":{"get":{"summary":"Get Instance Uuids","description":"Get all running simulation uuids","operationId":"get_instance_uuids_simulators_get_instance_uuids_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/simulators/psse/status/uuid/{uuid}":{"get":{"summary":"Get Instance Status","description":"Get status of the current provided simuation instance","operationId":"get_instance_status_simulators_psse_status_uuid__uuid__get","parameters":[{"name":"uuid","in":"path","required":true,"schema":{"type":"string","format":"uuid4","title":"Uuid"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/simulators/psse/download_results/uuid/{uuid}":{"get":{"summary":"Get Download Results","description":"Download results from a simulation instance","operationId":"get_download_results_simulators_psse_download_results_uuid__uuid__get","parameters":[{"name":"uuid","in":"path","required":true,"schema":{"type":"string","format":"uuid4","title":"Uuid"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/simulators/psse/download_log/uuid/{uuid}":{"get":{"summary":"Get Download Logs","description":"Download logs from a simulation instance","operationId":"get_download_logs_simulators_psse_download_log_uuid__uuid__get","parameters":[{"name":"uuid","in":"path","required":true,"schema":{"type":"string","format":"uuid4","title":"Uuid"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/upload_project":{"post":{"summary":"Post Upload Zipped Project","description":"Upload a new zipped project to the server","operationId":"post_upload_zipped_project_upload_project_post","requestBody":{"content":{"multipart/form-data":{"schema":{"$ref":"#/components/schemas/Body_post_upload_zipped_project_upload_project_post"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/list_projects":{"get":{"summary":"Get List Projects","operationId":"get_list_projects_list_projects_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}}},"components":{"schemas":{"ApiCommands":{"type":"string","enum":["run_simulation","status","run_step","get_results","close_case"],"title":"ApiCommands"},"ApiPssePostRequest":{"properties":{"project_name":{"type":"string","title":"Project Name","default":"static_example"}},"type":"object","title":"ApiPssePostRequest"},"ApiPssePutRequest":{"properties":{"uuid":{"type":"string","format":"uuid4","title":"Uuid"},"command":{"$ref":"#/components/schemas/ApiCommands"},"parameters":{"anyOf":[{"$ref":"#/components/schemas/ExportAssetTypes"},{"type":"null"}]}},"type":"object","required":["uuid","command","parameters"],"title":"ApiPssePutRequest"},"AreaProperties":{"type":"string","enum":["LOAD","LOADID","LGDN","LDGNLD","GEN","AREANAME","AREANUMBER"],"title":"AreaProperties","description":"Valid area properties"},"Body_post_upload_zipped_project_upload_project_post":{"properties":{"file":{"type":"string","format":"binary","title":"File"}},"type":"object","required":["file"],"title":"Body_post_upload_zipped_project_upload_project_post"},"BranchProperties":{"type":"string","enum":["RATEn","RATEA","RATEB","RATEC","RATE","LENGTH","CHARG","CHARGZ","FRACT1","FRACT2","FRACT3","FRACT4","RX","ISHNT","JSHNT","RXZ","ISHNTZ","JSHNTZ","LOSSES","O_LOSSES","MVA","AMPS","PUCUR","CURANG","P","O_P","Q","O_Q","PLOS","O_PLOS","QLOS","O_QLOS"],"title":"BranchProperties","description":"Valid branch properties"},"BusProperties":{"type":"string","enum":["BASE","FREQ","PU","KV","ANGLE","ANGLED","NVLMHI","NVLMLO","EVLMHI","EVLMLO"],"title":"BusProperties","description":"Valid bus properties"},"DCLineProperties":{"type":"string","enum":["DCLINENAME","MDC","RECT","INV","METER","NBR","NBI","ICR","ICI","NDR","NDI"],"title":"DCLineProperties","description":"Valid DC line properties"},"ExportAssetTypes":{"properties":{"buses":{"anyOf":[{"items":{"$ref":"#/components/schemas/BusProperties"},"type":"array"},{"type":"null"}],"title":"Buses"},"areas":{"anyOf":[{"items":{"$ref":"#/components/schemas/AreaProperties"},"type":"array"},{"type":"null"}],"title":"Areas"},"zones":{"anyOf":[{"items":{"$ref":"#/components/schemas/ZoneProperties"},"type":"array"},{"type":"null"}],"title":"Zones"},"stations":{"anyOf":[{"items":{"$ref":"#/components/schemas/StationProperties"},"type":"array"},{"type":"null"}],"title":"Stations"},"dctransmissionlines":{"anyOf":[{"items":{"$ref":"#/components/schemas/DCLineProperties"},"type":"array"},{"type":"null"}],"title":"Dctransmissionlines"},"loads":{"anyOf":[{"items":{"$ref":"#/components/schemas/LoadProperties"},"type":"array"},{"type":"null"}],"title":"Loads"},"fixed_shunts":{"anyOf":[{"items":{"$ref":"#/components/schemas/FixedShuntProperties"},"type":"array"},{"type":"null"}],"title":"Fixed Shunts"},"switched_shunts":{"anyOf":[{"items":{"$ref":"#/components/schemas/SwitchedShuntProperties"},"type":"array"},{"type":"null"}],"title":"Switched Shunts"},"transformers":{"anyOf":[{"items":{"$ref":"#/components/schemas/TransformerProperties"},"type":"array"},{"type":"null"}],"title":"Transformers"},"branches":{"anyOf":[{"items":{"$ref":"#/components/schemas/BranchProperties"},"type":"array"},{"type":"null"}],"title":"Branches"},"induction_generators":{"anyOf":[{"items":{"$ref":"#/components/schemas/InductionGeneratorProperties"},"type":"array"},{"type":"null"}],"title":"Induction Generators"},"machines":{"anyOf":[{"items":{"$ref":"#/components/schemas/MachinesProperties"},"type":"array"},{"type":"null"}],"title":"Machines"}},"type":"object","title":"ExportAssetTypes","description":"Valid export models and associated options"},"FixedShuntProperties":{"type":"string","enum":["ACT","O_ACT","NOM","O_NOM","PQZERO","PQZ","O_PQZ"],"title":"FixedShuntProperties","description":"Valid fixed shunt properties"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"InductionGeneratorProperties":{"type":"string","enum":["MBASE","RATEKV","PSET","RA","XA","R1","X1","R2","X2","X3","E1","SE1","E2","SE2","IA1","IA2","XAMULT","TRQA","TRQB","TRQD","TRQE","H","IRATIO","ROVERX","RZERO","XZERO","RGRND","XGRND","P","O_P","Q","O_Q","MVA","O_MVA","SLIP","ZA","Z1","Z2","ZZERO","ZGRND","PQ","O_PQ"],"title":"InductionGeneratorProperties","description":"Valid induction generator properties"},"LoadProperties":{"type":"string","enum":["MVA","IL","YL","TOTAL","YNEG","YZERO","FmA","FmB","FmC","FmD","Fel","PFel","TD","TC"],"title":"LoadProperties","description":"Valid load properties"},"MachinesProperties":{"type":"string","enum":["QMAX","O_QMAX","QMIN","O_QMIN","PMAX","O_PMAX","PMIN","O_PMIN","MBASE","MVA","O_MVA","P","O_P","Q","O_Q","PERCENT","GENTAP","VSCHED","WPF","RMPCT","RPOS","XSUBTR","XTRANS","XSYNCH","PQ","O_PQ","ZSORCE","XTRAN","ZPOS","ZNEG","ZZERO","ZGRND"],"title":"MachinesProperties","description":"Valid machine properties"},"StationProperties":{"type":"string","enum":["SUBNAME","SUBNUMBER","BUSES","GENERATORS","TRANSFORMERS","NOMKV","LOADMW","GENMW"],"title":"StationProperties","description":"Valid station properties"},"SwitchedShuntProperties":{"type":"string","enum":["VSWHI","VSWLO","RMPCT","BINIT","O_BINIT"],"title":"SwitchedShuntProperties","description":"Valid switched shunt properties"},"TransformerProperties":{"type":"string","enum":["RATIO","RATIO2","ANGLE","RMAX","RMIN","VMAX","VMIN","STEP","CR","CX","CNXANG","SBASE1","NOMV1","NOMV2","GMAGNT","BMAGNT","RG1","XG1","R01","X01","RG2","XG2","R02","X02","RNUTRL","XNUTRL","RX1-2","RX2-3","RX3-1","YMAGNT","ZG1","Z01","ZG2","Z02","ZG3","Z03","ZNUTRL"],"title":"TransformerProperties","description":"Valid transformer properties"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"},"ZoneProperties":{"type":"string","enum":["LOAD","LOADID","LGDN","LDGNLD","GEN","ZONENAME","ZONENUMBER"],"title":"ZoneProperties","description":"Valid zone properties"}}}}
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "FastAPI",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/simulator/": {
+            "put": {
+                "summary": "Put Psse",
+                "operationId": "put_psse_simulator__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiPssePutRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Post Psse",
+                "description": "Create UUID and intialize and push to queue",
+                "operationId": "post_psse_simulator__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiPssePostRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/simulator/uuid/{uuid}": {
+            "delete": {
+                "summary": "Delete Psse",
+                "description": "Delete an instance of simulation",
+                "operationId": "delete_psse_simulator_uuid__uuid__delete",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid4",
+                            "title": "Uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/simulator/uuids": {
+            "get": {
+                "summary": "Get Instance Uuids",
+                "description": "Get all running simulation uuids",
+                "operationId": "get_instance_uuids_simulator_uuids_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/simulator/status/uuid/{uuid}": {
+            "get": {
+                "summary": "Get Instance Status",
+                "description": "Get status of the current provided simuation instance",
+                "operationId": "get_instance_status_simulator_status_uuid__uuid__get",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid4",
+                            "title": "Uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/simulator/results/uuid/{uuid}": {
+            "get": {
+                "summary": "Get Download Results",
+                "description": "Download results from a simulation instance",
+                "operationId": "get_download_results_simulator_results_uuid__uuid__get",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid4",
+                            "title": "Uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/simulator/log/uuid/{uuid}": {
+            "get": {
+                "summary": "Get Download Logs",
+                "description": "Download logs from a simulation instance",
+                "operationId": "get_download_logs_simulator_log_uuid__uuid__get",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid4",
+                            "title": "Uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "summary": "Get Main Page",
+                "description": "Method to handle service info route.",
+                "operationId": "get_main_page__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "post": {
+                "summary": "Post Upload Zipped Project",
+                "description": "Upload a new zipped project to the server",
+                "operationId": "post_upload_zipped_project_upload_post",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_post_upload_zipped_project_upload_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects": {
+            "get": {
+                "summary": "Get List Projects",
+                "operationId": "get_list_projects_projects_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ApiAssetQuery": {
+                "properties": {
+                    "asset_type": {
+                        "$ref": "#/components/schemas/ModelTypes"
+                    },
+                    "asset_property": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BusProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AreaProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ZoneProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/StationProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/DCLineProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/LoadProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/FixedShuntProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/SwitchedShuntProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/TransformerProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/BranchProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/InductionGeneratorProperties"
+                            },
+                            {
+                                "$ref": "#/components/schemas/MachinesProperties"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Asset Property"
+                    },
+                    "asset_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Asset Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "asset_type"
+                ],
+                "title": "ApiAssetQuery"
+            },
+            "ApiCommands": {
+                "type": "string",
+                "enum": [
+                    "run_simulation",
+                    "status",
+                    "run_step",
+                    "open_case",
+                    "close_case",
+                    "update_model",
+                    "update_settings",
+                    "query_all",
+                    "query_by_asset",
+                    "query_by_ppty",
+                    "query_asset_list"
+                ],
+                "title": "ApiCommands"
+            },
+            "ApiPssePostRequest": {
+                "properties": {
+                    "project_name": {
+                        "type": "string",
+                        "title": "Project Name",
+                        "default": "static_example"
+                    }
+                },
+                "type": "object",
+                "title": "ApiPssePostRequest"
+            },
+            "ApiPssePutRequest": {
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid4",
+                        "title": "Uuid"
+                    },
+                    "command": {
+                        "$ref": "#/components/schemas/ApiCommands"
+                    },
+                    "parameters": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ApiAssetQuery"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "uuid",
+                    "command"
+                ],
+                "title": "ApiPssePutRequest"
+            },
+            "AreaProperties": {
+                "type": "string",
+                "enum": [
+                    "LOAD",
+                    "LOADID",
+                    "LGDN",
+                    "LDGNLD",
+                    "GEN",
+                    "AREANAME",
+                    "AREANUMBER"
+                ],
+                "title": "AreaProperties",
+                "description": "Valid area properties"
+            },
+            "Body_post_upload_zipped_project_upload_post": {
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "title": "File"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "file"
+                ],
+                "title": "Body_post_upload_zipped_project_upload_post"
+            },
+            "BranchProperties": {
+                "type": "string",
+                "enum": [
+                    "RATEn",
+                    "RATEA",
+                    "RATEB",
+                    "RATEC",
+                    "RATE",
+                    "LENGTH",
+                    "CHARG",
+                    "CHARGZ",
+                    "FRACT1",
+                    "FRACT2",
+                    "FRACT3",
+                    "FRACT4",
+                    "RX",
+                    "ISHNT",
+                    "JSHNT",
+                    "RXZ",
+                    "ISHNTZ",
+                    "JSHNTZ",
+                    "LOSSES",
+                    "O_LOSSES",
+                    "MVA",
+                    "AMPS",
+                    "PUCUR",
+                    "CURANG",
+                    "P",
+                    "O_P",
+                    "Q",
+                    "O_Q",
+                    "PLOS",
+                    "O_PLOS",
+                    "QLOS",
+                    "O_QLOS"
+                ],
+                "title": "BranchProperties",
+                "description": "Valid branch properties"
+            },
+            "BusProperties": {
+                "type": "string",
+                "enum": [
+                    "BASE",
+                    "FREQ",
+                    "PU",
+                    "KV",
+                    "ANGLE",
+                    "ANGLED",
+                    "NVLMHI",
+                    "NVLMLO",
+                    "EVLMHI",
+                    "EVLMLO"
+                ],
+                "title": "BusProperties",
+                "description": "Valid bus properties"
+            },
+            "DCLineProperties": {
+                "type": "string",
+                "enum": [
+                    "DCLINENAME",
+                    "MDC",
+                    "RECT",
+                    "INV",
+                    "METER",
+                    "NBR",
+                    "NBI",
+                    "ICR",
+                    "ICI",
+                    "NDR",
+                    "NDI"
+                ],
+                "title": "DCLineProperties",
+                "description": "Valid DC line properties"
+            },
+            "FixedShuntProperties": {
+                "type": "string",
+                "enum": [
+                    "ACT",
+                    "O_ACT",
+                    "NOM",
+                    "O_NOM",
+                    "PQZERO",
+                    "PQZ",
+                    "O_PQZ"
+                ],
+                "title": "FixedShuntProperties",
+                "description": "Valid fixed shunt properties"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "InductionGeneratorProperties": {
+                "type": "string",
+                "enum": [
+                    "MBASE",
+                    "RATEKV",
+                    "PSET",
+                    "RA",
+                    "XA",
+                    "R1",
+                    "X1",
+                    "R2",
+                    "X2",
+                    "X3",
+                    "E1",
+                    "SE1",
+                    "E2",
+                    "SE2",
+                    "IA1",
+                    "IA2",
+                    "XAMULT",
+                    "TRQA",
+                    "TRQB",
+                    "TRQD",
+                    "TRQE",
+                    "H",
+                    "IRATIO",
+                    "ROVERX",
+                    "RZERO",
+                    "XZERO",
+                    "RGRND",
+                    "XGRND",
+                    "P",
+                    "O_P",
+                    "Q",
+                    "O_Q",
+                    "MVA",
+                    "O_MVA",
+                    "SLIP",
+                    "ZA",
+                    "Z1",
+                    "Z2",
+                    "ZZERO",
+                    "ZGRND",
+                    "PQ",
+                    "O_PQ"
+                ],
+                "title": "InductionGeneratorProperties",
+                "description": "Valid induction generator properties"
+            },
+            "LoadProperties": {
+                "type": "string",
+                "enum": [
+                    "MVA",
+                    "IL",
+                    "YL",
+                    "TOTAL",
+                    "YNEG",
+                    "YZERO",
+                    "FmA",
+                    "FmB",
+                    "FmC",
+                    "FmD",
+                    "Fel",
+                    "PFel",
+                    "TD",
+                    "TC"
+                ],
+                "title": "LoadProperties",
+                "description": "Valid load properties"
+            },
+            "MachinesProperties": {
+                "type": "string",
+                "enum": [
+                    "QMAX",
+                    "O_QMAX",
+                    "QMIN",
+                    "O_QMIN",
+                    "PMAX",
+                    "O_PMAX",
+                    "PMIN",
+                    "O_PMIN",
+                    "MBASE",
+                    "MVA",
+                    "O_MVA",
+                    "P",
+                    "O_P",
+                    "Q",
+                    "O_Q",
+                    "PERCENT",
+                    "GENTAP",
+                    "VSCHED",
+                    "WPF",
+                    "RMPCT",
+                    "RPOS",
+                    "XSUBTR",
+                    "XTRANS",
+                    "XSYNCH",
+                    "PQ",
+                    "O_PQ",
+                    "ZSORCE",
+                    "XTRAN",
+                    "ZPOS",
+                    "ZNEG",
+                    "ZZERO",
+                    "ZGRND"
+                ],
+                "title": "MachinesProperties",
+                "description": "Valid machine properties"
+            },
+            "ModelTypes": {
+                "type": "string",
+                "enum": [
+                    "Buses",
+                    "Branches",
+                    "Loads",
+                    "Induction_generators",
+                    "Machines",
+                    "Fixed_shunts",
+                    "Switched_shunts",
+                    "Transformers",
+                    "Areas",
+                    "Zones",
+                    "DCtransmissionlines",
+                    "Stations"
+                ],
+                "title": "ModelTypes",
+                "description": "Supported asset tpyes in PyPSSE"
+            },
+            "StationProperties": {
+                "type": "string",
+                "enum": [
+                    "SUBNAME",
+                    "SUBNUMBER",
+                    "BUSES",
+                    "GENERATORS",
+                    "TRANSFORMERS",
+                    "NOMKV",
+                    "LOADMW",
+                    "GENMW"
+                ],
+                "title": "StationProperties",
+                "description": "Valid station properties"
+            },
+            "SwitchedShuntProperties": {
+                "type": "string",
+                "enum": [
+                    "VSWHI",
+                    "VSWLO",
+                    "RMPCT",
+                    "BINIT",
+                    "O_BINIT"
+                ],
+                "title": "SwitchedShuntProperties",
+                "description": "Valid switched shunt properties"
+            },
+            "TransformerProperties": {
+                "type": "string",
+                "enum": [
+                    "RATIO",
+                    "RATIO2",
+                    "ANGLE",
+                    "RMAX",
+                    "RMIN",
+                    "VMAX",
+                    "VMIN",
+                    "STEP",
+                    "CR",
+                    "CX",
+                    "CNXANG",
+                    "SBASE1",
+                    "NOMV1",
+                    "NOMV2",
+                    "GMAGNT",
+                    "BMAGNT",
+                    "RG1",
+                    "XG1",
+                    "R01",
+                    "X01",
+                    "RG2",
+                    "XG2",
+                    "R02",
+                    "X02",
+                    "RNUTRL",
+                    "XNUTRL",
+                    "RX1-2",
+                    "RX2-3",
+                    "RX3-1",
+                    "YMAGNT",
+                    "ZG1",
+                    "Z01",
+                    "ZG2",
+                    "Z02",
+                    "ZG3",
+                    "Z03",
+                    "ZNUTRL"
+                ],
+                "title": "TransformerProperties",
+                "description": "Valid transformer properties"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            },
+            "ZoneProperties": {
+                "type": "string",
+                "enum": [
+                    "LOAD",
+                    "LOADID",
+                    "LGDN",
+                    "LDGNLD",
+                    "GEN",
+                    "ZONENAME",
+                    "ZONENUMBER"
+                ],
+                "title": "ZoneProperties",
+                "description": "Valid zone properties"
+            }
+        }
+    }
+}

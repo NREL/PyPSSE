@@ -78,6 +78,7 @@ doc = [
   "mkdocs-table-reader-plugin",
   "mkdocs-video",
   "neoteroi-mkdocs",
+  "termynal"
 ]
 dev = [
   "pylint",
@@ -89,6 +90,10 @@ server = [
   "fastapi",
   "websockets",
   "python-multipart"
+]
+mdao = [
+  "openmdao",
+  "pyDOE3"
 ]
 
 [tool.hatch.envs.lint]

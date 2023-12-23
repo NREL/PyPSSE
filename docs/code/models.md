@@ -9,6 +9,11 @@ This page provides details on the data models part of the PyPSSE library.
 
 
 
+<img src="ApiAssetQuery.svg" /> 
+::: pypsse.models.ApiAssetQuery
+ 
+
+
 <img src="ApiPsseException.svg" /> 
 ::: pypsse.models.ApiPsseException
  
@@ -31,6 +36,11 @@ This page provides details on the data models part of the PyPSSE library.
 
 <img src="ApiPsseReplyInstances.svg" /> 
 ::: pypsse.models.ApiPsseReplyInstances
+ 
+
+
+<img src="ApiWebSocketRequest.svg" /> 
+::: pypsse.models.ApiWebSocketRequest
  
 
 

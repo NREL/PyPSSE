@@ -95,19 +95,19 @@ class PSSE:
         "Solves for the current time set and incremetn in time"
         self.psse_obj.inc_time = False
         self.current_result = self.psse_obj.step(self.time_counter)
-
+        print(self.current_result)
         # results = self.get_results()
 
     def export_result(self):
         "Updates results in the result container"
-        if not self.psse_obj.export_settings["Export results using channels"]:
+        if not self.psse_obj.export_settings.export_results_using_channels:
             self.psse_obj.results.export_results()
         else:
             self.psse_obj.sim.export()
 
     def close_case(self):
         "Closes the loaded model in PyPSSE"
-        self.psse_obj.PSSE.pssehalt_2()
+        self.psse_obj.psse.pssehalt_2()
         del self.psse_obj
         logger.info(f"PSSE case {self.uuid} closed.")
 
@@ -120,6 +120,10 @@ class PSSE:
         data = toml.load(problem_file)
         self.probelm = MdaoProblem(**data)
 
+    def __del__(self):
+        super().__del__()
+        self.export_result()
+        self.close()
 
 class PSSEModel(om.ExplicitComponent, PSSE):
     "Expicit OpenMDAO component"
