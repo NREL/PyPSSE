@@ -125,6 +125,7 @@ class PSSE:
         self.export_result()
         self.close()
 
+
 class PSSEModel(om.ExplicitComponent, PSSE):
     "Expicit OpenMDAO component"
 
