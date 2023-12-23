@@ -1,8 +1,9 @@
 import logging
 import os
 
-from pypsse.models import LogSettings
 from pypsse.common import DEFAULT_LOG_FILE
+from pypsse.models import LogSettings
+
 
 def get_logger(name, path, logger_options: LogSettings = None):
     "Customizes the logger for PyPSSE"

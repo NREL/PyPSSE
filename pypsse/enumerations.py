@@ -33,13 +33,15 @@ class HelicsCoreTypes(str, Enum):
     "HELICS core types"
     ZMQ = "zmq"
 
+
 class WritableModelTypes(str, Enum):
     "Writable data ty[es]"
     LOAD = "Load"
     PLANT = "Plant"
     MACHINE = "Machine"
     GENERATOR = "Induction_machine"
-    
+
+
 class ModelTypes(str, Enum):
     "Supported asset tpyes in PyPSSE"
     BUSES = "Buses"
@@ -54,7 +56,6 @@ class ModelTypes(str, Enum):
     ZONES = "Zones"
     DC_LINES = "DCtransmissionlines"
     STATIONS = "Stations"
-
 
 
 class ModelProperties(str, Enum):
@@ -418,18 +419,21 @@ class UseModes(str, Enum):
     LIST = "list"
     ALL = "all"
 
+
 class ApiCommands(str, Enum):
-    RUN = "run_simulation"
+    RUN_SIMUALTION = "run_simulation"
     STATUS = "status"
-    SOLVE = "run_step"
-    CLOSE = "close_case"
+    SOLVE_STEP = "run_step"
+    OPEN_CASE = "open_case"
+    CLOSE_CASE = "close_case"
     UDPATE_MODEL = "update_model"
     UPDATE_PARAMETERS = "update_settings"
     QUERY_ALL = "query_all"
     QUERY_BY_ID = "query_by_asset"
     QUERY_BY_PPTY = "query_by_ppty"
     QUERY_ASSET_LIST = "query_asset_list"
-    
+
+
 class SimulationStatus(str, Enum):
     NOT_INITIALIZED = "Instance not initialized"
     STARTING_INSTANCE = "Starting PyPSSE instance"

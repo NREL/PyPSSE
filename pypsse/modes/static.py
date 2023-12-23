@@ -56,5 +56,3 @@ class Static(AbstractMode):
         achnf = self.dyntools.CHNF(self.outx_path)
         achnf.xlsout(channels="", show=False, xlsfile=excelpath, outfile="", sheet="Sheet1", overwritesheet=True)
         self.logger.debug(f"{self.settings.export.excel_file} exported")
-
-    

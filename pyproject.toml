@@ -24,7 +24,6 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-
     "click",
     "h5py",
     "helics",

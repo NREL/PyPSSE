@@ -9,9 +9,9 @@ import pandas as pd
 
 from pypsse.common import DEFAULT_RESULTS_FILENAME
 
+
 class HDF5Writer:
-    """Class that handles writing simulation results to hdf5 files.
-    """
+    """Class that handles writing simulation results to hdf5 files."""
 
     def __init__(self, log_dir, column_length):
         """Constructor"""
@@ -33,7 +33,7 @@ class HDF5Writer:
             compression="gzip",
             compression_opts=4,
             shuffle=True,
-            dtype= np.int16,
+            dtype=np.int16,
         )
         self.Timestamp = self.store.create_dataset(
             "Time stamp",
@@ -94,12 +94,12 @@ class HDF5Writer:
                 for col_name in powerflow_output[obj_type].keys():
                     r = self.store_datasets[obj_type][col_name].shape[0]
                     if ei >= r:
-                        self.store_datasets[obj_type][col_name].resize((ei, ))
+                        self.store_datasets[obj_type][col_name].resize((ei,))
                     self.store_datasets[obj_type][col_name][si:ei] = self.dfs[obj_type][col_name]
                 self.dfs[obj_type] = None
             if self.step >= len(self.Timestamp):
-                self.Timestamp.resize((len(self.Timestamp)+1, ))
-                self.convergence.resize((len(self.convergence)+1, ))
+                self.Timestamp.resize((len(self.Timestamp) + 1,))
+                self.convergence.resize((len(self.convergence) + 1,))
             self.Timestamp[self.step - 1] = np.string_(str(currenttime))
             self.convergence[self.step - 1] = convergence
             # Add object status data to a DataFrame

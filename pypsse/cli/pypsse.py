@@ -10,6 +10,7 @@ from pypsse.cli.run import run
 
 logger = logging.getLogger(__name__)
 from pypsse.cli.serve import serve
+
 server_dependencies_installed = True
 
 # try:
