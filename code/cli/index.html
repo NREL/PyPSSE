@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../../css/mkdocsoad.css">
     
+      <link rel="stylesheet" href="../../termynal.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -575,10 +577,12 @@
   -a, --autofill                  Attempt to auto fill settings. (Verify
                                   manually settings file is correct)
                                   [default: True]
-  -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml file
-                                  (used to map profile to PSSE elements)
-  -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file (Contains
-                                  profiles for time series simulations)
+  -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml
+                                  file (used to map profile to PSSE
+                                  elements)
+  -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file
+                                  (Contains profiles for time series
+                                  simulations)
   -e, --export-settings-file TEXT
                                   Export settings toml file path
   -f, --simulation-file TEXT      Simulation settings toml file path
@@ -592,8 +596,9 @@
 <div class="highlight"><pre><span></span><code>run [OPTIONS] PROJECT_PATH
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="highlight"><pre><span></span><code>  -s, --simulations-file TEXT  scenario toml file to run (over rides default)
-                               [default: simulation_settings.toml]
+<div class="highlight"><pre><span></span><code>  -s, --simulations-file TEXT  scenario toml file to run (over rides
+                               default)  [default:
+                               simulation_settings.toml]
   --help                       Show this message and exit.
 </code></pre></div>
 <h1 id="create-profiles">create-profiles</h1>
@@ -606,14 +611,15 @@
   -r, --profile-res FLOAT    Profile time resolution in seconds  [default:
                              1.0]
   -T, --start-time TEXT      Time index for the first time step, format =
-                             Y-m-d H:M:S.f  [default: 2020-01-01 00:00:00.00]
+                             Y-m-d H:M:S.f  [default: 2020-01-01
+                             00:00:00.00]
   -t, --profile-type TEXT    Profile type; Possible values: ['Load',
                              'Induction_machine', 'Machine', 'Plant']
                              [default: Load]
   -n, --profile-name TEXT    Profile name  [default: Default]
-  -p, --profile-folder TEXT  Path to folder containing csv profiles. CSV file
-                             names should follow the following format:
-                             {profile-type}_{profile-name}
+  -p, --profile-folder TEXT  Path to folder containing csv profiles. CSV
+                             file names should follow the following
+                             format: {profile-type}_{profile-name}
   -f, --csv-file-path TEXT   Path to a csv valid file
   --help                     Show this message and exit.
 </code></pre></div>
@@ -683,6 +689,8 @@
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../termynal.js"></script>
       
     
   <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>

@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../../css/mkdocsoad.css">
     
+      <link rel="stylesheet" href="../../termynal.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -1135,7 +1137,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">pypsse.enumerations.ApiCommands.RUN</td>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.RUN_SIMUALTION</td>
 <td style="text-align: left;">run_simulation</td>
 </tr>
 <tr>
@@ -1143,16 +1145,40 @@
 <td style="text-align: left;">status</td>
 </tr>
 <tr>
-<td style="text-align: left;">pypsse.enumerations.ApiCommands.SOLVE</td>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.SOLVE_STEP</td>
 <td style="text-align: left;">run_step</td>
 </tr>
 <tr>
-<td style="text-align: left;">pypsse.enumerations.ApiCommands.RESULTS</td>
-<td style="text-align: left;">get_results</td>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.OPEN_CASE</td>
+<td style="text-align: left;">open_case</td>
 </tr>
 <tr>
-<td style="text-align: left;">pypsse.enumerations.ApiCommands.CLOSE</td>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.CLOSE_CASE</td>
 <td style="text-align: left;">close_case</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.UDPATE_MODEL</td>
+<td style="text-align: left;">update_model</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.UPDATE_PARAMETERS</td>
+<td style="text-align: left;">update_settings</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.QUERY_ALL</td>
+<td style="text-align: left;">query_all</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.QUERY_BY_ID</td>
+<td style="text-align: left;">query_by_asset</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.QUERY_BY_PPTY</td>
+<td style="text-align: left;">query_by_ppty</td>
+</tr>
+<tr>
+<td style="text-align: left;">pypsse.enumerations.ApiCommands.QUERY_ASSET_LIST</td>
+<td style="text-align: left;">query_asset_list</td>
 </tr>
 </tbody>
 </table>
@@ -2620,6 +2646,8 @@
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../termynal.js"></script>
       
     
   <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>

@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../css/mkdocsoad.css">
     
+      <link rel="stylesheet" href="../termynal.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -77,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#building-a-new-project" class="md-skip">
+        <a href="#installing-pypsse" class="md-skip">
           Skip to content
         </a>
       
@@ -354,20 +356,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#building-a-new-project" class="md-nav__link">
+  <a href="#installing-pypsse" class="md-nav__link">
     <span class="md-ellipsis">
-      Building a new project
+      Installing PyPSSE
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#setting-up-a-simulation" class="md-nav__link">
+  <a href="#cli-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting up a simulation
+      CLI commands
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-a-new-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building a new project
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building a new project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-a-new-project-using-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      setting a new project using cli
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -375,24 +401,6 @@
   <a href="#running-a-simulation" class="md-nav__link">
     <span class="md-ellipsis">
       Running a simulation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#exploring-simulation-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      Exploring simulation results
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-a-co-simulation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running a co-simulation
     </span>
   </a>
   
@@ -633,20 +641,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#building-a-new-project" class="md-nav__link">
+  <a href="#installing-pypsse" class="md-nav__link">
     <span class="md-ellipsis">
-      Building a new project
+      Installing PyPSSE
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#setting-up-a-simulation" class="md-nav__link">
+  <a href="#cli-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting up a simulation
+      CLI commands
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-a-new-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building a new project
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building a new project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-a-new-project-using-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      setting a new project using cli
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -654,24 +686,6 @@
   <a href="#running-a-simulation" class="md-nav__link">
     <span class="md-ellipsis">
       Running a simulation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#exploring-simulation-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      Exploring simulation results
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-a-co-simulation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running a co-simulation
     </span>
   </a>
   
@@ -703,18 +717,39 @@
 
   <h1>Tutorials</h1>
 
-<div><h2 id="building-a-new-project">Building a new project</h2>
-<p><div class="video-container"><iframe src="https://www.youtube.com/embed/LXb3EKWsInQ" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
-<h2 id="setting-up-a-simulation">Setting up a simulation</h2>
-<p><div class="video-container"><iframe src="https://www.youtube.com/embed/LXb3EKWsInQ" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
+<div><h2 id="installing-pypsse">Installing PyPSSE</h2>
+<p>Create a new python environment using the following command. Make sure you install the correct python version supported by the local PSS/e installation. Also make sure correcly choose a 32 or 64 bit python installer.</p>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span class="termynal-comment" data-ty># Creating a new environment</span><span data-ty="input" data-ty-prompt="$">conda create -n pypsse python==3.9</span><span data-ty="progress"></span><span data-ty="input" data-ty-prompt="$">conda activate pypsse </span><span data-ty></span><span class="termynal-comment" data-ty># Install the package</span><span class="termynal-comment" data-ty># For local minimal installation, use the following command</span><span data-ty="input" data-ty-prompt="$">pip install NREL-pypsse</span><span data-ty></span><span class="termynal-comment" data-ty># For pypsse server implmentation, use</span><span data-ty="input" data-ty-prompt="$">pip install NREL-pypsse[server]</span><span data-ty></span><span class="termynal-comment" data-ty># To use pypsse OpenMDAO interface, use</span><span data-ty="input" data-ty-prompt="$">pip install NREL-pypsse[mdao]</span><span data-ty></span><span class="termynal-comment" data-ty># For development, in a new directory, use the following commands</span><span data-ty="input" data-ty-prompt="$">git clone https://github.com/NREL/PyPSSE</span><span data-ty="input" data-ty-prompt="$">conda install pygraphviz</span><span data-ty="input" data-ty-prompt="$">pip install -e.[mdao,server,doc,dev]</span><span data-ty><br></span></div>
+
+<h2 id="cli-commands">CLI commands</h2>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span class="termynal-comment" data-ty># Using the CLI</span><span class="termynal-comment" data-ty># For CLI commands, type the following command</span><span data-ty></span><span data-ty="input" data-ty-prompt="$">pypsse --help</span><span data-ty><br>&gt; Usage: pypsse [OPTIONS] COMMAND [ARGS]...<br>&gt;<br>&gt; PyPSSE commands<br>&gt;<br>&gt; Options:<br>&gt;  --help  Show this message and exit.0<br>&gt;<br>&gt; Commands:<br>&gt;  create-profiles  Creates profiles for PyPSSE project.<br>&gt;  create-project   Create a new PyPSSE project.<br>&gt;  run              Runs a valid PyPSSE simulation.<br>&gt;  serve            Run a PyPSSE RESTful API server.<br></span></div>
+
+<p><div class="video-container"><iframe src="https://www.youtube.com/embed/UD2oTjcpz24" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
+<h2 id="building-a-new-project">Building a new project</h2>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span class="termynal-comment" data-ty># CLI project build options</span><span data-ty></span><span data-ty="input" data-ty-prompt="$">pypsse create-project --help</span><span data-ty><br>&gt; Usage: pypsse create-project [OPTIONS] PATH<br>&gt;  <br>&gt;   Create a new PyPSSE project.<br>&gt; <br>&gt; Options:<br>&gt;   -o, --overwrite                 Overwrite project is it already exists<br>&gt;                                   [default: True]<br>&gt;   -a, --autofill                  Attempt to auto fill settings. (Verify<br>&gt;                                   manually settings file is correct)<br>&gt;                                   [default: True]<br>&gt;   -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml<br>&gt;                                   file (used to map profile to PSSE<br>&gt;                                   elements)<br>&gt;   -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file<br>&gt;                                   (Contains profiles for time series<br>&gt;                                   simulations)<br>&gt;   -e, --export-settings-file TEXT<br>&gt;                                   Export settings toml file path<br>&gt;   -f, --simulation-file TEXT      Simulation settings toml file path<br>&gt;   -F, --psse-project-folder PATH  PSS/E project folder path<br>&gt;   -p, --project TEXT              project name  [required]<br>&gt;   --help                          Show this message and exit.<br></span></div>
+
+<h3 id="setting-a-new-project-using-cli">setting a new project using cli</h3>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span class="termynal-comment" data-ty># Building a project from scratch. Users will have to manually make all </span><span class="termynal-comment" data-ty># required changes to the created project skeleton. </span><span data-ty></span><span data-ty="input" data-ty-prompt="$">pypsse create-project . -p test_project </span><span data-ty></span><span class="termynal-comment" data-ty># Building a project from an existing PSS/e project. PyPSSE will attemp</span><span class="termynal-comment" data-ty># to autofill most settings. </span><span data-ty></span><span data-ty="input" data-ty-prompt="$">pypsse create-project . -p test_project -F &lt;project path&gt;</span><span data-ty><br></span></div>
+
+<p>Simulation settings can be changed within the simulation_settings.toml file.</p>
+<ul>
+<li>Simution type / time / duration</li>
+<li>Settung upEnabling / disabling the HELICS interface</li>
+<li>Setting up log preferences</li>
+<li>Setting up simulation contingencies</li>
+<li>Setting up simulation storage</li>
+<li>Setting up simulation profiles</li>
+</ul>
+<p><div class="video-container"><iframe src="https://www.youtube.com/embed/chMc9eTNO0c" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
 <h2 id="running-a-simulation">Running a simulation</h2>
-<p><div class="video-container"><iframe src="https://www.youtube.com/embed/LXb3EKWsInQ" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
-<h2 id="exploring-simulation-results">Exploring simulation results</h2>
-<p><div class="video-container"><iframe src="https://www.youtube.com/embed/LXb3EKWsInQ" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
-<h2 id="running-a-co-simulation">Running a co-simulation</h2>
-<p><div class="video-container"><iframe src="https://www.youtube.com/embed/LXb3EKWsInQ" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span class="termynal-comment" data-ty># Project run options</span><span data-ty></span><span data-ty="input" data-ty-prompt="$">pypsse run --help </span><span data-ty><br>&gt; Usage: pypsse run [OPTIONS] PROJECT_PATH<br>&gt; <br>&gt;   Runs a valid PyPSSE simulation.<br><br>&gt; Options:<br>&gt;   -s, --simulations-file TEXT  scenario toml file to run (over rides<br>&gt;                                default)  [default:<br>&gt;                                simulation_settings.toml]<br>&gt;   --help                       Show this message and exit.<br></span><span class="termynal-comment" data-ty># Running an existing PyPSSE project</span><span data-ty></span><span data-ty="input" data-ty-prompt="$">pypsse run &lt;project path&gt;</span><span data-ty><br></span></div>
+
+<p><div class="video-container"><iframe src="https://www.youtube.com/embed/oR3slhtMVX8" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p>
 <h2 id="working-with-a-pypsse-server">Working with a PyPSSE server</h2>
-<p><div class="video-container"><iframe src="https://www.youtube.com/embed/LXb3EKWsInQ" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p></div>
+<p>PyPSSE implments both a REST API and a Web Socket interface for the PyPSSE server. Usage of both interfaces is similar. The server can be started from the command line using the following command. </p>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span class="termynal-comment" data-ty># Starting a PyPSSE server</span><span data-ty="input" data-ty-prompt="$">pypsse serve</span><span data-ty><br>&gt; 2023-12-23 11:59:01,913 - INFO - Start PyPSSE server<br>&gt; 2023-12-23 11:59:01,914 - INFO - Initializing service handler<br>&gt; 2023-12-23 11:59:01,924 - INFO - Building web application<br>&gt; 2023-12-23 11:59:01,932 - INFO - Building API endpoints<br>&gt; INFO:     Started server process [15760]<br>&gt; INFO:     Waiting for application startup.<br>&gt; INFO:     Application startup complete.<br>&gt; INFO:     Uvicorn running on http://127.0.0.1:9090 (Press CTRL+C to quit)<br></span><span class="termynal-comment" data-ty># Open the link in the browser to view API documentation (Also documented in the reference guide)</span><span data-ty></span></div>
+
+<p><div class="video-container"><iframe src="https://www.youtube.com/embed/nIQapyH11KI" style="position:relative;width:100%;height:22.172vw" frameborder="0" allowfullscreen alt="type:video"></iframe></div></p></div>
 
 
 
@@ -771,6 +806,8 @@
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../termynal.js"></script>
       
     
   <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>

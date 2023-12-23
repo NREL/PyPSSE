@@ -45,6 +45,8 @@
     
       <link rel="stylesheet" href="../../css/mkdocsoad.css">
     
+      <link rel="stylesheet" href="../../termynal.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -3641,7 +3643,7 @@
 <span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Simulator</span><span class="p">:</span>
     <span class="s2">"Base class for the simulator"</span>
 
-    <span class="n">_status</span><span class="p">:</span><span class="n">SimulationStatus</span><span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">NOT_INITIALIZED</span>
+    <span class="n">_status</span><span class="p">:</span> <span class="n">SimulationStatus</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">NOT_INITIALIZED</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_toml_path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">psse_path</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
         <span class="s2">"Load a valid PyPSSE project and sets up simulation"</span>
@@ -3687,7 +3689,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">=</span><span class="n">SimulationStatus</span><span class="o">.</span><span class="n">INITIALIZATION_COMPLETE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">INITIALIZATION_COMPLETE</span>
 
     <span class="k">def</span> <span class="nf">dump_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest_dir</span><span class="p">):</span>
         <span class="n">setting_toml_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">"defaults"</span><span class="p">,</span> <span class="s2">"pyPSSE_settings.toml"</span><span class="p">)</span>
@@ -3868,7 +3870,7 @@
                 <span class="n">bokeh_server_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Run init() command to initialize models before running the simulation"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span><span class="s2">"Simulation complete"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">"Simulation complete"</span>
 
     <span class="k">def</span> <span class="nf">get_bus_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">"Returns bus IDs"</span>
@@ -4143,7 +4145,7 @@
 
     <span class="bp">self</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">=</span><span class="n">SimulationStatus</span><span class="o">.</span><span class="n">INITIALIZATION_COMPLETE</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">SimulationStatus</span><span class="o">.</span><span class="n">INITIALIZATION_COMPLETE</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -4803,7 +4805,7 @@
             <span class="n">bokeh_server_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Run init() command to initialize models before running the simulation"</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span><span class="s2">"Simulation complete"</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">"Simulation complete"</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -5788,7 +5790,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_vars</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="n">class_assets</span> <span class="o">=</span> <span class="n">ExportAssetTypes</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span>
+        <span class="n">class_assets</span> <span class="o">=</span> <span class="n">ExportAssetTypes</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span>
 
         <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">export__list</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
@@ -6100,7 +6102,7 @@ Method is called iteratively to store results as a simulation executes</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">export_vars</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">class_assets</span> <span class="o">=</span> <span class="n">ExportAssetTypes</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span>
+    <span class="n">class_assets</span> <span class="o">=</span> <span class="n">ExportAssetTypes</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_settings</span>
 
     <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">export__list</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
@@ -11040,7 +11042,8 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
 
           <details class="quote">
             <summary>Source code in <code>pypsse\cli\serve.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -11058,8 +11061,7 @@ Enables attacheing profilse to all PSSE objects and associated properties</p>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">"-p"</span><span class="p">,</span>
     <span class="s2">"--port"</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="mi">9090</span><span class="p">,</span>
@@ -13822,6 +13824,8 @@ files.</p>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../termynal.js"></script>
       
     
   <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>

@@ -45,6 +45,8 @@
     
       <link rel="stylesheet" href="css/mkdocsoad.css">
     
+      <link rel="stylesheet" href="termynal.css">
+    
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -695,18 +697,18 @@
 <p>The PSS/E Python API psspy follows functional programming methodology. The API exposes thousands of methods and can be difficult for new users to work with. PyPSSE wraps around hundreds of function calls in a few methods. This functionality allows users to set up cosimulations with minimal effort.</p>
 <h2 id="installation">Installation</h2>
 <p>Install using pip:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pssepy
-</code></pre></div>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span data-ty="input" data-ty-prompt="$">pip install NREL-pypsse</span><span data-ty="progress"></span><span data-ty>Installed<br></span></div>
+
 <h2 id="usage">Usage</h2>
 <p>Running an existing PyPSSE project from CLI</p>
-<div class="highlight"><pre><span></span><code>pypsse<span class="w"> </span>run<span class="w"> </span>&lt;project<span class="w"> </span>path&gt;
-</code></pre></div>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span data-ty="input" data-ty-prompt="$">pypsse run &lt;project path&gt;</span><span data-ty></span></div>
+
 <p>Building a new PyPSSE project from CLI</p>
-<div class="highlight"><pre><span></span><code>pypsse<span class="w"> </span>create-project<span class="w"> </span>&lt;args&gt;
-</code></pre></div>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span data-ty="input" data-ty-prompt="$">pypsse create-project &lt;args&gt;</span><span data-ty></span></div>
+
 <p>Running a PyPSSE server</p>
-<div class="highlight"><pre><span></span><code>pypsse<span class="w"> </span>serve
-</code></pre></div>
+<div class="termy" data-termynal data-ty-windows data-ty-title="anaconda prompt"><span data-ty="input" data-ty-prompt="$">pypsse serve</span><span data-ty></span></div>
+
 <h2 id="features">Features</h2>
 <ul>
 <li>Supports time-series steady-state simulations, which are not inherently supported by PSS/E</li>
@@ -778,6 +780,8 @@
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="termynal.js"></script>
       
     
   <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>

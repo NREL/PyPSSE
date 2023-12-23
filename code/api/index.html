@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../../css/mkdocsoad.css">
     
+      <link rel="stylesheet" href="../../termynal.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -579,33 +581,48 @@ Most likely, it is not desirable to edit this file by hand!
 
 <h1 id="fastapi-010">FastAPI 0.1.0</h1>
 <h2 id="endpoints">Endpoints</h2>
-<h3 id="get-simulatorspsse">GET /simulators/psse</h3>
-<p>Get Psse</p>
-<p><strong>Description</strong>
-Websocket handler for psse instance</p>
-<p><strong>Input parameters</strong></p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>In</th>
-<th>Type</th>
-<th>Default</th>
-<th>Nullable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>request</td>
-<td>query</td>
-<td>None</td>
-<td></td>
-<td>No</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<h3 id="put-simulator">PUT /simulator/</h3>
+<p>Put Psse</p>
+<p><strong>Request body</strong></p>
+<p><strong>application/json</strong></p>
+<p></p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"run_simulation"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</code></pre></div>
+<em>This example has been generated automatically from the schema and it is not
+accurate. Refer to the schema for more information.</em>
+<p><strong>Schema of the request body</strong></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uuid4"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Uuid"</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/components/schemas/ApiCommands"</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/components/schemas/ApiAssetQuery"</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"uuid"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"command"</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ApiPssePutRequest"</span>
+<span class="p">}</span>
+</code></pre></div>
 <h3 id="response-200-ok">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <p><strong>Schema of the response body</strong></p>
@@ -642,7 +659,7 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="post-simulatorspsse">POST /simulators/psse</h3>
+<h3 id="post-simulator">POST /simulator/</h3>
 <p>Post Psse</p>
 <p><strong>Description</strong>
 Create UUID and intialize and push to queue</p>
@@ -703,49 +720,33 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="put-simulatorspsse">PUT /simulators/psse</h3>
-<p>Put Psse</p>
-<p><strong>Request body</strong></p>
-<p><strong>application/json</strong></p>
-<p></p><div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"run_simulation"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
-<span class="p">}</span>
-</code></pre></div>
-<em>This example has been generated automatically from the schema and it is not
-accurate. Refer to the schema for more information.</em>
-<p><strong>Schema of the request body</strong></p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uuid4"</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Uuid"</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/components/schemas/ApiCommands"</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/components/schemas/ExportAssetTypes"</span>
-<span class="w">                </span><span class="p">},</span>
-<span class="w">                </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">            </span><span class="p">]</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">"uuid"</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">"command"</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">"parameters"</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ApiPssePutRequest"</span>
-<span class="p">}</span>
-</code></pre></div>
+<h3 id="delete-simulatoruuiduuid">DELETE /simulator/uuid/{uuid}</h3>
+<p>Delete Psse</p>
+<p><strong>Description</strong>
+Delete an instance of simulation</p>
+<p><strong>Input parameters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>In</th>
+<th>Type</th>
+<th>Default</th>
+<th>Nullable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>uuid</td>
+<td>path</td>
+<td>string</td>
+<td></td>
+<td>No</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h3 id="response-200-ok_2">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <p><strong>Schema of the response body</strong></p>
@@ -782,10 +783,19 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="delete-simulatorspsseuuiduuid">DELETE /simulators/psse/uuid/{uuid}</h3>
-<p>Delete Psse</p>
+<h3 id="get-simulatoruuids">GET /simulator/uuids</h3>
+<p>Get Instance Uuids</p>
 <p><strong>Description</strong>
-Delete an instance of simulation</p>
+Get all running simulation uuids</p>
+<h3 id="response-200-ok_3">Response 200 OK</h3>
+<p><strong>application/json</strong></p>
+<p><strong>Schema of the response body</strong></p>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
+<h3 id="get-simulatorstatusuuiduuid">GET /simulator/status/uuid/{uuid}</h3>
+<p>Get Instance Status</p>
+<p><strong>Description</strong>
+Get status of the current provided simuation instance</p>
 <p><strong>Input parameters</strong></p>
 <table>
 <thead>
@@ -809,7 +819,7 @@ Delete an instance of simulation</p>
 </tr>
 </tbody>
 </table>
-<h3 id="response-200-ok_3">Response 200 OK</h3>
+<h3 id="response-200-ok_4">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code>
@@ -845,19 +855,10 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="get-simulatorsget_instance_uuids">GET /simulators/get_instance_uuids</h3>
-<p>Get Instance Uuids</p>
+<h3 id="get-simulatorresultsuuiduuid">GET /simulator/results/uuid/{uuid}</h3>
+<p>Get Download Results</p>
 <p><strong>Description</strong>
-Get all running simulation uuids</p>
-<h3 id="response-200-ok_4">Response 200 OK</h3>
-<p><strong>application/json</strong></p>
-<p><strong>Schema of the response body</strong></p>
-<div class="highlight"><pre><span></span><code>
-</code></pre></div>
-<h3 id="get-simulatorspssestatusuuiduuid">GET /simulators/psse/status/uuid/{uuid}</h3>
-<p>Get Instance Status</p>
-<p><strong>Description</strong>
-Get status of the current provided simuation instance</p>
+Download results from a simulation instance</p>
 <p><strong>Input parameters</strong></p>
 <table>
 <thead>
@@ -917,10 +918,10 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="get-simulatorspssedownload_resultsuuiduuid">GET /simulators/psse/download_results/uuid/{uuid}</h3>
-<p>Get Download Results</p>
+<h3 id="get-simulatorloguuiduuid">GET /simulator/log/uuid/{uuid}</h3>
+<p>Get Download Logs</p>
 <p><strong>Description</strong>
-Download results from a simulation instance</p>
+Download logs from a simulation instance</p>
 <p><strong>Input parameters</strong></p>
 <table>
 <thead>
@@ -980,34 +981,44 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="get-simulatorspssedownload_loguuiduuid">GET /simulators/psse/download_log/uuid/{uuid}</h3>
-<p>Get Download Logs</p>
+<h3 id="get">GET /</h3>
+<p>Get Main Page</p>
 <p><strong>Description</strong>
-Download logs from a simulation instance</p>
-<p><strong>Input parameters</strong></p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>In</th>
-<th>Type</th>
-<th>Default</th>
-<th>Nullable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>uuid</td>
-<td>path</td>
-<td>string</td>
-<td></td>
-<td>No</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+Method to handle service info route.</p>
 <h3 id="response-200-ok_7">Response 200 OK</h3>
+<p><strong>application/json</strong></p>
+<p><strong>Schema of the response body</strong></p>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
+<h3 id="post-upload">POST /upload</h3>
+<p>Post Upload Zipped Project</p>
+<p><strong>Description</strong>
+Upload a new zipped project to the server</p>
+<p><strong>Request body</strong></p>
+<p><strong>multipart/form-data</strong></p>
+<p></p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQ="</span>
+<span class="p">}</span>
+</code></pre></div>
+<em>This example has been generated automatically from the schema and it is not
+accurate. Refer to the schema for more information.</em>
+<p><strong>Schema of the request body</strong></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"binary"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File"</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"file"</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Body_post_upload_zipped_project_upload_post"</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="response-200-ok_8">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
 <p><strong>Schema of the response body</strong></p>
 <div class="highlight"><pre><span></span><code>
@@ -1043,71 +1054,7 @@ accurate. Refer to the schema for more information.</em>
 <span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="post-upload_project">POST /upload_project</h3>
-<p>Post Upload Zipped Project</p>
-<p><strong>Description</strong>
-Upload a new zipped project to the server</p>
-<p><strong>Request body</strong></p>
-<p><strong>multipart/form-data</strong></p>
-<p></p><div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQ="</span>
-<span class="p">}</span>
-</code></pre></div>
-<em>This example has been generated automatically from the schema and it is not
-accurate. Refer to the schema for more information.</em>
-<p><strong>Schema of the request body</strong></p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"binary"</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File"</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">"file"</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Body_post_upload_zipped_project_upload_project_post"</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="response-200-ok_8">Response 200 OK</h3>
-<p><strong>application/json</strong></p>
-<p><strong>Schema of the response body</strong></p>
-<div class="highlight"><pre><span></span><code>
-</code></pre></div>
-<h3 id="response-422-unprocessable-entity_7">Response 422 Unprocessable Entity</h3>
-<p><strong>application/json</strong></p>
-<p></p><div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"loc"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="kc">null</span>
-<span class="w">            </span><span class="p">],</span>
-<span class="w">            </span><span class="nt">"msg"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-<em>This example has been generated automatically from the schema and it is not
-accurate. Refer to the schema for more information.</em>
-<p><strong>Schema of the response body</strong></p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/components/schemas/ValidationError"</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Detail"</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HTTPValidationError"</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3 id="get-list_projects">GET /list_projects</h3>
+<h3 id="get-projects">GET /projects</h3>
 <p>Get List Projects</p>
 <h3 id="response-200-ok_9">Response 200 OK</h3>
 <p><strong>application/json</strong></p>
@@ -1116,6 +1063,29 @@ accurate. Refer to the schema for more information.</em>
 </code></pre></div>
 <hr>
 <h2 id="schemas">Schemas</h2>
+<h3 id="apiassetquery">ApiAssetQuery</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>asset_id</td>
+<td></td>
+</tr>
+<tr>
+<td>asset_property</td>
+<td></td>
+</tr>
+<tr>
+<td>asset_type</td>
+<td><a href="#modeltypes">ModelTypes</a></td>
+</tr>
+</tbody>
+</table>
 <h3 id="apicommands">ApiCommands</h3>
 <p>Type: string</p>
 <h3 id="apipssepostrequest">ApiPssePostRequest</h3>
@@ -1158,7 +1128,7 @@ accurate. Refer to the schema for more information.</em>
 </table>
 <h3 id="areaproperties">AreaProperties</h3>
 <p>Type: string</p>
-<h3 id="body_post_upload_zipped_project_upload_project_post">Body_post_upload_zipped_project_upload_project_post</h3>
+<h3 id="body_post_upload_zipped_project_upload_post">Body_post_upload_zipped_project_upload_post</h3>
 <table>
 <thead>
 <tr>
@@ -1179,65 +1149,6 @@ accurate. Refer to the schema for more information.</em>
 <p>Type: string</p>
 <h3 id="dclineproperties">DCLineProperties</h3>
 <p>Type: string</p>
-<h3 id="exportassettypes">ExportAssetTypes</h3>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>areas</td>
-<td></td>
-</tr>
-<tr>
-<td>branches</td>
-<td></td>
-</tr>
-<tr>
-<td>buses</td>
-<td></td>
-</tr>
-<tr>
-<td>dctransmissionlines</td>
-<td></td>
-</tr>
-<tr>
-<td>fixed_shunts</td>
-<td></td>
-</tr>
-<tr>
-<td>induction_generators</td>
-<td></td>
-</tr>
-<tr>
-<td>loads</td>
-<td></td>
-</tr>
-<tr>
-<td>machines</td>
-<td></td>
-</tr>
-<tr>
-<td>stations</td>
-<td></td>
-</tr>
-<tr>
-<td>switched_shunts</td>
-<td></td>
-</tr>
-<tr>
-<td>transformers</td>
-<td></td>
-</tr>
-<tr>
-<td>zones</td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <h3 id="fixedshuntproperties">FixedShuntProperties</h3>
 <p>Type: string</p>
 <h3 id="httpvalidationerror">HTTPValidationError</h3>
@@ -1260,6 +1171,8 @@ accurate. Refer to the schema for more information.</em>
 <h3 id="loadproperties">LoadProperties</h3>
 <p>Type: string</p>
 <h3 id="machinesproperties">MachinesProperties</h3>
+<p>Type: string</p>
+<h3 id="modeltypes">ModelTypes</h3>
 <p>Type: string</p>
 <h3 id="stationproperties">StationProperties</h3>
 <p>Type: string</p>
@@ -1348,6 +1261,8 @@ accurate. Refer to the schema for more information.</em>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../termynal.js"></script>
       
     
   <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
