@@ -6,6 +6,6 @@ PyPSSE enables out of the box integration for co-simulation and co-optimization 
 
 The OpenMDAO framework enables multi-domain co-optimization by structuring the problem as a group of sub problems. ([Ssee OpenMDAO documentation](https://openmdao.org/newdocs/versions/latest/main.html)). The OpenMDAO interface implemented in PyPSSE enables it to a subproblem in a larger co-optimization or co-design problem. 
 
+## Runnning the provided MDAO example 
 
-
-::: pypsse.mdao_interface
+![type:video](https://www.youtube.com/embed/6A7w-g6Lz8M)

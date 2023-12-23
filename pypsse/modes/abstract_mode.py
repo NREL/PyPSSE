@@ -3,9 +3,10 @@
 import numpy as np
 
 from pypsse.common import CASESTUDY_FOLDER, VALUE_UPDATE_BOUND
+from pypsse.enumerations import ModelTypes, WritableModelTypes
 from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
 from pypsse.modes.constants import converter
-from pypsse.enumerations import WritableModelTypes, ModelTypes
+
 
 class AbstractMode:
     def __init__(
@@ -51,7 +52,10 @@ class AbstractMode:
             ModelTypes.STATIONS.value: {
                 "stanofunc": ["SUBNAME", "SUBNUMBER", "BUSES", "GENERATORS", "TRANSFORMERS", "NOMKV", "LOADMW", "GENMW"]
             },
-            ModelTypes.AREAS.value: {"arenofunc": ["AREANAME", "AREANUMBER"], "ardat": ["LOAD", "LOADLD", "LDGN", "LDGNLD", "GEN"]},
+            ModelTypes.AREAS.value: {
+                "arenofunc": ["AREANAME", "AREANUMBER"],
+                "ardat": ["LOAD", "LOADLD", "LDGN", "LDGNLD", "GEN"],
+            },
             ModelTypes.ZONES.value: {
                 "zonnofunc": ["ZONENAME", "ZONENUMBER"],
                 "zndat": ["LOAD", "LOADID", "LDGN", "LDGNLD", "GEN", "LOSS"],
@@ -254,8 +258,7 @@ class AbstractMode:
             },
         }
         self.initialization_complete = False
-        
-        
+
     def save_model(self):
         export_path = self.settings.simulation.project_path / CASESTUDY_FOLDER
 

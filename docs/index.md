@@ -15,28 +15,38 @@ The PSS/E Python API psspy follows functional programming methodology. The API e
 
 Install using pip:
 
-```bash
-pip install pssepy
+<!-- termynal -->
+
+```
+$ pip install NREL-pypsse
+---> 100%
+Installed
 ```
 
 ## Usage
 
 Running an existing PyPSSE project from CLI
 
-```bash
-pypsse run <project path>
+<!-- termynal -->
+
+```
+$ pypsse run <project path>
 ```
 
 Building a new PyPSSE project from CLI
 
-```bash
-pypsse create-project <args>
+<!-- termynal -->
+
+```
+$ pypsse create-project <args>
 ```
 
 Running a PyPSSE server
 
-```bash
-pypsse serve
+<!-- termynal -->
+
+```
+$ pypsse serve
 ```
 
 ## Features

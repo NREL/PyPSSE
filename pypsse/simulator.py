@@ -19,21 +19,21 @@ import pypsse.contingencies as c
 import pypsse.custom_logger as logger
 import pypsse.simulation_controller as sc
 from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS
+from pypsse.enumerations import SimulationStatus
 from pypsse.helics_interface import HelicsInterface
 from pypsse.models import ExportFileOptions, SimulationModes, SimulationSettings
 from pypsse.parsers import gic_parser as gp
 from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
-from pypsse.enumerations import SimulationStatus
 
 USING_NAERM = 0
 
 
 class Simulator:
     "Base class for the simulator"
-    
-    _status:SimulationStatus= SimulationStatus.NOT_INITIALIZED
+
+    _status: SimulationStatus = SimulationStatus.NOT_INITIALIZED
 
     def __init__(self, settings_toml_path="", psse_path=""):
         "Load a valid PyPSSE project and sets up simulation"
@@ -76,10 +76,10 @@ class Simulator:
         ierr = self.psse.psseinit(n_bus)
         assert ierr == 0, f"Error code: {ierr}"
         self.psse.psseinit(n_bus)
-        
+
         self.start_simulation()
         self.init()
-        self._status=SimulationStatus.INITIALIZATION_COMPLETE
+        self._status = SimulationStatus.INITIALIZATION_COMPLETE
 
     def dump_settings(self, dest_dir):
         setting_toml_file = os.path.join(os.path.dirname(__file__), "defaults", "pyPSSE_settings.toml")
@@ -151,7 +151,7 @@ class Simulator:
         self.results = Container(self.settings, self.export_settings)
         self.exp_vars = self.results.get_export_variables()
         self.inc_time = True
-        
+
     def init(self):
         "Initializes the model"
 
@@ -260,8 +260,8 @@ class Simulator:
                 bokeh_server_proc.terminate()
         else:
             self.logger.error("Run init() command to initialize models before running the simulation")
-        self._status ="Simulation complete"
-        
+        self._status = "Simulation complete"
+
     def get_bus_ids(self):
         "Returns bus IDs"
 
@@ -290,7 +290,7 @@ class Simulator:
 
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             self.publish_data()
-        
+
         curr_results = self.update_result_container(t)
         return curr_results
 
@@ -299,7 +299,7 @@ class Simulator:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
-            
+
         if not USING_NAERM:
             if not self.export_settings.export_results_using_channels:
                 self.results.update(curr_results, t, self.sim.get_time(), self.sim.has_converged())
@@ -331,7 +331,6 @@ class Simulator:
         )
         self._status = SimulationModes.RESULT_EXPORT_COMPLETE
         return curr_results
-
 
     def status(self):
         return self._status.value

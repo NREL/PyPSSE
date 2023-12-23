@@ -24,7 +24,6 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-
     "click",
     "h5py",
     "helics",
@@ -79,6 +78,7 @@ doc = [
   "mkdocs-table-reader-plugin",
   "mkdocs-video",
   "neoteroi-mkdocs",
+  "termynal"
 ]
 dev = [
   "pylint",
@@ -90,6 +90,10 @@ server = [
   "fastapi",
   "websockets",
   "python-multipart"
+]
+mdao = [
+  "openmdao",
+  "pyDOE3"
 ]
 
 [tool.hatch.envs.lint]

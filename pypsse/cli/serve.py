@@ -5,7 +5,6 @@ CLI to run the PyDSS server
 import logging
 
 import click
-from aiohttp import web
 
 from pypsse.api.server import run_server
 

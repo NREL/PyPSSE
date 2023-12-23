@@ -13,11 +13,17 @@ This page provides details on the enumerated classes part of the PyPSSE library.
 
 |Key|Value|
 | :--- | :--- |
-|pypsse.enumerations.ApiCommands.RUN|run_simulation|
+|pypsse.enumerations.ApiCommands.RUN_SIMUALTION|run_simulation|
 |pypsse.enumerations.ApiCommands.STATUS|status|
-|pypsse.enumerations.ApiCommands.SOLVE|run_step|
-|pypsse.enumerations.ApiCommands.RESULTS|get_results|
-|pypsse.enumerations.ApiCommands.CLOSE|close_case|
+|pypsse.enumerations.ApiCommands.SOLVE_STEP|run_step|
+|pypsse.enumerations.ApiCommands.OPEN_CASE|open_case|
+|pypsse.enumerations.ApiCommands.CLOSE_CASE|close_case|
+|pypsse.enumerations.ApiCommands.UDPATE_MODEL|update_model|
+|pypsse.enumerations.ApiCommands.UPDATE_PARAMETERS|update_settings|
+|pypsse.enumerations.ApiCommands.QUERY_ALL|query_all|
+|pypsse.enumerations.ApiCommands.QUERY_BY_ID|query_by_asset|
+|pypsse.enumerations.ApiCommands.QUERY_BY_PPTY|query_by_ppty|
+|pypsse.enumerations.ApiCommands.QUERY_ASSET_LIST|query_asset_list|
  
 ## AreaProperties
  

@@ -19,6 +19,9 @@ plugins:
           options:
             show_symbol_type_heading: true
   - glightbox
+  - termynal:
+      title: anaconda prompt
+      buttons: windows
 
 
 nav:

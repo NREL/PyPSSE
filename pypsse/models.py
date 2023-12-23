@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Literal, Optional, Union, Dict
-from typing_extensions import Annotated
+from typing import Dict, List, Literal, Optional, Union
 
 import pandas as pd
-from pydantic import BaseModel, Field, model_validator, UUID4
+from pydantic import UUID4, BaseModel, Field, model_validator
 from pydantic.networks import IPvAnyAddress
+from typing_extensions import Annotated
 
 from pypsse.common import CASESTUDY_FOLDER, EXPORTS_FOLDER, LOGS_FOLDER
 from pypsse.enumerations import (
+    ApiCommands,
     AreaProperties,
     BranchProperties,
     BusProperties,
@@ -30,9 +31,8 @@ from pypsse.enumerations import (
     SwitchedShuntProperties,
     TransformerProperties,
     UseModes,
-    ZoneProperties,
     WritableModelTypes,
-    ApiCommands,
+    ZoneProperties,
 )
 
 
@@ -341,6 +341,7 @@ class ExportAssetTypes(BaseModel):
     induction_generators: Optional[List[InductionGeneratorProperties]] = None
     machines: Optional[List[MachinesProperties]] = None
 
+
 class ExportFileOptions(ExportAssetTypes):
     "Export settings for a PyPSSE project"
 
@@ -356,56 +357,83 @@ class ProjectDefination(BaseModel):
     overwrite: bool = False
     autofill: bool = True
     project_name: str
-    project_folders: List[ProjectFolders] = [x for x in ProjectFolders]
+    project_folders: List[ProjectFolders] = list(ProjectFolders)
     simulation_settings: SimulationSettings
     export_settings: ExportFileOptions
 
+
 class MdaoOutput(BaseModel):
-    buses : List[int]
+    buses: List[int]
     quantities: Dict[ModelTypes, List[str]]
+
 
 class MdaoInput(BaseModel):
     asset_type: WritableModelTypes
     asset_bus: int
     asset_id: str
     attributes: Dict
-    
+
+
 class MdaoProblem(BaseModel):
-    outputs : MdaoOutput
-    inputs : List[MdaoInput]
+    outputs: MdaoOutput
+    inputs: List[MdaoInput]
+
 
 class ApiPsseReply(BaseModel):
     status: str
     message: str
-    uuid: Union[UUID4, None]=None
+    uuid: Union[UUID4, None] = None
+
 
 class ApiPsseException(BaseModel):
     message: str
-    uuid: Union[UUID4, None]=None
+    uuid: Union[UUID4, None] = None
+
 
 class ApiPsseReplyInstances(BaseModel):
     status: str
     message: str
     simulators: List[UUID4] = []
 
+
 class ApiAssetQuery(BaseModel):
     asset_type: ModelTypes
-    asset_property: Optional[Union[
-        BusProperties, AreaProperties, ZoneProperties, StationProperties, DCLineProperties, LoadProperties, FixedShuntProperties,SwitchedShuntProperties,
-        TransformerProperties, BranchProperties, InductionGeneratorProperties, MachinesProperties
-    ]] = None
+    asset_property: Optional[
+        Union[
+            BusProperties,
+            AreaProperties,
+            ZoneProperties,
+            StationProperties,
+            DCLineProperties,
+            LoadProperties,
+            FixedShuntProperties,
+            SwitchedShuntProperties,
+            TransformerProperties,
+            BranchProperties,
+            InductionGeneratorProperties,
+            MachinesProperties,
+        ]
+    ] = None
     asset_id: Optional[str] = None
-    
+
     @model_validator(mode="after")
     def define_atleast_one(self):
-        assert not (self.asset_id is None and self.asset_property is None), f"Atleast one 'asset_id' or 'asset_property' should be defined"
+        assert not (
+            self.asset_id is None and self.asset_property is None
+        ), "Atleast one 'asset_id' or 'asset_property' should be defined"
         return self
 
+
 class ApiPssePutRequest(BaseModel):
-    uuid:UUID4
+    uuid: UUID4
     command: ApiCommands
     parameters: Optional[ApiAssetQuery] = None
 
-    
+
 class ApiPssePostRequest(BaseModel):
     project_name: str = "static_example"
+
+
+class ApiWebSocketRequest(BaseModel):
+    command: ApiCommands
+    parameters: Optional[Dict] = None

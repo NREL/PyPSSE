@@ -18,7 +18,7 @@ Valid HELICS interface settings are:
 
 ## Setting up subscriptions
 
-Federate subscriptions can be set up by creatting a `Subscription.csv`. The table below presents an example implementation.  
+Federate subscriptions can be set up by creating a `Subscription.csv`. The table below presents an example implementation.  
 
 {{ read_csv('docs/code/subscriptions.csv') }}
 
@@ -55,6 +55,6 @@ The following data models can be refered to ensure valid implementation. Results
 
 Both interfaces can be used simultaneously as well
 
-## Additional co-simulation options
+## Running the provided HELICS example 
 
-::: pypsse.helics_interface
+![type:video](https://www.youtube.com/embed/gMTbxpJai7Y)
