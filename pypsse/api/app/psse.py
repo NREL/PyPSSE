@@ -283,7 +283,6 @@ class SimulatorAPI(SimulatorUtils):
             self.run()
         except Exception as e:
             result = ApiPsseReply(status=HTTPStatus.INTERNAL_SERVER_ERROR, message=str(e), uuid=self.uuid)
-        else:
             logger.error(result.model_dump_json())
 
     def run(self):
@@ -309,7 +308,9 @@ class SimulatorAPI(SimulatorUtils):
                                 command_return = command(parameters=task["parameters"])
                             else:
                                 command_return = command()
-                            result = ApiPsseReply(status=HTTPStatus.OK, message=command_return)
+                            print("command_return: ", command_return)
+                            result = ApiPsseReply(status=HTTPStatus.OK, message=json.dumps(command_return))
+                            print("ApiPsseReply: ", result)
                         except Exception as e:
                             result = ApiPsseReply(status=HTTPStatus.INTERNAL_SERVER_ERROR, message=str(e))
 
