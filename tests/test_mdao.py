@@ -6,8 +6,8 @@ import openmdao.api as om
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
 from pypsse.mdao_interface import PSSEModel
 
+
 def test_mdao_example():
-    
     examples_path = Path(__file__).parent.parent
     sim_setting_filepath = examples_path / "static_example" / SIMULATION_SETTINGS_FILENAME
     mdao_io_filepath = Path(__file__).parent / "mdao_settings.toml"
@@ -21,11 +21,9 @@ def test_mdao_example():
 
     prob = om.Problem(model)
 
-
     prob.driver = om.DifferentialEvolutionDriver()
     prob.driver.options["max_gen"] = 3
     prob.driver.options["pop_size"] = 3
-
 
     for input_name in psse_subsystem._list_inputs():
         prob.model.add_design_var(input_name, lower=0.0, upper=5.0)

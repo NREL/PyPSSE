@@ -1,10 +1,11 @@
+from loguru import logger
+
 from pypsse.models import SimulationSettings
 from pypsse.modes.dynamic import Dynamic
 from pypsse.modes.pcm import ProductionCostModel
 from pypsse.modes.snap import Snap
 from pypsse.modes.static import Static
 
-from loguru import logger
 
 def sim_controller(psse, dyntools, settings: SimulationSettings, export_settings, subsystem_buses, raw_data):
     "Sets up an appropriate simualtion controller based on user input"

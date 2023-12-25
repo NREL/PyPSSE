@@ -10,13 +10,14 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
 import toml
+from loguru import logger
 
 import pypsse.contingencies as c
-from loguru import  logger
 import pypsse.simulation_controller as sc
 from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS
 from pypsse.enumerations import SimulationStatus
@@ -27,8 +28,6 @@ from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
 
-from typing import Union
-
 USING_NAERM = 0
 
 
@@ -37,15 +36,14 @@ class Simulator:
 
     _status: SimulationStatus = SimulationStatus.NOT_INITIALIZED
 
-    def __init__(self, settings:SimulationSettings, psse_path:Union[str, Path]=''):
-        """"Load a valid PyPSSE project and sets up simulation"
+    def __init__(self, settings: SimulationSettings, psse_path: Union[str, Path] = ""):
+        """ "Load a valid PyPSSE project and sets up simulation"
 
         Args:
             settings_toml_path (SimulationSettings): simulation settings
             psse_path (Union[str, Path], optional): Path to python environment within the PSS/e install directory (overrides value in simulation settings)
         """
-        
-        
+
         self._status = SimulationStatus.STARTING_INSTANCE
         self.settings = settings
         export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
@@ -79,7 +77,7 @@ class Simulator:
 
         self.dyntools = dyntools
         self.psse = psspy
-        #logger.debug('Initializing PSS/E. connecting to license server')
+        # logger.debug('Initializing PSS/E. connecting to license server')
         ierr = self.psse.psseinit(n_bus)
         assert ierr == 0, f"Error code: {ierr}"
         self.psse.psseinit(n_bus)
@@ -264,7 +262,7 @@ class Simulator:
             if bokeh_server_proc is not None:
                 bokeh_server_proc.terminate()
         else:
-           logger.error("Run init() command to initialize models before running the simulation")
+            logger.error("Run init() command to initialize models before running the simulation")
         self._status = "Simulation complete"
 
     def get_bus_ids(self):

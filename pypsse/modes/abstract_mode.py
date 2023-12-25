@@ -1,13 +1,13 @@
 # Standard imports
 
 import numpy as np
+from loguru import logger
 
 from pypsse.common import CASESTUDY_FOLDER, VALUE_UPDATE_BOUND
 from pypsse.enumerations import ModelTypes, WritableModelTypes
 from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
 from pypsse.modes.constants import converter
 
-from loguru import logger
 
 class AbstractMode:
     def __init__(

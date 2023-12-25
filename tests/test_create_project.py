@@ -11,7 +11,6 @@ from pypsse.project import Project
 from pypsse.simulator import Simulator
 from pypsse.utils.utils import load_settings
 
-
 PROJECT_CREATION_SETTINGS = {
     "simulation_file": None,
     "export_settings_file": None,

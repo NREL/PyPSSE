@@ -1,22 +1,17 @@
-from websockets.sync.client import connect
-
-from pypsse.enumerations import ApiCommands
-from pypsse.models import ApiAssetQuery, ApiWebSocketRequest
-
 from fastapi.testclient import TestClient
-
 from websockets.sync.client import connect
 
 from pypsse.api.server import Server
+from pypsse.enumerations import ApiCommands
+from pypsse.models import ApiAssetQuery, ApiWebSocketRequest
 
 server = Server()
 
 client = TestClient(server.app)
 
+
 def test_web_sockt_interface():
-
     with client.websocket_connect("/simulator/ws") as conn:
-
         request = ApiWebSocketRequest(command=ApiCommands.STATUS, parameters=None)
 
         conn.send(request.model_dump_json())
@@ -28,9 +23,9 @@ def test_web_sockt_interface():
         conn.send_json(request.model_dump_json())
         results = conn.receive_json()
         print(results)  # noqa
-        
+
         for _ in range(10):
-            request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)           
+            request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)
             conn.send_json(request.model_dump_json())
             results = conn.receive_json()
             print(results)  # noqa
@@ -50,10 +45,11 @@ def test_web_sockt_interface():
         results = conn.receive_json()
         print(results)  # noqa
 
+
 import json
 
-def my_simple_test():
 
+def my_simple_test():
     conn = connect("ws://127.0.0.1:9090/simulator/ws")
     results = json.loads(conn.recv())
     request = ApiWebSocketRequest(command=ApiCommands.STATUS, parameters=None)
@@ -72,7 +68,7 @@ def my_simple_test():
         request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)
         conn.send(request.model_dump_json())
         results = json.loads(conn.recv())
-        
+
         request = ApiWebSocketRequest(
             command=ApiCommands.QUERY_BY_PPTY.value,
             parameters=ApiAssetQuery(asset_type="Buses", asset_property="PU", asset_id="153").model_dump(),
@@ -82,7 +78,6 @@ def my_simple_test():
         results = json.loads(conn.recv())
         print(results["message"])  # noqa
 
-
     request_end = "END"
 
     conn.send(request_end)
@@ -91,5 +86,6 @@ def my_simple_test():
 
     conn.close()
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     my_simple_test()

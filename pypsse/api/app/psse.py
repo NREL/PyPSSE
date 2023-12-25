@@ -38,7 +38,7 @@ class SimulatorUtils:
             self.time = self.psse_obj.settings.simulation.start_time
         except Exception as e:
             return str(e)
-        return 
+        return
 
     def close_case(self):
         self.psse_obj.PSSE.pssehalt_2()

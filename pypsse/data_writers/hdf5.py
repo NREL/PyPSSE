@@ -1,11 +1,11 @@
 # Standard libraries
 # from common import dtype_MAPPING
-from loguru import logger
 import os
 
 import h5py
 import numpy as np
 import pandas as pd
+from loguru import logger
 
 from pypsse.common import DEFAULT_RESULTS_FILENAME
 

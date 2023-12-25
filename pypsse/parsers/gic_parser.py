@@ -2,10 +2,10 @@ import os
 
 import networkx as nx
 import pandas as pd
+from loguru import logger
 
 from pypsse.models import SimulationSettings
 
-from loguru import logger
 
 class GICParser:
     valid_verions = ["3"]
@@ -24,9 +24,7 @@ class GICParser:
                 logger.debug(f"Reading GIC file verion {verion}")
             else:
                 vers = ",".join(self.valid_verions)
-                logger.debug(
-                    f"Version {verion} is not supported.\nFollowing version are currently supported: {vers}"
-                )
+                logger.debug(f"Version {verion} is not supported.\nFollowing version are currently supported: {vers}")
         else:
             logger.debug("GIC file structue does not seem to be valid")
 
@@ -158,6 +156,3 @@ class GICParser:
         )
         bus_data.to_csv(export_path)
         logger.debug(f"Bus coordinate file exported to: {export_path}")
-
-
-

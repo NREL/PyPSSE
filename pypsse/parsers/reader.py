@@ -1,6 +1,7 @@
+from loguru import logger
 
 from pypsse.common import MAPPED_CLASS_NAMES
-from loguru import logger
+
 
 class Reader:
     "Parser for indexing all PSSE model assets"

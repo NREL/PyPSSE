@@ -1,11 +1,11 @@
 import pandas as pd
+from loguru import logger
 
 from pypsse.common import EXPORTS_FOLDER, MAPPED_CLASS_NAMES
 from pypsse.data_writers.data_writer import DataWriter
 from pypsse.enumerations import BulkWriteModes, StreamedWriteModes
 from pypsse.models import ExportAssetTypes, ModelTypes, SimulationSettings
 
-from loguru import logger
 
 class Container:
     "Class defination for the simulation result container"
@@ -79,8 +79,7 @@ class Container:
                     df2 = pd.DataFrame.from_dict([bus_data[variable_name]])
                     concatenated = pd.concat([df1, df2])
                     self.results[f"{variable_name}"] = concatenated
-        logger.debug(f"result container updated")
-
+        logger.debug("result container updated")
 
     def export_results(self):
         "Exports all results stored to an external file."

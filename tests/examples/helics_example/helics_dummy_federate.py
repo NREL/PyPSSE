@@ -69,6 +69,6 @@ def run_dummy_federate():
     h.helicsFederateFree(vfed)
     h.helicsCloseLibrary()
 
+
 if __name__ == "__main__":
     run_dummy_federate()
-    
