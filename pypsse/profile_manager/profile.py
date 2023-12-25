@@ -2,10 +2,10 @@ import copy
 import datetime
 
 import numpy as np
+from loguru import logger
 
 from pypsse.profile_manager.common import PROFILE_VALIDATION
 
-from loguru import logger
 
 class Profile:
     "Class defination fora single profile"

@@ -2,7 +2,6 @@ import ast
 
 import helics as h
 import pandas as pd
-
 from loguru import logger
 
 from pypsse.common import MAPPED_CLASS_NAMES, VALUE_UPDATE_BOUND
@@ -20,9 +19,7 @@ class HelicsInterface:
     init_state = 1
     dynamic_params = ("FmA", "FmB", "FmC", "FmD", "Fel")
 
-    def __init__(
-        self, psse, sim, settings: SimulationSettings, export_settings: ExportFileOptions, bus_subsystems
-    ):
+    def __init__(self, psse, sim, settings: SimulationSettings, export_settings: ExportFileOptions, bus_subsystems):
         "Sets up the co-simulation federate"
         self.bus_pubs = ["bus_id", "bus_Vmag", "bus_Vang", "bus_dev"]
         self.psse = psse
@@ -46,9 +43,7 @@ class HelicsInterface:
         itr_flag = h.helics_iteration_request_iterate_if_needed
         while True:
             itr_status = h.helicsFederateEnterExecutingModeIterative(self.psse_federate, itr_flag)
-            logger.debug(
-                f"--- Iter {itr}: Iteration Status = {itr_status}, Passed Iteration Requestion = {itr_flag}"
-            )
+            logger.debug(f"--- Iter {itr}: Iteration Status = {itr_status}, Passed Iteration Requestion = {itr_flag}")
             if itr_status == h.helics_iteration_result_next_step:
                 break
 

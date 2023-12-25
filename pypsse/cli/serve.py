@@ -6,8 +6,6 @@ import click
 from pypsse.api.server import run_server
 
 
-
-
 @click.option(
     "-p",
     "--port",

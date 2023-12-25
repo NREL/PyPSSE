@@ -3,12 +3,11 @@ import json
 import numpy as np
 import openmdao.api as om
 import toml
+from loguru import logger
 
 from pypsse.models import MdaoProblem, SimulationSettings
 from pypsse.simulator import Simulator
 
-from loguru import logger
-import toml
 
 class PSSE:
     "The class defines the PSSE interface to OpenMDAO"
@@ -17,7 +16,7 @@ class PSSE:
     def load_model(self, settings_file_path):
         "Load the PyPSSE model"
         settings = toml.load(settings_file_path)
-        settings["simulation"]['project_path'] = settings_file_path.parent
+        settings["simulation"]["project_path"] = settings_file_path.parent
         settings = SimulationSettings(**settings)
         self.psse_obj = Simulator(settings)
         self.assets = self.psse_obj.raw_data
@@ -99,7 +98,7 @@ class PSSE:
         "Solves for the current time set and incremetn in time"
         self.psse_obj.inc_time = False
         self.current_result = self.psse_obj.step(self.time_counter)
-        
+
     def export_result(self):
         "Updates results in the result container"
         if not self.psse_obj.export_settings.export_results_using_channels:
@@ -112,18 +111,18 @@ class PSSE:
         "Closes the loaded model in PyPSSE"
         self.psse_obj.psse.pssehalt_2()
         del self.psse_obj
-        logger.info(f"PSSE case closed.")
+        logger.info("PSSE case closed.")
 
     def update_ouputs(self, outputs, results):
         for output in outputs:
             result = np.array(results[output])
             outputs[output] = result
-        logger.info(f"MDAO outputs updates.")
+        logger.info("MDAO outputs updates.")
 
     def read_problem_data(self, problem_file):
         data = toml.load(problem_file)
         self.probelm = MdaoProblem(**data)
-        logger.info(f"MDAO probelm parameters read. Building inputs and outputs.")
+        logger.info("MDAO probelm parameters read. Building inputs and outputs.")
 
     def __del__(self):
         self.export_result()

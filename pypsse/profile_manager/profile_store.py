@@ -4,6 +4,7 @@ import h5py
 import numpy as np
 import pandas as pd
 import toml
+from loguru import logger
 
 from pypsse.common import DEFAULT_PROFILE_MAPPING_FILENAME, DEFAULT_PROFILE_STORE_FILENAME, PROFILES_FOLDER
 from pypsse.exceptions import InvalidParameterError
@@ -11,7 +12,6 @@ from pypsse.models import SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
 from pypsse.profile_manager.profile import Profile
 
-from loguru import logger
 
 class ProfileManager:
     """Implentation for the profile manager for PyPSSE.

@@ -3,10 +3,10 @@
 
 from abc import ABCMeta
 
+from loguru import logger
+
 # from pyPSSE import
 from pypsse.models import BusFault, BusTrip, LineFault, LineTrip, MachineTrip, SimulationSettings
-
-from loguru import logger
 
 
 def build_contingencies(psse, settings: SimulationSettings):
@@ -16,9 +16,7 @@ def build_contingencies(psse, settings: SimulationSettings):
         for contingency in settings.contingencies:
             contingency_type = contingency.__class__.__name__
             if contingency_type in contingencies:
-                system_contingencies.append(
-                    contingencies[contingency_type](psse, contingency, contingency_type)
-                )
+                system_contingencies.append(contingencies[contingency_type](psse, contingency, contingency_type))
                 logger.debug(f'Contingency of type "{contingency_type}" added')
             else:
                 logger.warning("Invalid contingency type. Valid values are: {}".format(",".join(contingencies.keys())))

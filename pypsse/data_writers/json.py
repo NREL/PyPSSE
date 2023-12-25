@@ -1,8 +1,10 @@
 # Standard libraries
 # from common import dtype_MAPPING
 import json
-from loguru import logger
 import os
+
+from loguru import logger
+
 
 class JSONWriter:
     """Class that handles writing simulation results to arrow

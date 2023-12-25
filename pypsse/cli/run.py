@@ -4,12 +4,13 @@ CLI to run a PyDSS project
 
 
 import os
-import toml
+
 import click
+import toml
 
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
-from pypsse.simulator import Simulator
 from pypsse.models import SimulationSettings
+from pypsse.simulator import Simulator
 
 
 @click.argument(
@@ -33,6 +34,5 @@ def run(project_path, simulations_file=None):
         x = Simulator(settings)
         x.run()
     else:
-        msg = f"Simulation file not found. Use -s to choose a valid settings file if its name differs from the default file name."
+        msg = "Simulation file not found. Use -s to choose a valid settings file if its name differs from the default file name."
         raise Exception(msg)
-

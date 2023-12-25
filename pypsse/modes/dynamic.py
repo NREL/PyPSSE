@@ -1,11 +1,11 @@
 import numpy as np
+from loguru import logger
 
 from pypsse.models import ExportSettings, SimulationSettings
 from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, converter, dyn_only_options
 from pypsse.utils.dynamic_utils import DynamicUtils
 
-from loguru import logger
 
 class Dynamic(AbstractMode, DynamicUtils):
     "Class defination for dynamic simulation mode (uses dyr and raw files)"

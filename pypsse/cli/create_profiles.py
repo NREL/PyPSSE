@@ -4,11 +4,11 @@ CLI to run a PyDSS project
 
 
 import datetime as dt
-from loguru import logger
 import os
 
 import click
 import toml
+from loguru import logger
 
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
 from pypsse.profile_manager.common import (

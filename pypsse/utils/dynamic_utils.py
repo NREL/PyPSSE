@@ -2,11 +2,11 @@ import os
 from typing import ClassVar, List
 
 import pandas as pd
+from loguru import logger
 
 from pypsse.common import MACHINE_CHANNELS
 from pypsse.modes.constants import dyn_only_options
 
-from loguru import logger
 
 class DynamicUtils:
     "Utility functions for dynamic simulations"
@@ -244,9 +244,7 @@ class DynamicUtils:
                 elif qty == "voltage_and_angle":
                     self.channel_map[qty][b] = [self.chnl_idx, self.chnl_idx + 1]
                     self.psse.voltage_and_angle_channel([self.chnl_idx, -1, -1, int(b)], "")
-                    logger.info(
-                        f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}"
-                    )
+                    logger.info(f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}")
                     self.chnl_idx += 2
 
     def poll_channels(self):

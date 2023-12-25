@@ -6,6 +6,7 @@ from shutil import copy
 
 import pandas as pd
 import toml
+from loguru import logger
 
 from pypsse.common import (
     CASESTUDY_FOLDER,
@@ -26,7 +27,6 @@ from pypsse.enumerations import SubscriptionFileRequiredColumns
 from pypsse.models import ExportFileOptions, ProjectDefination, SimulationSettings
 from pypsse.profile_manager.profile_store import ProfileManager
 
-from loguru import logger
 
 class Project:
     "This class defines the structure of a PyPSSE project"

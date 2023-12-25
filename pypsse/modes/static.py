@@ -1,9 +1,11 @@
 # Standard imports
 import os
 
+from loguru import logger
+
 # Internal imports
 from pypsse.modes.abstract_mode import AbstractMode
-from loguru import logger
+
 
 class Static(AbstractMode):
     def __init__(self, psse, dyntools, settings, export_settings, subsystem_buses, raw_data):
