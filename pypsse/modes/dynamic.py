@@ -5,6 +5,7 @@ from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, converter, dyn_only_options
 from pypsse.utils.dynamic_utils import DynamicUtils
 
+from loguru import logger
 
 class Dynamic(AbstractMode, DynamicUtils):
     "Class defination for dynamic simulation mode (uses dyr and raw files)"
@@ -15,11 +16,10 @@ class Dynamic(AbstractMode, DynamicUtils):
         dyntools,
         settings: SimulationSettings,
         export_settings: ExportSettings,
-        logger,
         subsystem_buses,
         raw_data,
     ):
-        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
+        super().__init__(psse, dyntools, settings, export_settings, subsystem_buses, raw_data)
         self.time = settings.simulation.start_time
         self._StartTime = settings.simulation.start_time
         self.incTime = settings.simulation.simulation_step_resolution
@@ -51,7 +51,7 @@ class Dynamic(AbstractMode, DynamicUtils):
         # self.psse.save(self.study_case_path.split('.')[0] + ".sav")
         dyr_path = self.settings.simulation.dyr_file
         assert dyr_path and dyr_path.exists
-        self.logger.debug(f"Loading dynamic model....{dyr_path}")
+        logger.debug(f"Loading dynamic model....{dyr_path}")
         self.psse.dynamicsmode(1)
         ierr = self.psse.dyre_new([1, 1, 1, 1], str(dyr_path), r"""conec""", r"""conet""", r"""compile""")
 
@@ -72,7 +72,7 @@ class Dynamic(AbstractMode, DynamicUtils):
             msg = f'Error loading dynamic model file "{dyr_path}". Error code - {ierr}'
             raise Exception(msg)
         else:
-            self.logger.debug(f"Dynamic file {dyr_path} sucessfully loaded")
+            logger.debug(f"Dynamic file {dyr_path} sucessfully loaded")
 
         self.disable_load_models_for_coupled_buses()
 
@@ -102,11 +102,11 @@ class Dynamic(AbstractMode, DynamicUtils):
             raise Exception(msg)
         else:
             self.initialization_complete = True
-            self.logger.debug("Dynamic simulation initialization sucess!")
+            logger.debug("Dynamic simulation initialization sucess!")
         # get load info for the sub system
         self.load_info = self.get_load_indices(bus_subsystems)
 
-        self.logger.debug("pyPSSE initialization complete!")
+        logger.debug("pyPSSE initialization complete!")
 
         self.xTime = 0
 
@@ -203,5 +203,5 @@ class Dynamic(AbstractMode, DynamicUtils):
                                                 obj_name = f"{bus}_{ld_id}"
                                                 results[res_base][obj_name] = value
             else:
-                self.logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
+                logger.warning("Extend function 'read_subsystems' in the Dynamic class (Dynamic.py)")
         return results

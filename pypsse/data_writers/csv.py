@@ -23,13 +23,7 @@ class CSVWriter:
 
     def write(self, currenttime, powerflow_output):
         """
-        Writes the status of BES assets at a particular timestep to an
-            arrow file.
-
-        :param fed_name: name of BES federate
-        :param log_fields: list of objects to log
-        :param currenttime: simulation timestep
-        :param powerflow_output: Powerflow solver timestep output as a dict
+        Writes the status of BES assets at a particular timestep to an arrow file.
         """
         # Iterate through each object type
         self.timestamps.append(currenttime)

@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 from distutils.dir_util import copy_tree
 from pathlib import Path
@@ -27,12 +26,12 @@ from pypsse.enumerations import SubscriptionFileRequiredColumns
 from pypsse.models import ExportFileOptions, ProjectDefination, SimulationSettings
 from pypsse.profile_manager.profile_store import ProfileManager
 
+from loguru import logger
 
 class Project:
     "This class defines the structure of a PyPSSE project"
 
     def __init__(self):
-        logging.root.setLevel("DEBUG")
         self.basepath = Path(__file__).parent
 
     def create(
@@ -152,25 +151,25 @@ class Project:
 
         if "dll" in psse_files:
             self.project.simulation_settings.simulation.user_models = psse_files["dll"]
-            logging.info(f"user_models={psse_files['dll']}")
+            logger.info(f"user_models={psse_files['dll']}")
         else:
-            logging.info("No DLL files found in project path")
+            logger.info("No DLL files found in project path")
 
         if "idv" in psse_files:
             self.project.simulation_settings.simulation.setup_files = psse_files["idv"]
-            logging.info(
+            logger.info(
                 f"setup_files={psse_files['idv']}"
                 f"\nSequence of IDV setup files is important. Manually change in TOML file if needed"
             )
         else:
-            logging.info("No IDV files found in project path")
+            logger.info("No IDV files found in project path")
 
         store_path = self.project_path / PROFILES_FOLDER
         if profile_store_file and Path(profile_store_file).exists():
             assert Path(profile_store_file).suffix.lower() == ".hdf5", "Store file should be a valid hdf5 file"
             copy(profile_store_file, store_path)
         else:
-            ProfileManager(None, None, self.project.simulation_settings, logging)
+            ProfileManager(None, None, self.project.simulation_settings)
 
         if profile_mapping_file and Path(profile_mapping_file).exists():
             assert Path(profile_mapping_file).suffix.lower() == ".toml", "Profile mapping should be a valid toml file"
@@ -189,19 +188,19 @@ class Project:
         subscription_fields = [x.value for x in SubscriptionFileRequiredColumns]
         data = pd.DataFrame({}, columns=list(subscription_fields))
         data.to_csv(self.project_path / DEFAULT_SUBSCRIPTION_FILENAME, index=False)
-        logging.info("Creating subscription template")
+        logger.info("Creating subscription template")
         self.project.simulation_settings.simulation.subscriptions_file = DEFAULT_SUBSCRIPTION_FILENAME
 
     def _update_setting(self, f_type, key, psse_files):
         if f_type in psse_files:
             relevent_files = psse_files[f_type]
             setattr(self.project.simulation_settings.simulation, key, relevent_files[0])
-            logging.info(f"Settings:{key}={relevent_files[0]}")
+            logger.info(f"Settings:{key}={relevent_files[0]}")
             if len(relevent_files) > 1:
-                logging.warning(
+                logger.warning(
                     f"More than one file with extension {f_type} exist."
                     f"\nFiles found: {relevent_files}"
                     f"\nManually update the settings toml file"
                 )
         else:
-            logging.warning(f"No file with extension '{f_type}'")
+            logger.warning(f"No file with extension '{f_type}'")

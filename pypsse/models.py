@@ -381,7 +381,7 @@ class MdaoProblem(BaseModel):
 
 class ApiPsseReply(BaseModel):
     status: str
-    message: str
+    message: Union[Dict, str]
     uuid: Union[UUID4, None] = None
 
 

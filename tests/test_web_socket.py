@@ -3,40 +3,93 @@ from websockets.sync.client import connect
 from pypsse.enumerations import ApiCommands
 from pypsse.models import ApiAssetQuery, ApiWebSocketRequest
 
-conn = connect("ws://127.0.0.1:9090/simulator/ws")
+from fastapi.testclient import TestClient
 
-request = ApiWebSocketRequest(command=ApiCommands.STATUS, parameters=None)
+from websockets.sync.client import connect
 
-conn.send(request.model_dump_json())
-results = conn.recv()
-print(results)  # noqa
+from pypsse.api.server import Server
 
-request = ApiWebSocketRequest(command=ApiCommands.OPEN_CASE, parameters={"project_name": "static_example"})
+server = Server()
 
-conn.send(request.model_dump_json())
-results = conn.recv()
-print(results)  # noqa
+client = TestClient(server.app)
 
-for _ in range(10):
-    request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)
+def test_web_sockt_interface():
+
+    with client.websocket_connect("/simulator/ws") as conn:
+
+        request = ApiWebSocketRequest(command=ApiCommands.STATUS, parameters=None)
+
+        conn.send(request.model_dump_json())
+        results = conn.receive_json()
+        print(results)  # noqa
+
+        request = ApiWebSocketRequest(command=ApiCommands.OPEN_CASE, parameters={"project_name": "static_example"})
+        print(request.model_dump_json())
+        conn.send_json(request.model_dump_json())
+        results = conn.receive_json()
+        print(results)  # noqa
+        
+        for _ in range(10):
+            request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)           
+            conn.send_json(request.model_dump_json())
+            results = conn.receive_json()
+            print(results)  # noqa
+
+            request = ApiWebSocketRequest(
+                command=ApiCommands.QUERY_BY_PPTY.value,
+                parameters=ApiAssetQuery(asset_type="Buses", asset_property="PU", asset_id="153").model_dump(),
+            )
+
+            conn.send_json(request.model_dump_json())
+            results = conn.receive_json()
+            print(results)  # noqa
+
+        request_end = "END"
+
+        conn.send_json(request_end)
+        results = conn.receive_json()
+        print(results)  # noqa
+
+import json
+
+def my_simple_test():
+
+    conn = connect("ws://127.0.0.1:9090/simulator/ws")
+    results = json.loads(conn.recv())
+    request = ApiWebSocketRequest(command=ApiCommands.STATUS, parameters=None)
+
     conn.send(request.model_dump_json())
     results = conn.recv()
     print(results)  # noqa
 
-    request = ApiWebSocketRequest(
-        command=ApiCommands.QUERY_BY_PPTY.value,
-        parameters=ApiAssetQuery(asset_type="Buses", asset_property="PU", asset_id="153").model_dump(),
-    )
+    request = ApiWebSocketRequest(command=ApiCommands.OPEN_CASE, parameters={"project_name": "static_example"})
 
     conn.send(request.model_dump_json())
     results = conn.recv()
     print(results)  # noqa
 
+    for _ in range(10):
+        request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)
+        conn.send(request.model_dump_json())
+        results = json.loads(conn.recv())
+        
+        request = ApiWebSocketRequest(
+            command=ApiCommands.QUERY_BY_PPTY.value,
+            parameters=ApiAssetQuery(asset_type="Buses", asset_property="PU", asset_id="153").model_dump(),
+        )
 
-request_end = "END"
+        conn.send(request.model_dump_json())
+        results = json.loads(conn.recv())
+        print(results["message"])  # noqa
 
-conn.send(request_end)
-results = conn.recv()
-print(results)  # noqa
 
-conn.close()
+    request_end = "END"
+
+    conn.send(request_end)
+    results = conn.recv()
+    print(results)  # noqa
+
+    conn.close()
+
+if __name__=="__main__":
+    my_simple_test()

@@ -9,6 +9,7 @@ EXPORTS_FOLDER = "exports"
 LOGS_FOLDER = "logs"
 PROFILES_FOLDER = "profiles"
 DEFAULTS_FOLDER = "defaults"
+EXAMPLES_FOLDER = "examples"
 
 SIMULATION_SETTINGS_FILENAME = "simulation_settings.toml"
 EXPORTS_SETTINGS_FILENAME = "export_settings.toml"
@@ -16,6 +17,7 @@ DEFAULT_SUBSCRIPTION_FILENAME = "subscriptions.csv"
 DEFAULT_PROFILE_MAPPING_FILENAME = "profile_mapping.toml"
 DEFAULT_PROFILE_STORE_FILENAME = "profiles.hdf5"
 DEFAULT_RESULTS_FILENAME = "simulation_results.hdf5"
+
 
 DEFAULT_OUT_FILE = "results.out"
 DEFAULT_OUTX_FILE = "results.outx"

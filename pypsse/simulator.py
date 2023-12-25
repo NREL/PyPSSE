@@ -16,7 +16,7 @@ import pandas as pd
 import toml
 
 import pypsse.contingencies as c
-import pypsse.custom_logger as logger
+from loguru import  logger
 import pypsse.simulation_controller as sc
 from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS
 from pypsse.enumerations import SimulationStatus
@@ -27,6 +27,8 @@ from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
 
+from typing import Union
+
 USING_NAERM = 0
 
 
@@ -35,19 +37,24 @@ class Simulator:
 
     _status: SimulationStatus = SimulationStatus.NOT_INITIALIZED
 
-    def __init__(self, settings_toml_path="", psse_path=""):
-        "Load a valid PyPSSE project and sets up simulation"
+    def __init__(self, settings:SimulationSettings, psse_path:Union[str, Path]=''):
+        """"Load a valid PyPSSE project and sets up simulation"
+
+        Args:
+            settings_toml_path (SimulationSettings): simulation settings
+            psse_path (Union[str, Path], optional): Path to python environment within the PSS/e install directory (overrides value in simulation settings)
+        """
+        
+        
         self._status = SimulationStatus.STARTING_INSTANCE
-        settings = self.read_settings(settings_toml_path)
-        self.settings = SimulationSettings.model_validate(settings)
+        self.settings = settings
         export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
         assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
         export_settings = self.read_settings(export_settings_path)
         self.export_settings = ExportFileOptions.model_validate(export_settings)
 
         log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
-        self.logger = logger.get_logger("pyPSSE", log_path, logger_options=self.settings.log)
-        self.logger.debug("Starting PSSE instance")
+        logger.debug("Starting PSSE instance")
 
         if psse_path != "" and Path(psse_path).exists():
             self.settings.simulation.psse_path = Path(psse_path)
@@ -59,20 +66,20 @@ class Simulator:
 
         n_bus = 200000
         if "psse34" in str(self.settings.simulation.psse_path).lower():
-            self.logger.debug("Instantiating psse version 34")
+            logger.debug("Instantiating psse version 34")
             import psse34  # noqa: F401
         elif "psse35" in str(self.settings.simulation.psse_path).lower():
-            self.logger.debug("Instantiating psse version 35")
+            logger.debug("Instantiating psse version 35")
             import psse35  # noqa: F401
         else:
-            self.logger.debug("Instantiating psse version 36")
+            logger.debug("Instantiating psse version 36")
             import psse36  # noqa: F401
         import dyntools
         import psspy
 
         self.dyntools = dyntools
         self.psse = psspy
-        # self.logger.debug('Initializing PSS/E. connecting to license server')
+        #logger.debug('Initializing PSS/E. connecting to license server')
         ierr = self.psse.psseinit(n_bus)
         assert ierr == 0, f"Error code: {ierr}"
         self.psse.psseinit(n_bus)
@@ -100,8 +107,8 @@ class Simulator:
             msg = "Please pass a RAW or SAV file in the settings dictionary"
             raise Exception(msg)
 
-        self.logger.info(f"Trying to read a file >>{self.settings.simulation.case_study}")
-        self.raw_data = rd.Reader(self.psse, self.logger)
+        logger.info(f"Trying to read a file >>{self.settings.simulation.case_study}")
+        self.raw_data = rd.Reader(self.psse)
         (
             self.bus_subsystems,
             self.all_subsysten_buses,
@@ -117,7 +124,6 @@ class Simulator:
             self.dyntools,
             self.settings,
             self.export_settings,
-            self.logger,
             valid_buses,
             self.raw_data,
         )
@@ -136,7 +142,6 @@ class Simulator:
                 self.settings,
                 self.export_settings,
                 self.bus_subsystems,
-                self.logger,
             )
             self.publications = self.hi.register_publications(self.bus_subsystems)
             if self.settings.helics.create_subscriptions:
@@ -158,7 +163,7 @@ class Simulator:
         self.sim.init(self.bus_subsystems)
 
         if self.settings.simulation.use_profile_manager:
-            self.pm = ProfileManager(None, self.sim, self.settings, self.logger)
+            self.pm = ProfileManager(None, self.sim, self.settings)
             self.pm.setup_profiles()
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             self.hi.enter_execution_mode()
@@ -166,7 +171,7 @@ class Simulator:
     def parse_gic_file(self):
         "Parses the GIC file (if included in the project)"
 
-        gicdata = gp.GICParser(self.settings, self.logger)
+        gicdata = gp.GICParser(self.settings)
         return gicdata.psse_graph
 
     def define_bus_subsystems(self):
@@ -190,7 +195,7 @@ class Simulator:
                 msg = "Failed to create bus subsystem chosen buses."
                 raise Exception(msg)
             else:
-                self.logger.debug(f'Bus subsystem "{i}" created')
+                logger.debug(f'Bus subsystem "{i}" created')
 
             ierr = self.psse.bsys(sid=i, numbus=len(buses), buses=buses)
             if ierr:
@@ -198,7 +203,7 @@ class Simulator:
                 raise Exception(msg)
             else:
                 bus_subsystems_dict[i] = buses
-                self.logger.debug(f'Buses {buses} added to subsystem "{i}"')
+                logger.debug(f'Buses {buses} added to subsystem "{i}"')
         all_subsysten_buses = [str(x) for x in all_subsysten_buses]
         return bus_subsystems_dict, all_subsysten_buses
 
@@ -238,7 +243,7 @@ class Simulator:
             else:
                 bokeh_server_proc = None
 
-            self.logger.debug(
+            logger.debug(
                 f"Running dynamic simulation for time {self.settings.simulation.simulation_time.total_seconds()} sec"
             )
             total_simulation_time = self.settings.simulation.simulation_time.total_seconds()
@@ -259,7 +264,7 @@ class Simulator:
             if bokeh_server_proc is not None:
                 bokeh_server_proc.terminate()
         else:
-            self.logger.error("Run init() command to initialize models before running the simulation")
+           logger.error("Run init() command to initialize models before running the simulation")
         self._status = "Simulation complete"
 
     def get_bus_ids(self):
@@ -275,13 +280,13 @@ class Simulator:
         if self.settings.simulation.use_profile_manager:
             self.pm.update()
         ctime = time.time() - self.simStartTime
-        self.logger.debug(f"Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.get_time()}")
+        logger.debug(f"Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.get_time()}")
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.create_subscriptions:
                 self.update_subscriptions()
-                self.logger.debug(f"Time requested: {t}")
+                logger.debug(f"Time requested: {t}")
                 self.inc_time, helics_time = self.update_federate_time(t)
-                self.logger.debug(f"Time granted: {helics_time}")
+                logger.debug(f"Time granted: {helics_time}")
 
         if self.inc_time:
             self.sim.step(t)
@@ -393,7 +398,7 @@ class Simulator:
         ierr, bus_data = self.psse.abusreal(bus_subsystem_id, 1, ["PU", "ANGLED", "MISMATCH"])
         assert ierr == 0, f"Error code: {ierr}"
         if ierr:
-            self.logger.warning(f"Unable to read voltage data at time {t} (seconds)")
+            logger.warning(f"Unable to read voltage data at time {t} (seconds)")
         bus_data = np.array(bus_data)
 
         for i, j in enumerate(bus_numbers):
@@ -403,7 +408,7 @@ class Simulator:
     def build_contingencies(self):
         "Builds user defined contengingies"
 
-        contingencies = c.build_contingencies(self.psse, self.settings, self.logger)
+        contingencies = c.build_contingencies(self.psse, self.settings)
         return contingencies
 
     def update_contingencies(self, t):

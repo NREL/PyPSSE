@@ -3,13 +3,13 @@ import os
 
 # Internal imports
 from pypsse.modes.abstract_mode import AbstractMode
-
+from loguru import logger
 
 class Static(AbstractMode):
-    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
+    def __init__(self, psse, dyntools, settings, export_settings, subsystem_buses, raw_data):
         "Class defination for steady-state simulation mode"
 
-        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
+        super().__init__(psse, dyntools, settings, export_settings, subsystem_buses, raw_data)
         self.time = settings.simulation.start_time
         self._StartTime = settings.simulation.start_time
         self.incTime = settings.simulation.simulation_step_resolution
@@ -51,8 +51,8 @@ class Static(AbstractMode):
 
     def export(self):
         "Exports simulation results"
-        self.logger.debug("Starting export process. Can take a few minutes for large files")
+        logger.debug("Starting export process. Can take a few minutes for large files")
         excelpath = os.path.join(self.export_path, self.settings["Excel file"])
         achnf = self.dyntools.CHNF(self.outx_path)
         achnf.xlsout(channels="", show=False, xlsfile=excelpath, outfile="", sheet="Sheet1", overwritesheet=True)
-        self.logger.debug(f"{self.settings.export.excel_file} exported")
+        logger.debug(f"{self.settings.export.excel_file} exported")

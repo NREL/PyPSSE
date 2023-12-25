@@ -7,8 +7,10 @@ import pytest
 import toml
 
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
-from pypsse.project import pypsse_project
-from pypsse.Simulator import Simulator
+from pypsse.project import Project
+from pypsse.simulator import Simulator
+from pypsse.utils.utils import load_settings
+
 
 PROJECT_CREATION_SETTINGS = {
     "simulation_file": None,
@@ -40,7 +42,7 @@ def test_create_project(_cleanup):
     s_settings = toml.load(settings["simulation_file"]) if settings["simulation_file"] else {}
     e_settings = toml.load(settings["export_settings_file"]) if settings["export_settings_file"] else {}
     # TODO: Validate settings
-    a = pypsse_project()
+    a = Project()
     a.create(
         TMP_FOLDER,
         PROJECT_NAME,
@@ -84,7 +86,7 @@ def test_run_sim_dynamic(_cleanup):
 
 
 def test_license_availability(_cleanup):
-    example_path = "./examples/static_example"
+    example_path = ".tests/examples/static_example"
     export_path = os.path.join(example_path, "Exports")
     python_path = sys.executable
     cmd = rf"{python_path} tests\check_license.py {example_path}"

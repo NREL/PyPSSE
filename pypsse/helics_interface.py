@@ -3,6 +3,8 @@ import ast
 import helics as h
 import pandas as pd
 
+from loguru import logger
+
 from pypsse.common import MAPPED_CLASS_NAMES, VALUE_UPDATE_BOUND
 from pypsse.models import ExportFileOptions, SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION
@@ -19,12 +21,11 @@ class HelicsInterface:
     dynamic_params = ("FmA", "FmB", "FmC", "FmD", "Fel")
 
     def __init__(
-        self, psse, sim, settings: SimulationSettings, export_settings: ExportFileOptions, bus_subsystems, logger
+        self, psse, sim, settings: SimulationSettings, export_settings: ExportFileOptions, bus_subsystems
     ):
         "Sets up the co-simulation federate"
         self.bus_pubs = ["bus_id", "bus_Vmag", "bus_Vang", "bus_dev"]
         self.psse = psse
-        self.logger = logger
         self.settings = settings
         self.export_settings = export_settings
         self.bus_subsystems = bus_subsystems
@@ -45,7 +46,7 @@ class HelicsInterface:
         itr_flag = h.helics_iteration_request_iterate_if_needed
         while True:
             itr_status = h.helicsFederateEnterExecutingModeIterative(self.psse_federate, itr_flag)
-            self.logger.debug(
+            logger.debug(
                 f"--- Iter {itr}: Iteration Status = {itr_status}, Passed Iteration Requestion = {itr_flag}"
             )
             if itr_status == h.helics_iteration_result_next_step:
@@ -139,9 +140,9 @@ class HelicsInterface:
                             )
                         else:
                             dtype_matched = False
-                            self.logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
+                            logger.warning(f"Publication {pub_tag} could not be registered. Data type not found")
                         if dtype_matched:
-                            self.logger.debug(f"Publication registered: {pub_tag}")
+                            logger.debug(f"Publication registered: {pub_tag}")
 
     def register_subscriptions(self):
         "Creates a HELICS subscriptions"
@@ -155,11 +156,11 @@ class HelicsInterface:
             try:
                 row["element_property"] = ast.literal_eval(row["element_property"])
             except Exception as e:
-                self.logger.debug(str(e))
+                logger.debug(str(e))
             try:
                 row["scaler"] = ast.literal_eval(row["scaler"])
             except Exception as e:
-                self.logger.debug(str(e))
+                logger.debug(str(e))
 
             if row["element_type"] not in PROFILE_VALIDATION:
                 msg = f"Subscription file error: {row['element_type']} not a valid element_type."
@@ -193,7 +194,7 @@ class HelicsInterface:
                 "subscription": h.helicsFederateRegisterSubscription(self.psse_federate, row["sub_tag"], ""),
             }
 
-            self.logger.info(
+            logger.info(
                 "{} property of element {}.{} at bus {} has subscribed to {}".format(
                     row["element_property"], row["element_type"], row["element_id"], row["bus"], row["sub_tag"]
                 )
@@ -224,7 +225,7 @@ class HelicsInterface:
         if not self.settings.helics.iterative_mode:
             while self.c_seconds < r_seconds:
                 self.c_seconds = h.helicsFederateRequestTime(self.psse_federate, r_seconds)
-            self.logger.info(f"Time requested: {r_seconds} - time granted: {self.c_seconds} ")
+            logger.info(f"Time requested: {r_seconds} - time granted: {self.c_seconds} ")
             return True, self.c_seconds
         else:
             itr = 0
@@ -234,7 +235,7 @@ class HelicsInterface:
                     self.psse_federate, r_seconds, h.helics_iteration_request_iterate_if_needed
                 )
                 if itr_state == h.helics_iteration_result_next_step:
-                    self.logger.debug("\tIteration complete!")
+                    logger.debug("\tIteration complete!")
                     break
 
                 error = max([abs(x["dStates"][0] - x["dStates"][1]) for k, x in self.subscriptions.items()])
@@ -254,7 +255,7 @@ class HelicsInterface:
                     self.all_pub_results[self.sim.get_time()][pub_name].append(pub_value)
 
                 itr += 1
-                self.logger.debug(f"\titr = {itr}")
+                logger.debug(f"\titr = {itr}")
 
                 if itr > self.settings.helics.max_coiterations or error < self.settings.helics.error_tolerance:
                     self.c_seconds, itr_state = h.helicsFederateRequestTimeIterative(
@@ -308,9 +309,9 @@ class HelicsInterface:
                             h.helicsPublicationPublishString(pub, val)
                         else:
                             dtype_matched = False
-                            self.logger.warning(f"Publication {pub_tag} not updated")
+                            logger.warning(f"Publication {pub_tag} not updated")
                         if dtype_matched:
-                            self.logger.debug(f"Publication {pub_tag} published: {val}")
+                            logger.debug(f"Publication {pub_tag} published: {val}")
         return pub_results
 
     def subscribe(self):
@@ -330,7 +331,7 @@ class HelicsInterface:
                             sub_data["scaler"][i],
                         )
 
-            self.logger.debug("Data received {} for tag {}".format(sub_data["value"], sub_tag))
+            logger.debug("Data received {} for tag {}".format(sub_data["value"], sub_tag))
             if self.settings.helics.iterative_mode:
                 if self.c_seconds != self.c_seconds_old:
                     sub_data["dStates"] = [self.init_state] * self.n_states
@@ -362,10 +363,10 @@ class HelicsInterface:
                         and sum(values.values()) > -VALUE_UPDATE_BOUND
                     ):
                         self.sim.update_object(t, b, i, values)
-                        self.logger.debug(f"{t}.{b}.{i} = {values}")
+                        logger.debug(f"{t}.{b}.{i} = {values}")
 
                     else:
-                        self.logger.debug("write failed")
+                        logger.debug("write failed")
 
         self.c_seconds_old = self.c_seconds
         return all_values
@@ -381,4 +382,4 @@ class HelicsInterface:
         h.helicsFederateGetState(self.psse_federate)
         h.helicsFederateInfoFree(self.fedinfo)
         h.helicsFederateFree(self.psse_federate)
-        self.logger.info("HELICS federate for PyDSS destroyed")
+        logger.info("HELICS federate for PyDSS destroyed")

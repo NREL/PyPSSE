@@ -1,15 +1,14 @@
 import json
-import logging
 
 import numpy as np
 import openmdao.api as om
 import toml
 
-from pypsse.models import MdaoProblem
+from pypsse.models import MdaoProblem, SimulationSettings
 from pypsse.simulator import Simulator
 
-logger = logging.getLogger("model")
-
+from loguru import logger
+import toml
 
 class PSSE:
     "The class defines the PSSE interface to OpenMDAO"
@@ -17,7 +16,10 @@ class PSSE:
 
     def load_model(self, settings_file_path):
         "Load the PyPSSE model"
-        self.psse_obj = Simulator(settings_file_path)
+        settings = toml.load(settings_file_path)
+        settings["simulation"]['project_path'] = settings_file_path.parent
+        settings = SimulationSettings(**settings)
+        self.psse_obj = Simulator(settings)
         self.assets = self.psse_obj.raw_data
         self.time_counter = 0
         self.psse_obj.init()
@@ -35,7 +37,7 @@ class PSSE:
             for var, val in input_model.attributes.items():
                 tag = f"{input_model.asset_type.value}_{input_model.asset_id}_{input_model.asset_bus}_{var}"
                 inputs_dict[tag] = [val]
-
+        logger.info("MDAO inputs built sucessfully")
         self.solve_step()
         return inputs_dict
 
@@ -69,6 +71,7 @@ class PSSE:
                     output[f"{tag}_imag"] = [value.imag]
                 else:
                     output[f"{tag}"] = [value]
+        logger.info("MDAO outputs built sucessfully")
         return output
 
     def _update_inputs(self, inputs):
@@ -82,6 +85,7 @@ class PSSE:
         for info, attrs in attr_keys.items():
             asset_type, asset_id, asset_bus_id = info.split("_")
             self.psse_obj.sim.update_object(dtype=asset_type, bus=int(asset_bus_id), element_id=asset_id, values=attrs)
+        logger.info("MDAO inputs updated sucessfully")
 
     def models_to_dict(self, models):
         mdl = {}
@@ -95,35 +99,35 @@ class PSSE:
         "Solves for the current time set and incremetn in time"
         self.psse_obj.inc_time = False
         self.current_result = self.psse_obj.step(self.time_counter)
-        print(self.current_result)
-        # results = self.get_results()
-
+        
     def export_result(self):
         "Updates results in the result container"
         if not self.psse_obj.export_settings.export_results_using_channels:
             self.psse_obj.results.export_results()
         else:
             self.psse_obj.sim.export()
+        logger.info("Result sucessfully exported")
 
     def close_case(self):
         "Closes the loaded model in PyPSSE"
         self.psse_obj.psse.pssehalt_2()
         del self.psse_obj
-        logger.info(f"PSSE case {self.uuid} closed.")
+        logger.info(f"PSSE case closed.")
 
     def update_ouputs(self, outputs, results):
         for output in outputs:
             result = np.array(results[output])
             outputs[output] = result
+        logger.info(f"MDAO outputs updates.")
 
     def read_problem_data(self, problem_file):
         data = toml.load(problem_file)
         self.probelm = MdaoProblem(**data)
+        logger.info(f"MDAO probelm parameters read. Building inputs and outputs.")
 
     def __del__(self):
-        super().__del__()
         self.export_result()
-        self.close()
+        self.close_case()
 
 
 class PSSEModel(om.ExplicitComponent, PSSE):

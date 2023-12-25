@@ -18,9 +18,9 @@ from pypsse.models import ApiPsseReply
 logger = logging.getLogger(__name__)
 
 
-class PSSEServer:
+class Server:
     def __init__(self):
-        logger.info("Start PyPSSE server")
+        logger.info("Start server")
         self.handler = Handler()
         logger.info("Building web application")
         self.app = FastAPI(lifespan=self.lifespan)
@@ -104,5 +104,5 @@ def run_server(host, port):
     time_format = "%(asctime)s -  %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=time_format)
     # endpoints_file='app/endpoints.yaml'
-    instance = PSSEServer()
+    instance = Server()
     uvicorn.run(instance.app, host=host, port=port)

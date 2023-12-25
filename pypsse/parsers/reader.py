@@ -1,9 +1,12 @@
+
+from pypsse.common import MAPPED_CLASS_NAMES
+from loguru import logger
+
 class Reader:
     "Parser for indexing all PSSE model assets"
 
-    def __init__(self, psse_instance, logger):
+    def __init__(self, psse_instance):
         self.psse = psse_instance
-        self.logger = logger
         self.buses = self.get_data("abus", tails=["int"], strings=["NUMBER"], flags=[2])
         self.loads = self.get_data("aload", tails=["int", "char"], strings=["NUMBER", "ID"], flags=[4, 4])
         self.loads = self.get_data("aload", tails=["int", "char"], strings=["NUMBER", "ID"], flags=[4, 4])
@@ -38,8 +41,14 @@ class Reader:
             assert ierr == 0, f"Error code {ierr}, while running function '{func_name.lower() + tail}'"
             array_list.append([x for array in array_1 for x in array])
 
-        self.logger.info(f"{func_name} count - {len(array_1)}")
+        logger.info(f"{func_name} count - {len(array_1)}")
         if len(array_list) == 1:
             return array_list[0]
 
         return list(zip(*array_list))
+
+    def __str__(self):
+        str_name = "Model asset summary:\n"
+        for model in MAPPED_CLASS_NAMES:
+            str_name += f"   {model}-{len(getattr(self, model))}"
+        return str_name

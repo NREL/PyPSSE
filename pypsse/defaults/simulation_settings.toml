@@ -7,21 +7,18 @@ simulation_mode = "Steady-state"
 use_profile_manager = false
 psse_path = "C:/Program Files/PTI/PSSE35/35.4/PSSPY39"
 project_path = "."
-case_study = ""
-raw_file = ""
-dyr_file = ""
-rwm_file = ""
-gic_file = ""
-snp_file = ""
-subscriptions_file = ""
+case_study = "savnw.sav"
+raw_file = "savnw.raw"
+dyr_file = "savnw.dyr"
+subscriptions_file = "Subscriptions.csv"
 
 [export]
-outx_file = ""
-out_file = ""
-excel_file = ""
-log_file = ""
-coordinate_file = ""
-networkx_graph_file = ""
+outx_file = "Results.outx"
+out_file = "Results.out"
+excel_file = "Results.xls"
+log_file = "Results.log"
+coordinate_file = "Coordinates.csv"
+networkx_graph_file = "Graph.gpickle"
 
 [helics]
 cosimulation_mode = false
@@ -34,7 +31,7 @@ create_subscriptions = true
 iterative_mode = false
 error_tolerance = 1e-5
 max_coiterations = 15
-subscription_file = ""
+subscription_file = "Subscriptions.csv"
 broker_ip = "127.0.0.1"
 broker_port = 23404
 disable_generation_on_coupled_buses = true

@@ -35,7 +35,8 @@ dependencies = [
     "requests",
     "terminaltables",
     "toml",
-    "xlrd"
+    "xlrd",
+    "loguru"
 ]
 
 [project.scripts]
@@ -53,6 +54,7 @@ dependencies = [
   "pytest",
   "pytest-cov",
   "pytest-mock",
+  "httpx"
 ]
 
 [tool.hatch.build.targets.sdist]

@@ -6,10 +6,11 @@ import os
 from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.utils.dc2ac.dc_ac_algorithm import DC2ACconverter
 
+from loguru import logger
 
 class ProductionCostModel(AbstractMode):
-    def __init__(self, psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data):
-        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
+    def __init__(self, psse, dyntools, settings, export_settings, subsystem_buses, raw_data):
+        super().__init__(psse, dyntools, settings, export_settings, subsystem_buses, raw_data)
         self.time = datetime.datetime.strptime(settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S").astimezone(
             None
         )
@@ -17,7 +18,7 @@ class ProductionCostModel(AbstractMode):
             settings["Simulation"]["Start time"], "%m/%d/%Y %H:%M:%S"
         ).astimezone(None)
         self.incTime = settings["Simulation"]["Step resolution (sec)"]
-        self.convergence_helper = DC2ACconverter(psse, self, settings, raw_data, logger)
+        self.convergence_helper = DC2ACconverter(psse, self, settings, raw_data)
 
     def init(self, bussubsystems):
         super().init(bussubsystems)
@@ -34,7 +35,7 @@ class ProductionCostModel(AbstractMode):
         else:
             self.convergence_helper.run()
             if not self.convergence_helper.has_converged:
-                self.logger.error(
+                logger.error(
                     f"Error code {solved_flag} returned from PSSE while running powerflow, please follow \
                                 PSSE doumentation to know more about error"
                 )
@@ -67,8 +68,8 @@ class ProductionCostModel(AbstractMode):
         return self.settings["Simulation"]["Step resolution (sec)"]
 
     def export(self):
-        self.logger.debug("Starting export process. Can take a few minutes for large files")
+        logger.debug("Starting export process. Can take a few minutes for large files")
         excelpath = os.path.join(self.export_path, self.settings["Excel file"])
         achnf = self.dyntools.CHNF(self.outx_path)
         achnf.xlsout(channels="", show=False, xlsfile=excelpath, outfile="", sheet="Sheet1", overwritesheet=True)
-        self.logger.debug("{} export to {}".format(self.settings["Simulation"]["Excel file"], self.export_path))
+        logger.debug("{} export to {}".format(self.settings["Simulation"]["Excel file"], self.export_path))
