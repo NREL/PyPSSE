@@ -269,15 +269,18 @@ class AbstractMode:
 
         savfile = export_path / f"modified_steady_state_{i}.sav"
         rawfile = export_path / f"modified_steady_state_{i}.raw"
-        # self.psse.save(savfile)
+        self.psse.save(str(savfile))
+        logger.info(f"file saved - {savfile}")
         self.psse.rawd_2(0, 1, [1, 1, 1, 0, 0, 0, 0], 0, str(rawfile))
+        logger.info(f"file saved - {rawfile}")
         if self.settings.simulation.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
             snpfile = export_path / f"modified_dynamic_{i}.snp"
             self.psse.snap([-1, -1, -1, -1, -1], str(snpfile))
-            return savfile, snpfile
+            logger.info(f"file saved - {snpfile}")
+            return [savfile, rawfile, snpfile]
 
         else:
-            return savfile, None
+            return [savfile, rawfile]
 
     def init(self, bus_subsystems=None):
         assert bus_subsystems is not None

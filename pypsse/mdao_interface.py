@@ -129,7 +129,7 @@ class PSSE:
         self.close_case()
 
 
-class PSSEModel(om.ExplicitComponent, PSSE):
+class PypsseMdaoModel(om.ExplicitComponent, PSSE):
     "Expicit OpenMDAO component"
 
     def __init__(self, settings_file_path, problem_file):
