@@ -11,13 +11,13 @@ from pypsse.models import SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
 from pypsse.profile_manager.profile import Profile
 
+from loguru import logger
 
 class ProfileManager:
     """Implentation for the profile manager for PyPSSE.
     Enables attacheing profilse to all PSSE objects and associated properties"""
 
-    def __init__(self, pypsse_objects, solver, settings: SimulationSettings, logger, mode="r+"):
-        self._logger = logger
+    def __init__(self, pypsse_objects, solver, settings: SimulationSettings, mode="r+"):
         self.solver = solver
         self.objects = pypsse_objects
         self.settings = settings
@@ -25,10 +25,10 @@ class ProfileManager:
         file_path = settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_STORE_FILENAME
 
         if file_path.exists():
-            self._logger.info("Loading existing h5 store")
+            logger.info("Loading existing h5 store")
             self.store = h5py.File(file_path, mode)
         else:
-            self._logger.info("Creating new h5 store")
+            logger.info("Creating new h5 store")
             self.store = h5py.File(file_path, "w")
             for profile_group in ProfileTypes.names():
                 self.store.create_group(profile_group)
@@ -53,9 +53,9 @@ class ProfileManager:
                                 grp[profile_name], self.solver, mapping_dict
                             )
                         else:
-                            self._logger.warning(rf"Group {group} \ data set {profile_name} not found in the h5 store")
+                            logger.warning(rf"Group {group} \ data set {profile_name} not found in the h5 store")
                 else:
-                    self._logger.warning(f"Group {group} not found in the h5 store")
+                    logger.warning(f"Group {group} not found in the h5 store")
         else:
             msg = f"Profile_mapping.toml file does not exist in path {mapping_path}"
             raise Exception(msg)
@@ -70,7 +70,7 @@ class ProfileManager:
             )
             self.create_metadata(dset, start_time, resolution, data, list(data.columns), info, p_type)
         else:
-            self._logger.error(f'Data set "{dname}" already exists in group "{p_type}".')
+            logger.error(f'Data set "{dname}" already exists in group "{p_type}".')
             msg = f'Data set "{dname}" already exists in group "{p_type}".'
             raise Exception(msg)
 

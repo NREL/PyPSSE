@@ -15,17 +15,16 @@ import random
 import numpy as np
 
 from pypsse.utils.dc2ac.helper_functions import PowerFlowData
-
+from loguru import logger
 
 class DC2ACconverter:
     min_kv_filter = 200.0
     filter_buses = 1.0
 
-    def __init__(self, psse, solver, settings, raw_data, logger) -> None:
+    def __init__(self, psse, solver, settings, raw_data) -> None:
         self.settings = settings
         self.raw_data = raw_data
         self.solver = solver
-        self.logger = logger
         self.psse = psse
         self._f = psse._f
         self._i = psse._i
@@ -42,7 +41,7 @@ class DC2ACconverter:
         self.sol_out_orig(solved_flag)
 
         # if directly solved, save the solved case and move to the next
-        self.logger.info(f"solved_flag:{solved_flag}")
+        logger.info(f"solved_flag:{solved_flag}")
         if solved_flag == 0:  ## IF-1, yes
             self.converged = True
             return
@@ -57,7 +56,7 @@ class DC2ACconverter:
 
         # if 1st power flow not converging, check solvability
         if solved_flag_1st:  ## IF-2, no
-            self.logger.info("First power flow (with added generators) cannot converge! Investigating solvability...")
+            logger.info("First power flow (with added generators) cannot converge! Investigating solvability...")
             self.solver.reload()
             insolvable_flag, dec_perc = self.svblt_check()  ## Step 4 - Step 6
 
@@ -97,7 +96,7 @@ class DC2ACconverter:
                 solved_flag = self.if_solved(self.psse, 1, 5)
 
                 if solved_flag:
-                    self.logger.info("Should have solved the case.\n")
+                    logger.info("Should have solved the case.\n")
                     self.converged = True
                     return
                 else:
@@ -142,7 +141,7 @@ class DC2ACconverter:
                         if solved_flag == 0:
                             self.psse.rawd_2(0, 1, [1, 1, 1, 0, 0, 0, 0], 0, step2_tempcase)  ## Possibility b
                         else:
-                            self.logger.info("Should not see this!!!\n")
+                            logger.info("Should not see this!!!\n")
                             pass
 
             else:
@@ -152,7 +151,7 @@ class DC2ACconverter:
 
                 self.save_raw(3, 2.1, perc)
 
-                self.logger.info(
+                logger.info(
                     "PF (w added gens) not converge, but can converged at %" + perc + " loading. (Failed!)\n"
                 )  ## Possibility c
                 self.converged = False
@@ -163,7 +162,7 @@ class DC2ACconverter:
         w_q_bus = []
         w_q_q = []
         if solved_flag_1st == 0:
-            self.logger.info("PF (w added gens) converged.")
+            logger.info("PF (w added gens) converged.")
             step3_tempcase = self.save_raw(4, 3)
 
             # try to gradually remove all added generators
@@ -173,7 +172,7 @@ class DC2ACconverter:
                 self.pfdt, ad_pq_busid, ad_pv_busid
             )
 
-            self.logger.info("Trying to remove added generators..")
+            logger.info("Trying to remove added generators..")
             # remove added gen
             n_ct_pv, n_ct_pq, idx = self.remove_added_generators(
                 ad_pv_genbus, ad_pq_genbus, ad_pq_gen_q_abs, step3_tempcase
@@ -181,7 +180,7 @@ class DC2ACconverter:
 
             # all added gens can be removed  ## IF-8
             if n_ct_pq == len(idx):  ## IF-8, yes
-                self.logger.info("Orig PF converged at target loading. (Success!)\n")
+                logger.info("Orig PF converged at target loading. (Success!)\n")
                 self.converged = True
                 return
 
@@ -195,7 +194,7 @@ class DC2ACconverter:
             q_remote, bus_remote, v_set_remote = self.remove_geni_adj_vi(ad_genbus, ad_gen_q, step4_tempcase)
 
             if len(bus_remote) == 0:
-                self.logger.info("Orig PF converged (w adjusted local v_set). (Success!)\n")
+                logger.info("Orig PF converged (w adjusted local v_set). (Success!)\n")
                 self.save_raw(1, 2)  ## Possibility e
                 self.converged = True
                 return
@@ -237,13 +236,13 @@ class DC2ACconverter:
                     w_q_q.append(qi)
 
         if len(w_q_bus) == 0:
-            self.logger.info("Orig PF converged (w adjusted remote v_set). (Success!)\n")
+            logger.info("Orig PF converged (w adjusted remote v_set). (Success!)\n")
             self.save_raw(1, 2)  ## Possibility e
             self.converged = True
             return
 
         else:
-            self.logger.info(
+            logger.info(
                 "PF converged only when w Q support. "
                 + str(len(w_q_bus))
                 + " out of "
@@ -315,7 +314,7 @@ class DC2ACconverter:
                 self.psse.fnsl([0, 0, 0, 1, 1, 0, 0, 0])
             solved_flag = self.psse.solved()
             if n_flag1 > n_flag1_max:
-                self.logger.info("Flag = 1 does not disappear over " + str(n_flag1_max) + " runs. Let Flag = 2.")
+                logger.info("Flag = 1 does not disappear over " + str(n_flag1_max) + " runs. Let Flag = 2.")
                 solved_flag = 2
         return solved_flag
 
@@ -426,7 +425,7 @@ class DC2ACconverter:
             self.psse.fnsl([0, 0, 0, 1, 1, 1, 99, 0])
             solved_flag = self.psse.solved()
         if insolvable_flag == 1:
-            self.logger.info("Power flow cannot converge above " + str(100 - dec_perc) + "% loading.\n")
+            logger.info("Power flow cannot converge above " + str(100 - dec_perc) + "% loading.\n")
         return insolvable_flag, dec_perc
 
     def approach_target_loading(self, dec_perc, step2_tempcase):
@@ -552,9 +551,9 @@ class DC2ACconverter:
 
     def sol_out_orig(self, solved_flag):
         if solved_flag == 0:
-            self.logger.info("Orig PF converged at target loading. (Success!)\n")
+            logger.info("Orig PF converged at target loading. (Success!)\n")
         else:
-            self.logger.info("Orig PF cannot converge at target loading.")
+            logger.info("Orig PF cannot converge at target loading.")
 
     def get_bus_list(self):
         bus_list = []
@@ -674,7 +673,7 @@ class DC2ACconverter:
                 pass
                 # step4_tempcase = saveRaw(self.psse, rawfile, 5)
             else:
-                self.logger.info("cannot remove gen" + str(busi))
+                logger.info("cannot remove gen" + str(busi))
                 self.psse.read(0, step4_tempcase)
 
                 self.pfdt.getdata(self.psse)
@@ -846,7 +845,7 @@ class DC2ACconverter:
                 pass
                 # step4_tempcase = self.save_raw(self.psse, rawfile, 5)
             else:
-                self.logger.info("cannot remove gen" + str(busi))
+                logger.info("cannot remove gen" + str(busi))
                 self.psse.read(0, step4_tempcase)
 
                 self.pfdt.getdata(self.psse)

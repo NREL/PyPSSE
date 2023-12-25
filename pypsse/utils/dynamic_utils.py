@@ -6,6 +6,7 @@ import pandas as pd
 from pypsse.common import MACHINE_CHANNELS
 from pypsse.modes.constants import dyn_only_options
 
+from loguru import logger
 
 class DynamicUtils:
     "Utility functions for dynamic simulations"
@@ -56,7 +57,7 @@ class DynamicUtils:
                         self._f,
                     ]
                     self.psse.machine_chng_2(bus_id, machine, intgar, realar)
-                    self.logger.info(f"Machine disabled: {bus_id}_{machine}")
+                    logger.info(f"Machine disabled: {bus_id}_{machine}")
 
     def disable_load_models_for_coupled_buses(self):
         "Disables loads of coupled buses (co-simulation mode only)"
@@ -70,7 +71,7 @@ class DynamicUtils:
                 load = row["element_id"]
                 ierr = self.psse.ldmod_status(0, int(bus), str(load), 1, 0)
                 assert ierr == 0, f"error={ierr}"
-                self.logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
+                logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
 
     def break_loads(self, loads=None, components_to_replace: List[str] = []):
         "Implements the load split logic"
@@ -102,7 +103,7 @@ class DynamicUtils:
                 # self.psse.change_ldmod_con(load['bus'], 'XX' ,r"""CMLDBLU2""" ,idx ,v)
             values = list(settings.values())
             self.psse.add_load_model(load["bus"], "XX", 0, 1, r"""CMLDBLU2""", 2, [0, 0], ["", ""], 133, values)
-            self.logger.info(f"Dynamic model parameters for load {load['id']} at bus 'XX' changed.")
+            logger.info(f"Dynamic model parameters for load {load['id']} at bus 'XX' changed.")
 
     def _get_load_dynamic_properties(self, load):
         "Returns dynamic parameters of composite load models"
@@ -143,9 +144,9 @@ class DynamicUtils:
                 lodtyp="original",
             )
             # ierr, cmpval = self.psse.loddt2(load["bus"], load["id"] ,"MVA" , "ACT")
-            self.logger.info(f"Original load {load['id']} @ bus {load['bus']}: {total_load}")
-            self.logger.info(f"New load 'XX' @ bus {load['bus']} created successfully: {total_transmission_load}")
-            self.logger.info(f"Load {load['id']} @ bus {load['bus']} updated : {total_distribution_load}")
+            logger.info(f"Original load {load['id']} @ bus {load['bus']}: {total_load}")
+            logger.info(f"New load 'XX' @ bus {load['bus']} created successfully: {total_transmission_load}")
+            logger.info(f"Load {load['id']} @ bus {load['bus']} updated : {total_distribution_load}")
             load["distribution"] = total_distribution_load
             load["transmission"] = total_transmission_load
         return loads
@@ -209,7 +210,7 @@ class DynamicUtils:
                 if qty in MACHINE_CHANNELS:
                     self.channel_map[nqty][f"{b}_{mch}"] = [self.chnl_idx]
                     chnl_id = MACHINE_CHANNELS[qty]
-                    self.logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
+                    logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
                     self.psse.machine_array_channel([self.chnl_idx, chnl_id, int(b)], mch, "")
                     self.chnl_idx += 1
 
@@ -225,7 +226,7 @@ class DynamicUtils:
             self.channel_map["LOAD_Q"][f"{b}_{ld}"] = [self.chnl_idx + 1]
             self.psse.load_array_channel([self.chnl_idx, 1, int(b)], ld, "")
             self.psse.load_array_channel([self.chnl_idx + 1, 2, int(b)], ld, "")
-            self.logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
+            logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
             self.chnl_idx += 2
 
     def setup_bus_channels(self, buses, properties):
@@ -238,12 +239,12 @@ class DynamicUtils:
                 if qty == "frequency":
                     self.channel_map[qty][b] = [self.chnl_idx]
                     self.psse.bus_frequency_channel([self.chnl_idx, int(b)], "")
-                    self.logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
+                    logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
                     self.chnl_idx += 1
                 elif qty == "voltage_and_angle":
                     self.channel_map[qty][b] = [self.chnl_idx, self.chnl_idx + 1]
                     self.psse.voltage_and_angle_channel([self.chnl_idx, -1, -1, int(b)], "")
-                    self.logger.info(
+                    logger.info(
                         f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}"
                     )
                     self.chnl_idx += 2

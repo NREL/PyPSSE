@@ -9,8 +9,9 @@ from queue import Empty
 from pypsse.api.common import BASE_PROJECT_PATH
 from pypsse.common import MAPPED_CLASS_NAMES, SIMULATION_SETTINGS_FILENAME
 from pypsse.enumerations import ApiCommands, SimulationStatus
-from pypsse.models import ApiAssetQuery, ApiPssePostRequest, ApiPsseReply, ApiWebSocketRequest
+from pypsse.models import ApiAssetQuery, ApiPssePostRequest, ApiPsseReply, ApiWebSocketRequest, SimulationSettings
 from pypsse.simulator import Simulator
+from pypsse.utils.utils import load_settings
 
 logger = logging.getLogger(__name__)
 # Make sure to change the PSSE path
@@ -29,11 +30,15 @@ class SimulatorUtils:
         project_path = BASE_PROJECT_PATH / parameters.project_name
         assert project_path.exists(), f"Project path {project_path!s} does not exist"
         simulation_filepath = project_path / SIMULATION_SETTINGS_FILENAME
-        self.logger.info(SimulationStatus.STARTING_INSTANCE.value)
-        self.psse_obj = Simulator(settings_toml_path=simulation_filepath)
-        self.logger.info(SimulationStatus.INITIALIZATION_COMPLETE.value)
-        self.time = self.psse_obj.settings.simulation.start_time
-        return ""
+        try:
+            settings = load_settings(simulation_filepath)
+            self.logger.info(SimulationStatus.STARTING_INSTANCE.value)
+            self.psse_obj = Simulator(settings)
+            self.logger.info(SimulationStatus.INITIALIZATION_COMPLETE.value)
+            self.time = self.psse_obj.settings.simulation.start_time
+        except Exception as e:
+            return str(e)
+        return 
 
     def close_case(self):
         self.psse_obj.PSSE.pssehalt_2()
@@ -237,7 +242,7 @@ class SimulatorWebSocket(SimulatorUtils):
                     else:
                         command_return = func()
 
-                    result = ApiPsseReply(status=HTTPStatus.OK, message=json.dumps(command_return), uuid=self.uuid)
+                    result = ApiPsseReply(status=HTTPStatus.OK, message=command_return, uuid=self.uuid)
 
                 except Exception as e:
                     result = ApiPsseReply(status=HTTPStatus.INTERNAL_SERVER_ERROR, message=str(e), uuid=self.uuid)
@@ -272,7 +277,8 @@ class SimulatorAPI(SimulatorUtils):
         assert project_path.exists(), f"Project path {project_path!s} does not exist"
         simulation_filepath = project_path / SIMULATION_SETTINGS_FILENAME
         try:
-            self.psse_obj = Simulator(settings_toml_path=simulation_filepath)
+            settings = load_settings(simulation_filepath)
+            self.psse_obj = Simulator(settings)
             logger.info(f"{self.uuid} - psse dispatched")
             result = ApiPsseReply(
                 status=HTTPStatus.OK, message=f"Simulation {self.uuid} successfully initiallized.", uuid=self.uuid

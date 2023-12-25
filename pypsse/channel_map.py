@@ -1,4 +1,5 @@
-"Mapping of all channels available in PSS/E"
+"""Mapping of all channels available in PSS/E
+"""
 
 
 channel_map = {

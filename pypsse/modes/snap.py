@@ -5,6 +5,7 @@ from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, converter, dyn_only_options
 from pypsse.utils.dynamic_utils import DynamicUtils
 
+from loguru import logger
 
 class Snap(AbstractMode, DynamicUtils):
     "Class defination for snapshat simulation mode (uses snp and sav files)"
@@ -15,11 +16,10 @@ class Snap(AbstractMode, DynamicUtils):
         dyntools,
         settings: SimulationSettings,
         export_settings: ExportSettings,
-        logger,
         subsystem_buses,
         raw_data,
     ):
-        super().__init__(psse, dyntools, settings, export_settings, logger, subsystem_buses, raw_data)
+        super().__init__(psse, dyntools, settings, export_settings, subsystem_buses, raw_data)
         self.time = settings.simulation.start_time
         self._StartTime = settings.simulation.start_time
         self.incTime = settings.simulation.simulation_step_resolution
@@ -37,7 +37,7 @@ class Snap(AbstractMode, DynamicUtils):
         self.load_setup_files()
         self.convert_load()
 
-        self.logger.info(f"Load snap file: {self.settings.simulation.snp_file}")
+        logger.info(f"Load snap file: {self.settings.simulation.snp_file}")
         ierr = self.psse.rstr(str(self.settings.simulation.snp_file))
         #
 
@@ -76,7 +76,7 @@ class Snap(AbstractMode, DynamicUtils):
 
         self.setup_all_channels()
 
-        self.logger.debug("pyPSSE initialization complete!")
+        logger.debug("pyPSSE initialization complete!")
         self.initialization_complete = True
         return self.initialization_complete
 
@@ -165,6 +165,6 @@ class Snap(AbstractMode, DynamicUtils):
                                                 obj_name = f"{bus}_{ld_id}"
                                                 results[res_base][obj_name] = value
             else:
-                self.logger.warning("Extend function 'read_subsystems' in the Snap class (Snap.py)")
+                logger.warning("Extend function 'read_subsystems' in the Snap class (Snap.py)")
 
         return results

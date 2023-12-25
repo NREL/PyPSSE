@@ -7,6 +7,7 @@ from pypsse.enumerations import ModelTypes, WritableModelTypes
 from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
 from pypsse.modes.constants import converter
 
+from loguru import logger
 
 class AbstractMode:
     def __init__(
@@ -15,7 +16,6 @@ class AbstractMode:
         dyntools,
         settings: SimulationSettings,
         export_settings: ExportSettings,
-        logger,
         subsystem_buses,
         raw_data,
     ):
@@ -32,7 +32,6 @@ class AbstractMode:
         self.bus_freq_channels = {}
 
         self.sub_buses = subsystem_buses
-        self.logger = logger
         self.dyntools = dyntools
         self.settings = settings
         self.export_settings = export_settings
@@ -293,7 +292,7 @@ class AbstractMode:
 
     def export(self):
         try:
-            self.logger.info("Starting export process. Can take a few minutes for large files")
+            logger.info("Starting export process. Can take a few minutes for large files")
             achnf = self.dyntools.CHNF(str(self.settings.export.outx_file))
             achnf.xlsout(
                 channels="",
@@ -303,14 +302,14 @@ class AbstractMode:
                 sheet="Sheet1",
                 overwritesheet=True,
             )
-            self.logger.debug(f"Exported {self.settings.export.excel_file}")
+            logger.debug(f"Exported {self.settings.export.excel_file}")
         except Exception as e:
             raise e
 
     def load_user_defined_models(self):
         for mdl in self.settings.simulation.user_models:
             self.psse.addmodellibrary(str(mdl))
-            self.logger.debug(f"User defined library added: {mdl}")
+            logger.debug(f"User defined library added: {mdl}")
 
     def load_setup_files(self):
         for f in self.settings.simulation.setup_files:
@@ -319,7 +318,7 @@ class AbstractMode:
                 msg = f'Error running setup file "{f}"'
                 raise Exception(msg)
             else:
-                self.logger.debug(f"Setup file {f} sucessfully run")
+                logger.debug(f"Setup file {f} sucessfully run")
 
     def disable_logging(self):
         self.psse.progress_output(islct=6, filarg="", options=[0, 0])
@@ -332,7 +331,7 @@ class AbstractMode:
         for channel, add in self.export_settings["Channels"].items():
             if add:
                 channel_id = channel_map.channel_map[channel]
-                self.logger.debug(f'"{channel}" added to the channel file')
+                logger.debug(f'"{channel}" added to the channel file')
                 self.psse.chsb(0, 1, [-1, -1, -1, 1, channel_id, 0])
 
     def get_area_numbers(self, subsystem_buses):
@@ -364,7 +363,7 @@ class AbstractMode:
         dc_lines = []
         ierr = self.psse.ini2dc()
         if ierr:
-            self.logger.info("No DC line in the model.")
+            logger.info("No DC line in the model.")
         else:
             ierr, dc_line_name = self.psse.nxtmdc()
             while dc_line_name is not None:
@@ -651,7 +650,7 @@ class AbstractMode:
                                     elif func_name in ["inddt1", "inddt2", "indnofunc"]:
                                         ierr = self.psse.iniind(int(b))
                                         if ierr:
-                                            self.logger.info("No induction machine in the model")
+                                            logger.info("No induction machine in the model")
                                         else:
                                             ierr, ind_id = self.psse.nxtind(int(b))
                                             while ind_id is not None:
@@ -992,9 +991,9 @@ class AbstractMode:
                 ierr = 1
 
             if ierr == 0:
-                self.logger.info(f"Profile Manager: {dtype} '{element_id}' on bus '{bus}' has been updated. {values}")
+                logger.info(f"Profile Manager: {dtype} '{element_id}' on bus '{bus}' has been updated. {values}")
             else:
-                self.logger.error(f"Profile Manager: Error updating {dtype} '{element_id}' on bus '{bus}'.")
+                logger.error(f"Profile Manager: Error updating {dtype} '{element_id}' on bus '{bus}'.")
 
     def has_converged(self):
         return self.psse.solved()

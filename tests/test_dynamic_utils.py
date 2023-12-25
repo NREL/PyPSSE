@@ -2,7 +2,7 @@ import os
 import tempfile
 
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
-from pypsse.Simulator import Simulator
+from pypsse.simulator import Simulator
 
 PROJECT_CREATION_SETTINGS = {
     "simulation_file": None,

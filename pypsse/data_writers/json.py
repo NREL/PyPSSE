@@ -1,11 +1,8 @@
 # Standard libraries
 # from common import dtype_MAPPING
 import json
-import logging
+from loguru import logger
 import os
-
-logger = logging.getLogger("pyPSSE")
-
 
 class JSONWriter:
     """Class that handles writing simulation results to arrow

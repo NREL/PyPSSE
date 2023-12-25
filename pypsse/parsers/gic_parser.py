@@ -5,13 +5,13 @@ import pandas as pd
 
 from pypsse.models import SimulationSettings
 
+from loguru import logger
 
 class GICParser:
     valid_verions = ["3"]
 
-    def __init__(self, settings: SimulationSettings, logger=None):
-        self.logger = logger
-        self.logger.debug("Starting RAW parser")
+    def __init__(self, settings: SimulationSettings):
+        logger.debug("Starting RAW parser")
 
         self.settings = settings
         self.filepath = str(settings.simulation.gic_file)
@@ -21,14 +21,14 @@ class GICParser:
         if "GICFILEVRSN=" in verion:
             verion = verion.replace("GICFILEVRSN=", "").replace("\r", "").replace("\n", "")
             if verion in self.valid_verions:
-                self.logger.debug(f"Reading GIC file verion {verion}")
+                logger.debug(f"Reading GIC file verion {verion}")
             else:
                 vers = ",".join(self.valid_verions)
-                self.logger.debug(
+                logger.debug(
                     f"Version {verion} is not supported.\nFollowing version are currently supported: {vers}"
                 )
         else:
-            self.logger.debug("GIC file structue does not seem to be valid")
+            logger.debug("GIC file structue does not seem to be valid")
 
         self.get_bus_coordinates()
         self.psse_graph = nx.Graph()
@@ -59,7 +59,7 @@ class GICParser:
     def parse_substation_data(self):
         "Parses substation data"
 
-        self.logger.debug("Parsing substation data...")
+        logger.debug("Parsing substation data...")
         linedata = ""
         while True:
             linedata = self.filehandle.readline()
@@ -71,14 +71,14 @@ class GICParser:
                 if buses[0] in self.bus_data and buses[1] in self.bus_data:
                     self.psse_graph.add_edge(buses[0], buses[1])
                 else:
-                    self.logger.debug(
+                    logger.debug(
                         f"Error parsing substation data egde: {buses}.\nOne of the bus id does not exist in bus data"
                     )
 
     def parse_transformer_data(self):
         "Parses transformer data"
 
-        self.logger.debug("Parsing transformer data...")
+        logger.debug("Parsing transformer data...")
         linedata = ""
         while True:
             linedata = self.filehandle.readline()
@@ -92,7 +92,7 @@ class GICParser:
                     if buses[0] in self.bus_data and buses[1] in self.bus_data:
                         self.psse_graph.add_edge(buses[0], buses[1])
                     else:
-                        self.logger.debug(
+                        logger.debug(
                             f"Error parsing transformer data egde: {buses}."
                             f"\nOne of the bus id does not exist in bus data"
                         )
@@ -108,7 +108,7 @@ class GICParser:
     def parse_branch_data(self):
         "Parses branch data"
 
-        self.logger.debug("Parsing branch data...")
+        logger.debug("Parsing branch data...")
         linedata = ""
         while True:
             linedata = self.filehandle.readline()
@@ -120,14 +120,14 @@ class GICParser:
                 if buses[0] in self.bus_data and buses[1] in self.bus_data:
                     self.psse_graph.add_edge(buses[0], buses[1])
                 else:
-                    self.logger.debug(
+                    logger.debug(
                         f"Error parsing branch data egde: {buses}.\nOne of the bus id does not exist in bus data"
                     )
 
     def get_bus_coordinates(self):
         "Parses bus coordinates"
 
-        self.logger.debug("Parsing bus coordinates...")
+        logger.debug("Parsing bus coordinates...")
         bus_data_headers = ["subsystem/bustype?", "latitude", "longitude", "angle?"]
         self.bus_data = {}
         linedata = ""
@@ -157,17 +157,7 @@ class GICParser:
             self.settings["Simulation"]["Project Path"], "Exports", self.settings["Export_settings"]["Coordinate file"]
         )
         bus_data.to_csv(export_path)
-        self.logger.debug(f"Bus coordinate file exported to: {export_path}")
+        logger.debug(f"Bus coordinate file exported to: {export_path}")
 
 
-# settings =  {
-#     "Project Path" : r"C:\Users\alatif\Desktop\NEARM_sim\PSSE_studycase\PSSE_WECC_model_test",
-#     "GIC file" : "28hs1a.epc",
-#     'bus_subsystems' : {
-#        "Export coordinates" : True,
-#        "Coordinate output file" : "ACTIVSg10k_bus_coordinates.csv",
-#        "Netwrokx graph file" : "ACTIVSg10k_graph.gpickle",
-#         },
-# }
-# a = gic_parser(settings)
-#
+

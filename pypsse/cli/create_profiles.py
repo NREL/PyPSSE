@@ -4,7 +4,7 @@ CLI to run a PyDSS project
 
 
 import datetime as dt
-import logging
+from loguru import logger
 import os
 
 import click
@@ -84,12 +84,11 @@ def create_profiles(
     project_path, csv_file_path, profile_folder, profile_name, profile_type, start_time, profile_res, profile_info
 ):
     """Creates profiles for PyPSSE project."""
-    logging.root.setLevel("DEBUG")
     settings_file = os.path.join(project_path, "Settings", SIMULATION_SETTINGS_FILENAME)
     if os.path.exists(settings_file):
         if csv_file_path and os.path.exists(csv_file_path):
             settings = toml.load(settings_file)
-            a = ProfileManager(None, None, settings, logging)
+            a = ProfileManager(None, None, settings)
             a.add_profiles_from_csv(
                 csv_file=csv_file_path,
                 name=profile_name,
@@ -98,10 +97,10 @@ def create_profiles(
                 resolution_sec=profile_res,
                 info=profile_info,
             )
-            logging.info(f"Profile '{profile_name}' added to group '{profile_type}'")
+            logger.info(f"Profile '{profile_name}' added to group '{profile_type}'")
         elif os.path.exists(profile_folder):
             settings = toml.load(settings_file)
-            a = ProfileManager(None, None, settings, logging)
+            a = ProfileManager(None, None, settings)
             for _, _, files in os.walk(profile_folder):
                 for file in files:
                     if file.endswith(".csv"):
@@ -117,7 +116,7 @@ def create_profiles(
                                 info=profile_info,
                             )
                             msg = f"Profile '{p_name}'' added to group '{dtype}'"
-                            logging.info(msg)
+                            logger.info(msg)
         else:
             msg = "Value for either -f or -p flag has to be passed"
             raise Exception(msg)

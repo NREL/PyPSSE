@@ -1,12 +1,15 @@
 "This module manages contingency modeling in PyPSSE"
 
+
 from abc import ABCMeta
 
 # from pyPSSE import
 from pypsse.models import BusFault, BusTrip, LineFault, LineTrip, MachineTrip, SimulationSettings
 
+from loguru import logger
 
-def build_contingencies(psse, settings: SimulationSettings, logger):
+
+def build_contingencies(psse, settings: SimulationSettings):
     "Builds all contingencies defined in the settings file"
     system_contingencies = []
     if settings.contingencies:
@@ -14,7 +17,7 @@ def build_contingencies(psse, settings: SimulationSettings, logger):
             contingency_type = contingency.__class__.__name__
             if contingency_type in contingencies:
                 system_contingencies.append(
-                    contingencies[contingency_type](psse, contingency, logger, contingency_type)
+                    contingencies[contingency_type](psse, contingency, contingency_type)
                 )
                 logger.debug(f'Contingency of type "{contingency_type}" added')
             else:
@@ -44,10 +47,9 @@ class BaseFault:
     fault_method = ""
     element = None
 
-    def __init__(self, psse, settings, logger, contingency_type):
+    def __init__(self, psse, settings, contingency_type):
         self.contingency_type = contingency_type
         self.settings = settings
-        self.logger = logger
         self.psse = psse
         self.enabled = False
         self.tripped = False
@@ -70,17 +72,17 @@ class BaseFault:
         "Enables a fault event"
         err = getattr(self.psse, self.fault_method)(**self.fault_settings)
         if err:
-            self.logger.warning(f"Unable to enable {self.fault_method} at element {self.element}")
+            logger.warning(f"Unable to enable {self.fault_method} at element {self.element}")
         else:
-            self.logger.debug(f"{self.fault_method} applied to {self.element} at time {self.t} seconds")
+            logger.debug(f"{self.fault_method} applied to {self.element} at time {self.t} seconds")
 
     def disable_fault(self):
         "Disables a fault event"
         err = self.psse.dist_clear_fault()
         if err:
-            self.logger.warning(f"Unable to clear {self.fault_method} at element {self.element}")
+            logger.warning(f"Unable to clear {self.fault_method} at element {self.element}")
         else:
-            self.logger.debug(f"{self.fault_method} cleared at element {self.element} at time {self.t} seconds")
+            logger.debug(f"{self.fault_method} cleared at element {self.element} at time {self.t} seconds")
 
     def is_enabled(self):
         "Returns true if the fault object is enabled else false"
@@ -96,8 +98,8 @@ class BusFault(BaseFault):
     fault_method = "dist_bus_fault"
     fault_settings = {}
 
-    def __init__(self, psse, settings: BusFault, logger, contingency_type):
-        super().__init__(psse, settings, logger, contingency_type)
+    def __init__(self, psse, settings: BusFault, contingency_type):
+        super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_id
         self.fault_settings["units"] = 3
         self.fault_settings["values"] = settings.fault_impedance
@@ -110,8 +112,8 @@ class LineFault(BaseFault):
     fault_method = "dist_branch_fault"
     fault_settings = {}
 
-    def __init__(self, psse, settings: LineFault, logger, contingency_type):
-        super().__init__(psse, settings, logger, contingency_type)
+    def __init__(self, psse, settings: LineFault, contingency_type):
+        super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_ids[0]
         self.fault_settings["jbus"] = settings.bus_ids[1]
         self.fault_settings["id"] = settings.bus_ids[2]
@@ -126,8 +128,8 @@ class LineTrip(BaseFault):
     fault_method = "dist_branch_trip"
     fault_settings = {}
 
-    def __init__(self, psse, settings: LineTrip, logger, contingency_type):
-        super().__init__(psse, settings, logger, contingency_type)
+    def __init__(self, psse, settings: LineTrip, contingency_type):
+        super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_ids[0]
         self.fault_settings["jbus"] = settings.bus_ids[1]
         self.element = settings.bus_ids
@@ -138,8 +140,8 @@ class BusTrip(BaseFault):
     fault_method = "dist_bus_trip"
     fault_settings = {}
 
-    def __init__(self, psse, settings: BusTrip, logger, contingency_type):
-        super().__init__(psse, settings, logger, contingency_type)
+    def __init__(self, psse, settings: BusTrip, contingency_type):
+        super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_id
         self.element = settings.bus_id
 
@@ -149,8 +151,8 @@ class MachineTrip(BaseFault):
     fault_method = "dist_machine_trip"
     fault_settings = {}
 
-    def __init__(self, psse, settings: MachineTrip, logger, contingency_type):
-        super().__init__(psse, settings, logger, contingency_type)
+    def __init__(self, psse, settings: MachineTrip, contingency_type):
+        super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_id
         self.fault_settings["id"] = settings.machine_id
         self.element = settings.bus_id
