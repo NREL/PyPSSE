@@ -7,10 +7,9 @@ simulation_mode = "Steady-state"
 use_profile_manager = false
 psse_path = "C:/Program Files/PTI/PSSE35/35.4/PSSPY39"
 project_path = "."
-case_study = "savnw.sav"
-raw_file = "savnw.raw"
-dyr_file = "savnw.dyr"
-subscriptions_file = "Subscriptions.csv"
+raw_file = ""
+dyr_file = ""
+subscriptions_file = ""
 
 [export]
 outx_file = "Results.outx"

@@ -4,18 +4,18 @@ from pathlib import Path
 import openmdao.api as om
 
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
-from pypsse.mdao_interface import PSSEModel
+from pypsse.mdao_interface import PypsseMdaoModel
 
 
 def test_mdao_example():
-    examples_path = Path(__file__).parent.parent
-    sim_setting_filepath = examples_path / "static_example" / SIMULATION_SETTINGS_FILENAME
-    mdao_io_filepath = Path(__file__).parent / "mdao_settings.toml"
+    examples_path = Path(__file__).parent
+    sim_setting_filepath = examples_path / "examples" / "static_example" / SIMULATION_SETTINGS_FILENAME
+    mdao_io_filepath = Path(__file__).parent / "interfaces" / "openmdao_example" / "mdao_settings.toml"
 
     model_name = "pypsse"
     model = om.Group()
 
-    psse_subsystem = PSSEModel(sim_setting_filepath, mdao_io_filepath)
+    psse_subsystem = PypsseMdaoModel(sim_setting_filepath, mdao_io_filepath)
 
     model.add_subsystem(name=model_name, subsys=psse_subsystem, promotes_inputs=psse_subsystem._list_inputs())
 

@@ -47,7 +47,8 @@ class Project:
         autofill=True,
     ):
         "The methods creates a new PyPSSE project"
-
+        self.project_path = Path(parent_path) / project_name
+        
         exports_dict = toml.load(self.basepath / DEFAULTS_FOLDER / EXPORTS_SETTINGS_FILENAME)
         export_settings = ExportFileOptions(**exports_dict)
 
@@ -58,6 +59,7 @@ class Project:
             export_settings.update(**new_export_settings)
 
         sim_setting_dict = toml.load(self.basepath / DEFAULTS_FOLDER / SIMULATION_SETTINGS_FILENAME)
+        sim_setting_dict['simulation']['project_path'] = str(self.project_path)
         simulation_settings = SimulationSettings(**sim_setting_dict)
 
         if simulation_settings_file:
@@ -75,7 +77,7 @@ class Project:
             overwrite=overwrite,
             autofill=autofill,
         )
-        self.project_path = Path(parent_path) / project_name
+        
 
         self._create_folders()
 
@@ -123,10 +125,12 @@ class Project:
         sim_file_path = self.project_path / SIMULATION_SETTINGS_FILENAME
         with open(sim_file_path, "w") as f:
             toml.dump(json.loads(self.project.simulation_settings.model_dump_json()), f)
+            logger.info(f"writing file : {str(sim_file_path)}")
 
         export_file_path = self.project_path / EXPORTS_SETTINGS_FILENAME
         with open(export_file_path, "w") as f:
             toml.dump(json.loads(self.project.export_settings.model_dump_json()), f)
+            logger.info(f"writing file : {str(export_file_path)}")
 
     def _create_folders(self):
         "Creates folder structure for a new project. Older project can be over-written"
@@ -138,6 +142,7 @@ class Project:
                 raise Exception(msg)
             elif not project_folder.exists():
                 project_folder.mkdir(parents=True, exist_ok=True)
+                logger.info(f"folder created: {str(project_folder)}")
 
     def _autofill_settings(self, psse_files, profile_store_file, profile_mapping_file):
         "The method auto populates fields for a new PyPSSE project"
