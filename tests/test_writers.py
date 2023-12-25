@@ -22,43 +22,35 @@ TMP_FOLDER = os.path.join(TEMPPATH, "temp")
 PROJECT_NAME = "psse_project"
 
 
-def test_run_sim_static(build_temp_project):
+def load_dynamic_model():
     project_path = Path(TMP_FOLDER) / PROJECT_NAME
     file_Path = project_path / SIMULATION_SETTINGS_FILENAME
 
     if file_Path.exists():
         settings = load_settings(file_Path, project_path)
         settings.simulation.simulation_mode = SimulationModes.STATIC
+        settings.simulation.use_profile_manager = True
         settings.helics.cosimulation_mode = False
+        yield settings
         x = Simulator(settings)
         x.init()
-        x.run()
+        x.run
+
     else:
         msg = f"'{file_Path}' is not a valid path."
         raise Exception(msg)
 
 
-def test_run_sim_dynamic(build_temp_project):
-    project_path = Path(TMP_FOLDER) / PROJECT_NAME
-    file_Path = project_path / SIMULATION_SETTINGS_FILENAME
-
-    if file_Path.exists():
-        settings = load_settings(file_Path, project_path)
-        settings.simulation.simulation_mode = SimulationModes.DYNAMIC
-        settings.simulation.use_profile_manager = False
-        settings.helics.cosimulation_mode = False
-        x = Simulator(settings)
-        x.init()
-        x.run()
-    else:
-        msg = f"'{file_Path}' is not a valid path."
-        raise Exception(msg)
+def test_writer_hdf5(build_temp_project):
+    settings = next(load_dynamic_model())
+    # settings.export.
 
 
-# def test_license_availability(_cleanup):
-#     example_path = ".tests/examples/static_example"
-#     export_path = os.path.join(example_path, "Exports")
-#     python_path = sys.executable
-#     cmd = rf"{python_path} tests\check_license.py {example_path}"
-#     os.system(cmd)
-#     assert len(os.listdir(export_path)) > 0, "Example failed to run license not available"
+def test_writer_json(build_temp_project):
+    x = load_dynamic_model()
+    x = next(x)
+
+
+def test_writer_csv(build_temp_project):
+    x = load_dynamic_model()
+    x = next(x)

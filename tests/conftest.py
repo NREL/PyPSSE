@@ -1,12 +1,12 @@
 import os
-import pytest 
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
-import toml 
+
+import pytest
+import toml
 
 from pypsse.project import Project
-
 
 PROJECT_CREATION_SETTINGS = {
     "simulation_file": None,
@@ -27,7 +27,7 @@ PROJECT_NAME = "psse_project"
 def build_temp_project():
     if os.path.exists(TMP_FOLDER):
         shutil.rmtree(TMP_FOLDER)
-    
+
     os.mkdir(TMP_FOLDER)
     settings = PROJECT_CREATION_SETTINGS
     s_settings = toml.load(settings["simulation_file"]) if settings["simulation_file"] else {}
@@ -45,7 +45,7 @@ def build_temp_project():
         settings["overwrite"],
         settings["autofill"],
     )
-    
+
     yield
     if os.path.exists(TMP_FOLDER):
         shutil.rmtree(TMP_FOLDER)

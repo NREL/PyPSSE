@@ -2,27 +2,12 @@
 
 
 from abc import ABCMeta
+from typing import List, Union
 
 from loguru import logger
 
 # from pyPSSE import
 from pypsse.models import BusFault, BusTrip, LineFault, LineTrip, MachineTrip, SimulationSettings
-
-
-def build_contingencies(psse, settings: SimulationSettings):
-    "Builds all contingencies defined in the settings file"
-    system_contingencies = []
-    if settings.contingencies:
-        for contingency in settings.contingencies:
-            contingency_type = contingency.__class__.__name__
-            if contingency_type in contingencies:
-                system_contingencies.append(contingencies[contingency_type](psse, contingency, contingency_type))
-                logger.debug(f'Contingency of type "{contingency_type}" added')
-            else:
-                logger.warning("Invalid contingency type. Valid values are: {}".format(",".join(contingencies.keys())))
-    else:
-        logger.debug("No contingencies to build")
-    return system_contingencies
 
 
 def add_contingency(contingency, cont_dict, dt, system_contingencies):
@@ -52,8 +37,12 @@ class BaseFault:
         self.enabled = False
         self.tripped = False
 
-    def update(self, t):
-        "updates a fault event"
+    def update(self, t: float):
+        """updates a fault event
+
+        Args:
+            t (float): simuation time in seconds
+        """
         self.t = t
         if hasattr(self.settings, "duration"):
             if self.settings.time + self.settings.duration > t >= self.settings.time and not self.enabled:
@@ -67,7 +56,7 @@ class BaseFault:
             self.tripped = True
 
     def enable_fault(self):
-        "Enables a fault event"
+        """enables a fault event"""
         err = getattr(self.psse, self.fault_method)(**self.fault_settings)
         if err:
             logger.warning(f"Unable to enable {self.fault_method} at element {self.element}")
@@ -75,7 +64,7 @@ class BaseFault:
             logger.debug(f"{self.fault_method} applied to {self.element} at time {self.t} seconds")
 
     def disable_fault(self):
-        "Disables a fault event"
+        """disables a fault event"""
         err = self.psse.dist_clear_fault()
         if err:
             logger.warning(f"Unable to clear {self.fault_method} at element {self.element}")
@@ -83,20 +72,35 @@ class BaseFault:
             logger.debug(f"{self.fault_method} cleared at element {self.element} at time {self.t} seconds")
 
     def is_enabled(self):
-        "Returns true if the fault object is enabled else false"
+        """Returns enabled status
+
+        Returns:
+            _type_: rue if the fault object is enabled else false
+        """
         return self.enabled
 
-    def is_tripped(self):
-        "Returns true if the fault object is tripped else false"
+    def is_tripped(self) -> bool:
+        """Returns trip status
+
+        Returns:
+            bool: true if the fault object is tripped else false
+        """
         return self.tripped
 
 
-class BusFault(BaseFault):
+class BusFaultObject(BaseFault):
     "Class defination for a bus fault"
     fault_method = "dist_bus_fault"
     fault_settings = {}
 
-    def __init__(self, psse, settings: BusFault, contingency_type):
+    def __init__(self, psse: object, settings: BusFault, contingency_type: str):
+        """bus fault object
+
+        Args:
+            psse (object): simulator type
+            settings (BusFault): bus fault object
+            contingency_type (str): contingency type
+        """
         super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_id
         self.fault_settings["units"] = 3
@@ -105,12 +109,19 @@ class BusFault(BaseFault):
         self.element = settings.bus_id
 
 
-class LineFault(BaseFault):
+class LineFaultObject(BaseFault):
     "Class defination for a line fault"
     fault_method = "dist_branch_fault"
     fault_settings = {}
 
-    def __init__(self, psse, settings: LineFault, contingency_type):
+    def __init__(self, psse: object, settings: LineFault, contingency_type: str):
+        """line fault model
+
+        Args:
+            psse (object): simulator instance
+            settings (LineFault): line fault model
+            contingency_type (str): contingecy type
+        """
         super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_ids[0]
         self.fault_settings["jbus"] = settings.bus_ids[1]
@@ -121,35 +132,56 @@ class LineFault(BaseFault):
         self.element = settings.bus_ids
 
 
-class LineTrip(BaseFault):
+class LineTripObject(BaseFault):
     "Class defination for a line trip"
     fault_method = "dist_branch_trip"
     fault_settings = {}
 
-    def __init__(self, psse, settings: LineTrip, contingency_type):
+    def __init__(self, psse: object, settings: LineTrip, contingency_type: str):
+        """line trip model
+
+        Args:
+            psse (object): simulator instance
+            settings (LineTrip): line trip model
+            contingency_type (str): contingency type
+        """
         super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_ids[0]
         self.fault_settings["jbus"] = settings.bus_ids[1]
         self.element = settings.bus_ids
 
 
-class BusTrip(BaseFault):
+class BusTripObject(BaseFault):
     "Class defination for a bus trip"
     fault_method = "dist_bus_trip"
     fault_settings = {}
 
-    def __init__(self, psse, settings: BusTrip, contingency_type):
+    def __init__(self, psse: object, settings: BusTrip, contingency_type: str):
+        """Bus trip contingency
+
+        Args:
+            psse (object): simulator instance
+            settings (BusTrip): bus trip model
+            contingency_type (str): type of contingency
+        """
         super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_id
         self.element = settings.bus_id
 
 
-class MachineTrip(BaseFault):
+class MachineTripObject(BaseFault):
     "Class defination for a machine fault"
     fault_method = "dist_machine_trip"
     fault_settings = {}
 
-    def __init__(self, psse, settings: MachineTrip, contingency_type):
+    def __init__(self, psse: object, settings: MachineTrip, contingency_type: str):
+        """Machine trip contingency
+
+        Args:
+            psse (object): simulator instance
+            settings (MachineTrip): machine trip model
+            contingency_type (str): type of contingency
+        """
         super().__init__(psse, settings, contingency_type)
         self.fault_settings["ibus"] = settings.bus_id
         self.fault_settings["id"] = settings.machine_id
@@ -157,9 +189,36 @@ class MachineTrip(BaseFault):
 
 
 contingencies = {
-    "BusFault": BusFault,
-    "LineFault": LineFault,
-    "LineTrip": LineTrip,
-    "BusTrip": BusTrip,
-    "MachineTrip": MachineTrip,
+    "BusFault": BusFaultObject,
+    "LineFault": LineFaultObject,
+    "LineTrip": LineTripObject,
+    "BusTrip": BusTripObject,
+    "MachineTrip": MachineTripObject,
 }
+
+
+def build_contingencies(
+    psse: object, settings: SimulationSettings
+) -> List[Union[BusFaultObject, BusTripObject, LineFaultObject, LineTripObject, MachineTripObject]]:
+    """Builds all contingencies defined in the settings file
+
+    Args:
+        psse (object): simulator instance
+        settings (SimulationSettings): simulation settings
+
+    Returns:
+        List[Union[BusFaultObject, BusTripObject, LineFaultObject, LineTripObject, MachineTripObject]]: list of contingencies
+    """
+
+    system_contingencies = []
+    if settings.contingencies:
+        for contingency in settings.contingencies:
+            contingency_type = contingency.__class__.__name__
+            if contingency_type in contingencies:
+                system_contingencies.append(contingencies[contingency_type](psse, contingency, contingency_type))
+                logger.debug(f'Contingency of type "{contingency_type}" added')
+            else:
+                logger.warning("Invalid contingency type. Valid values are: {}".format(",".join(contingencies.keys())))
+    else:
+        logger.debug("No contingencies to build")
+    return system_contingencies

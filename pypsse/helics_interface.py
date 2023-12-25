@@ -6,6 +6,7 @@ from loguru import logger
 
 from pypsse.common import MAPPED_CLASS_NAMES, VALUE_UPDATE_BOUND
 from pypsse.models import ExportFileOptions, SimulationSettings
+from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.profile_manager.common import PROFILE_VALIDATION
 
 
@@ -19,8 +20,23 @@ class HelicsInterface:
     init_state = 1
     dynamic_params = ("FmA", "FmB", "FmC", "FmD", "Fel")
 
-    def __init__(self, psse, sim, settings: SimulationSettings, export_settings: ExportFileOptions, bus_subsystems):
-        "Sets up the co-simulation federate"
+    def __init__(
+        self,
+        psse: object,
+        sim: AbstractMode,
+        settings: SimulationSettings,
+        export_settings: ExportFileOptions,
+        bus_subsystems: dict,
+    ):
+        """Sets up the co-simulation federate
+
+        Args:
+            psse (object): simulator instance
+            sim (AbstractMode): simulator controller inatance
+            settings (SimulationSettings): simulation settings
+            export_settings (ExportFileOptions): export settings
+            bus_subsystems (dict): bus subsystem to bus mapping
+        """
         self.bus_pubs = ["bus_id", "bus_Vmag", "bus_Vang", "bus_dev"]
         self.psse = psse
         self.settings = settings
@@ -38,7 +54,7 @@ class HelicsInterface:
         self.subscriptions = {}
 
     def enter_execution_mode(self):
-        "Enables federate to enter execution mode"
+        """Enables federate to enter execution mode"""
         itr = 0
         itr_flag = h.helics_iteration_request_iterate_if_needed
         while True:
@@ -48,7 +64,7 @@ class HelicsInterface:
                 break
 
     def create_federate(self):
-        "Creates a HELICS co-simulation federate"
+        """Creates a HELICS co-simulation federate"""
         self.fedinfo = h.helicsCreateFederateInfo()
         h.helicsFederateInfoSetCoreName(self.fedinfo, self.settings.helics.federate_name)
         h.helicsFederateInfoSetCoreTypeFromString(self.fedinfo, self.settings.helics.core_type.value)
@@ -70,8 +86,17 @@ class HelicsInterface:
             )
         self.psse_federate = h.helicsCreateValueFederate(self.settings.helics.federate_name, self.fedinfo)
 
-    def register_publications(self, bus_subsystems):
-        "Creates a HELICS publications"
+    def register_publications(self, bus_subsystems: dict):
+        """Creates a HELICS publications
+
+        Args:
+            bus_subsystems (dict): bus subsystem to bus mapping
+
+        Raises:
+            LookupError: returned if invalid subsystem passed
+            LookupError: returned if invalid class named passed
+            LookupError: returned if property fields do not match class names
+        """
         self.publications = {}
         self.pub_struc = []
         for publication_dict in self.settings.helics.publications:
@@ -79,14 +104,14 @@ class HelicsInterface:
             if not set(bus_subsystem_ids).issubset(self.bus_subsystems):
                 msg = f"One or more invalid bus subsystem ID pass in {bus_subsystem_ids}."
                 f"Valid subsystem IDs are  '{list(self.bus_subsystems.keys())}'."
-                raise Exception(msg)
+                raise LookupError(msg)
 
             elm_class = publication_dict.asset_type.value
 
             if not hasattr(self.export_settings, elm_class.lower()):
                 msg = f"'{elm_class.lower()}' is not a valid class of elements. "
                 f"Valid fields are: {list(self.export_settings.dict().keys())}"
-                raise Exception(msg)
+                raise LookupError(msg)
 
             managed_properties = [ptpy.value for ptpy in getattr(self.export_settings, elm_class.lower())]
             properties = [p.value for p in publication_dict.asset_properties]
@@ -140,7 +165,14 @@ class HelicsInterface:
                             logger.debug(f"Publication registered: {pub_tag}")
 
     def register_subscriptions(self):
-        "Creates a HELICS subscriptions"
+        """Creates a HELICS subscriptions
+
+        Raises:
+            Exception: raised if invalid element type passed
+            Exception: raised if property do not match class
+            Exception: rasied if invalid property
+        """
+
         self.subscriptions = {}
         assert (
             self.settings.simulation.subscriptions_file
@@ -209,9 +241,19 @@ class HelicsInterface:
                     if r not in self.psse_dict[row["bus"]][row["element_type"]][element_id]:
                         self.psse_dict[row["bus"]][row["element_type"]][element_id][r] = 0
 
-    def request_time(self, _):
+    def request_time(self, _) -> (bool, float):
         """Enables time increment of the federate ina  co-simulation."
-        Works for both loosely ans tightly coupled co-simulations"""
+        Works for both loosely ans tightly coupled co-simulations
+
+        Args:
+            self (_type_): _description_
+            float (_type_): _description_
+
+        Returns:
+            bool: flag for iteration requrirement (rerun same time step)
+            float: current helics time in seconds
+        """
+
         r_seconds = self.sim.get_total_seconds()  # - self._dss_solver.GetStepResolutionSeconds()
         if self.sim.get_time() not in self.all_sub_results:
             self.all_sub_results[self.sim.get_time()] = {}
@@ -261,8 +303,16 @@ class HelicsInterface:
 
             return True, self.c_seconds
 
-    def get_restructured_results(self, results):
-        "Quries PSSE results that are to be published each iteration."
+    def get_restructured_results(self, results: dict) -> dict:
+        """result restructure for helics interface
+
+        Args:
+            results (dict): simulation results from result container
+
+        Returns:
+            dict: restructured result
+        """
+
         results_dict = {}
         for k, d in results.items():
             c, p = k.split("_")
@@ -278,8 +328,13 @@ class HelicsInterface:
                 results_dict[c][n].update({p: v})
         return results_dict
 
-    def publish(self):
-        "Publishes updated reslts each iteration"
+    def publish(self) -> dict:
+        """Publishes updated reslts each iteration
+
+        Returns:
+            dict: mapping of publication key to result
+        """
+
         pub_results = {}
         for quantities, subsystem_buses in self.pub_struc:
             temp_res = self.sim.read_subsystems(quantities, subsystem_buses)
@@ -309,7 +364,13 @@ class HelicsInterface:
                             logger.debug(f"Publication {pub_tag} published: {val}")
         return pub_results
 
-    def subscribe(self):
+    def subscribe(self) -> dict:
+        """Subscribes results each iteration and updates PSSE objects accordingly
+
+        Returns:
+            dict: mapping of subscription key to updated result
+        """
+
         "Subscribes results each iteration and updates PSSE objects accordingly"
         for sub_tag, sub_data in self.subscriptions.items():
             if isinstance(sub_data["property"], str):
@@ -367,12 +428,13 @@ class HelicsInterface:
         return all_values
 
     def fill_missing_values(self, value):
-        "Fix values before model dispatch"
+        "fixes values before model dispatch"
         idx = [f"realar{PROFILE_VALIDATION[self.d_type].index(c) + 1}" for c in self.Columns]
         x = dict(zip(idx, list(value)))
         return x
 
     def __del__(self):
+        "frees helics resources"
         h.helicsFederateFinalize(self.psse_federate)
         h.helicsFederateGetState(self.psse_federate)
         h.helicsFederateInfoFree(self.fedinfo)

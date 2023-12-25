@@ -1,4 +1,7 @@
+from pathlib import Path
+from typing import Union
 import datetime
+
 
 import h5py
 import numpy as np
@@ -12,14 +15,26 @@ from pypsse.models import SimulationSettings
 from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
 from pypsse.profile_manager.profile import Profile
 
+from pypsse.modes.pcm import ProductionCostModel
+from pypsse.modes.snap import Snap
+from pypsse.modes.static import Static
+from pypsse.modes.dynamic import Dynamic
+
 
 class ProfileManager:
     """Implentation for the profile manager for PyPSSE.
     Enables attacheing profilse to all PSSE objects and associated properties"""
 
-    def __init__(self, pypsse_objects, solver, settings: SimulationSettings, mode="r+"):
+    def __init__(self, solver:Union[ProductionCostModel, Snap, Static, Dynamic], settings: SimulationSettings, mode:str="r+"):
+        """Creates an instance of the profile manager
+
+        Args:
+            solver (Union[ProductionCostModel, Snap, Static, Dynamic]): instance of simulation controller
+            settings (SimulationSettings): simulation settings
+            mode (str, optional): file update mode. Defaults to "r+".
+        """        
+        
         self.solver = solver
-        self.objects = pypsse_objects
         self.settings = settings
 
         file_path = settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_STORE_FILENAME
@@ -33,13 +48,26 @@ class ProfileManager:
             for profile_group in ProfileTypes.names():
                 self.store.create_group(profile_group)
 
-    def load_data(self, file_path):
-        "Load in external profile data"
+    def load_data(self, file_path:Path)->dict:
+        """Load in external profile data
+
+        Args:
+            file_path (Path): path to profile mapping file
+
+        Returns:
+            dict: profile mapping dictionary
+        """        
+
         toml_dict = toml.load(file_path)
         return toml_dict
 
     def setup_profiles(self):
-        "Sets up all profiles in the profile manager"
+        """sets up all profiles in the profile manager
+
+        Raises:
+            Exception: raised if mapped object not found in profile DB
+        """        
+        
         mapping_path = self.settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_MAPPING_FILENAME
         if mapping_path.exists():
             self.profile_mapping = self.load_data(mapping_path)
@@ -60,8 +88,22 @@ class ProfileManager:
             msg = f"Profile_mapping.toml file does not exist in path {mapping_path}"
             raise Exception(msg)
 
-    def create_dataset(self, dname, p_type, data, start_time, resolution, _, info):
-        "Craete datasets for a PyPSSE project"
+    def create_dataset(self, dname:str, p_type:ProfileTypes, data:pd.DataFrame, start_timedate:datetime.datetime, resolution:float, _, info:str):
+        """Create new profile datasets
+
+        Args:
+            dname (str): dateset name
+            p_type (ProfileTypes): profile type
+            data (pd.DataFrame): data 
+            start_timedate (datetime.datetime): profile start time
+            resolution (float): profile resolution
+            _ (_type_): _description_
+            info (:str): profile description 
+
+        Raises:
+            Exception: raised if dataset already exists
+        """        
+
         grp = self.store[p_type]
         if dname not in grp:
             sa, sa_type = self.df_to_sarray(data)
@@ -74,8 +116,18 @@ class ProfileManager:
             msg = f'Data set "{dname}" already exists in group "{p_type}".'
             raise Exception(msg)
 
-    def df_to_sarray(self, df):
-        "Enables data converson"
+    def df_to_sarray(self, df:pd.DataFrame) -> [str, str]:
+        """Enables data converson
+
+        Args:
+            df (pd.DataFrame): _description_
+
+        Raises:
+            SystemError: raised if unable to convert
+
+        Returns:
+            [str, str]: returns column name and datatype
+        """             
 
         def make_col_type(col_type, col):
             try:
@@ -88,7 +140,7 @@ class ProfileManager:
                         col_type = "f2"
                 return col.name, col_type
             except:
-                raise
+                raise SystemError("Unable to convert dataframe to np array")
 
         v = df.values
         types = df.dtypes
@@ -107,20 +159,50 @@ class ProfileManager:
 
         return z, dtype
 
-    def add_profiles_from_csv(self, csv_file, name, p_type, start_time, resolution_sec=900, units="", info=""):
-        "Enables profiles from existing csv files"
+    def add_profiles_from_csv(self, csv_file:Path, name:str, p_type:ProfileTypes, start_time:datetime.date, resolution_sec:float=900, units:str="", info:str=""):
+        """enables profiles from existing csv files
+
+        Args:
+            csv_file (Path): path to profiles in a csv file
+            name (str): profile name
+            p_type (ProfileTypes): profile type
+            start_time (datetime.date): profile start time
+            resolution_sec (float, optional): profile resolution in seconds. Defaults to 900.
+            units (str, optional): profile units. Defaults to "".
+            info (str, optional): profile into. Defaults to "".
+
+        Raises:
+            ValueError: rasied if invalid profile name passed
+            ValueError: rasied if invalid profile type passed
+        """        
+        
         if p_type not in PROFILE_VALIDATION:
             msg = f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}"
-            raise Exception(msg)
+            raise ValueError(msg)
         data = pd.read_csv(csv_file)
         for c in data.columns:
             if c not in PROFILE_VALIDATION[p_type]:
                 msg = f"{c} is not valid, Valid subtypes for '{p_type}' are: {PROFILE_VALIDATION[p_type]}"
-                raise Exception(msg)
+                raise ValueError(msg)
         self.add_profiles(name, p_type, data, start_time, resolution_sec=resolution_sec, units=units, info=info)
 
-    def add_profiles(self, name, p_type, data, start_time, resolution_sec=900, units="", info=""):
-        "Adds a profile to the profile manager"
+    def add_profiles(self, name:str, data:object, p_type:ProfileTypes, start_time:datetime.date, resolution_sec:float=900, units:str="", info:str=""):
+        """adds a profile to the profile manager
+
+        Args:
+            name (str): profile name
+            data (object): profile data object
+            p_type (ProfileTypes): profile type
+            start_time (datetime.date): profile start time
+            resolution_sec (float, optional): profile resolution in seconds. Defaults to 900.
+            units (str, optional): profile units. Defaults to "".
+            info (str, optional): profile into. Defaults to "".
+
+        Raises:
+            InvalidParameterError: raised if start_time not a datetime object
+            InvalidParameterError: raised if invalid profile type passed
+        """        
+       
         if type(start_time) is not datetime.datetime:
             msg = "start_time should be a python datetime object"
             raise InvalidParameterError(msg)
@@ -129,8 +211,19 @@ class ProfileManager:
             raise InvalidParameterError(msg)
         self.create_dataset(name, p_type, data, start_time, resolution_sec, units=units, info=info)
 
-    def create_metadata(self, d_set, start_time, resolution, data, units, info, p_type):
-        "Adds a metadata to a profile"
+    def create_metadata(self, d_set:str, start_time:datetime.date, resolution:float, data:object, units:str, info:str, p_type:ProfileTypes):
+        """adds a metadata to a new profile
+
+        Args:
+            d_set (str): dataset name
+            start_time (datetime.date): profile start time
+            resolution (float): profile resolution
+            data (object): profile data object
+            units (str): profile units
+            info (str): profile info
+            p_type (ProfileTypes): profile type
+        """        
+      
         metadata = {
             "sTime": str(start_time),
             "eTime": str(start_time + datetime.timedelta(seconds=resolution * len(data))),
@@ -150,8 +243,13 @@ class ProfileManager:
                 value_mod = value
             d_set.attrs[key] = value_mod
 
-    def update(self):
-        "Returns data for the current timestep for all mapped profiles"
+    def update(self)->dict:
+        """returns data for the current timestep for all mapped profiles
+
+        Returns:
+            dict: values for profiles at the current time step
+        """        
+
         results = {}
         for profile_name, profile_obj in self.profiles.items():
             result = profile_obj.update()

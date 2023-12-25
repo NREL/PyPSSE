@@ -88,7 +88,7 @@ def create_profiles(
     if os.path.exists(settings_file):
         if csv_file_path and os.path.exists(csv_file_path):
             settings = toml.load(settings_file)
-            a = ProfileManager(None, None, settings)
+            a = ProfileManager(None, settings)
             a.add_profiles_from_csv(
                 csv_file=csv_file_path,
                 name=profile_name,
@@ -100,7 +100,7 @@ def create_profiles(
             logger.info(f"Profile '{profile_name}' added to group '{profile_type}'")
         elif os.path.exists(profile_folder):
             settings = toml.load(settings_file)
-            a = ProfileManager(None, None, settings)
+            a = ProfileManager(None, settings)
             for _, _, files in os.walk(profile_folder):
                 for file in files:
                     if file.endswith(".csv"):
