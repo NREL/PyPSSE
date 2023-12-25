@@ -25,7 +25,7 @@ def test_profile_manager():
 
     settings = toml.load(r"C:\Users\alatif\Desktop\pypsse-usecases\PSSE_WECC_model\Settings\simulation_settings.toml")
     solver = Solver()
-    a = ProfileManager(None, solver, settings)
+    a = ProfileManager(solver, settings)
     # a.setup_profiles()
     # for i in range(30):
     #     a.update()

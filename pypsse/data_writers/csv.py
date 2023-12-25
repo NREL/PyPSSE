@@ -1,5 +1,7 @@
 # Standard libraries
 # from common import dtype_MAPPING
+from datetime import datetime
+from pathlib import Path
 import os
 
 import numpy as np
@@ -7,12 +9,18 @@ import pandas as pd
 
 
 class CSVWriter:
-    """Class that handles writing simulation results to arrow
+    """Class that handles writing simulation results to csv
     files.
     """
 
-    def __init__(self, log_dir, column_length):
-        """Constructor"""
+    def __init__(self, log_dir:Path, column_length:int):
+        """Constructor for csv writer
+
+        Args:
+            log_dir (Path): output path (dirctory)
+            column_length (int): number of data columns
+        """        
+    
         self.column_length = column_length
         self.log_dir = log_dir
         self.timestamps = []
@@ -21,10 +29,14 @@ class CSVWriter:
         self.step = 0
         # Create arrow writer for each object type
 
-    def write(self, currenttime, powerflow_output):
-        """
-        Writes the status of BES assets at a particular timestep to an arrow file.
-        """
+    def write(self, currenttime:datetime, powerflow_output:dict):
+        """Writes the status of assets at a particular timestep to a csv file.
+
+        Args:
+            currenttime (datetime): simulator time step
+            powerflow_output (dict): simulation results
+        """        
+        
         # Iterate through each object type
         self.timestamps.append(currenttime)
         for obj_type in powerflow_output:

@@ -1,3 +1,6 @@
+import datetime
+from typing import Union
+
 import pandas as pd
 from loguru import logger
 
@@ -14,7 +17,12 @@ class Container:
     STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
 
     def __init__(self, settings: SimulationSettings, export_settings: ExportAssetTypes):
-        "Sets up the result container object"
+        """Sets up the result container object
+
+        Args:
+            settings (SimulationSettings): _description_
+            export_settings (ExportAssetTypes): _description_
+        """
 
         export__list = [m.value for m in ModelTypes]
         self.export_path = settings.simulation.project_path / EXPORTS_FOLDER
@@ -39,15 +47,26 @@ class Container:
         if self.export_settings.file_format not in self.BULK_WRITE_MODES:
             self.dataWriter = DataWriter(self.export_path, export_settings.file_format.value, time_steps)
 
-    def update_export_variables(self, params):
+    def update_export_variables(self, params: Union[ExportAssetTypes, dict]) -> dict:
         """Updates the container with current system state.
-        Method is called iteratively to store results as a simulation executes"""
+        Method is called iteratively to store results as a simulation executes
 
+        Args:
+            params (Union[ExportAssetTypes, dict]): _description_
+
+        Returns:
+            dict: mapping of export variables to values
+        """
         export__list = [m.value for m in ModelTypes]
         self.results = {}
         self.export_vars = {}
-
-        class_assets = ExportAssetTypes(**params) if params else self.export_settings
+        if params:
+            if isinstance(params, ExportAssetTypes):
+                class_assets = params
+            else:
+                class_assets = ExportAssetTypes(**params)
+        else:
+            class_assets = self.export_settings
 
         for class_name in export__list:
             if class_name in params:
@@ -62,12 +81,25 @@ class Container:
 
         return self.export_vars
 
-    def get_export_variables(self):
-        "Queries and return results from the current timestep"
+    def get_export_variables(self) -> dict:
+        """Queries and return results from the current timestep
+
+        Returns:
+            dict: mapping of export variables to values
+        """
+
         return self.export_vars
 
-    def update(self, bus_data, _, time, has_converged):
-        "Updates the results cotainer"
+    def update(self, bus_data: dict, _, time: datetime.datetime, has_converged: bool):
+        """Updates the results cotainer
+
+        Args:
+            bus_data (dict): mapping of vairables to values
+            _ (_type_): _description_
+            time (datetime.datetime): simulation time
+            has_converged (bool): flag showing if simulation converged
+        """
+
         if self.export_settings.file_format not in self.BULK_WRITE_MODES:
             self.dataWriter.write(time, bus_data, has_converged)
         else:
@@ -82,7 +114,8 @@ class Container:
         logger.debug("result container updated")
 
     def export_results(self):
-        "Exports all results stored to an external file."
+        """exports all results stored to an external file"""
+
         if self.export_settings.file_format in self.BULK_WRITE_MODES:
             for df_name, df in self.results.items():
                 export_path = (

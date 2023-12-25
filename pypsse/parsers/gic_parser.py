@@ -8,9 +8,16 @@ from pypsse.models import SimulationSettings
 
 
 class GICParser:
+    """parser for the psse GIC file
+    """    
     valid_verions = ["3"]
 
     def __init__(self, settings: SimulationSettings):
+        """create GIC parser object
+
+        Args:
+            settings (SimulationSettings): simulation settings
+        """        
         logger.debug("Starting RAW parser")
 
         self.settings = settings
@@ -47,7 +54,8 @@ class GICParser:
         # plt.show()
 
     def create_graph(self):
-        "Creates graph representation"
+        """creates graph representation
+        """        
 
         self.parse_substation_data()
         self.parse_transformer_data()
@@ -55,7 +63,8 @@ class GICParser:
         nx.set_node_attributes(self.psse_graph, self.bus_data)
 
     def parse_substation_data(self):
-        "Parses substation data"
+        """parses substation data
+        """        
 
         logger.debug("Parsing substation data...")
         linedata = ""
@@ -74,7 +83,8 @@ class GICParser:
                     )
 
     def parse_transformer_data(self):
-        "Parses transformer data"
+        """parses transformer data
+        """                
 
         logger.debug("Parsing transformer data...")
         linedata = ""
@@ -104,7 +114,8 @@ class GICParser:
                     pass
 
     def parse_branch_data(self):
-        "Parses branch data"
+        """parses branch data
+        """
 
         logger.debug("Parsing branch data...")
         linedata = ""
@@ -123,7 +134,8 @@ class GICParser:
                     )
 
     def get_bus_coordinates(self):
-        "Parses bus coordinates"
+        """parses bus coordinates
+        """
 
         logger.debug("Parsing bus coordinates...")
         bus_data_headers = ["subsystem/bustype?", "latitude", "longitude", "angle?"]

@@ -1,3 +1,4 @@
+from typing import List
 from loguru import logger
 
 from pypsse.common import MAPPED_CLASS_NAMES
@@ -6,7 +7,12 @@ from pypsse.common import MAPPED_CLASS_NAMES
 class Reader:
     "Parser for indexing all PSSE model assets"
 
-    def __init__(self, psse_instance):
+    def __init__(self, psse_instance:object):
+        """creates pypsse model reader
+
+        Args:
+            psse_instance (object): simulator instance
+        """        
         self.psse = psse_instance
         self.buses = self.get_data("abus", tails=["int"], strings=["NUMBER"], flags=[2])
         self.loads = self.get_data("aload", tails=["int", "char"], strings=["NUMBER", "ID"], flags=[4, 4])
@@ -34,7 +40,19 @@ class Reader:
         self.zones = self.get_data("azone", tails=["int", "char"], strings=["NUMBER", "ZONENAME"], flags=[2, 2])
         self.owners = self.get_data("aowner", tails=["int", "char"], strings=["NUMBER", "OWNERNAME"], flags=[2, 2])
 
-    def get_data(self, func_name, tails=[], strings=[], flags=[]):
+    def get_data(self, func_name:str, tails:list=[], strings:list=[], flags:List[int]=[])->list:
+        """returns list of assets matching signature
+
+        Args:
+            func_name (str): _description_
+            tails (list, optional): method tail. Defaults to [].
+            strings (list, optional): data types. Defaults to [].
+            flags (List[int], optional): list of flags for filtering. Defaults to [].
+
+        Returns:
+            list: list of asset names
+        """        
+               
         array_list = []
         for tail, string, flag in zip(tails, strings, flags):
             func = getattr(self.psse, func_name.lower() + tail)
@@ -48,7 +66,12 @@ class Reader:
 
         return list(zip(*array_list))
 
-    def __str__(self):
+    def __str__(self)->str:
+        """overrides default 'print' behavior
+
+        Returns:
+            str: summary of model assets
+        """        
         str_name = "Model asset summary:\n"
         for model in MAPPED_CLASS_NAMES:
             str_name += f"   {model}-{len(getattr(self, model))}"

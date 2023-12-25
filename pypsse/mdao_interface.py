@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import numpy as np
 import openmdao.api as om
@@ -13,8 +14,13 @@ class PSSE:
     "The class defines the PSSE interface to OpenMDAO"
     model_loaded = False
 
-    def load_model(self, settings_file_path):
-        "Load the PyPSSE model"
+    def load_model(self, settings_file_path: Path):
+        """Load the PyPSSE model
+
+        Args:
+            settings_file_path (Path): path to simulation setting file
+        """
+
         settings = toml.load(settings_file_path)
         settings["simulation"]["project_path"] = settings_file_path.parent
         settings = SimulationSettings(**settings)
@@ -24,7 +30,12 @@ class PSSE:
         self.psse_obj.init()
         self.model_loaded = True
 
-    def _build_inputs(self):
+    def _build_inputs(self) -> dict:
+        """builds mdao inputs
+
+        Returns:
+            dict: mapping of input variables to values
+        """
         inputs_dict = {}
         for input_model in self.probelm.inputs:
             self.psse_obj.sim.update_object(
@@ -40,10 +51,23 @@ class PSSE:
         self.solve_step()
         return inputs_dict
 
-    def _list_inputs(self):
+    def _list_inputs(self) -> list:
+        """list subproblem input variables
+
+        Returns:
+            list: list of input variables
+        """
         return list(self._psse_inputs.keys())
 
-    def _build_outputs(self, output=None):
+    def _build_outputs(self, output: dict = None) -> dict:
+        """Updates outputs if dict provided and returns output vaiable dict
+
+        Args:
+            output (dict, optional): mapping of variables to value. Defaults to None.
+
+        Returns:
+            dict: mapping of variables to value
+        """
         outputs = json.loads(self.probelm.outputs.model_dump_json())
         buses = outputs["buses"]
         quantities = outputs["quantities"]
@@ -73,7 +97,12 @@ class PSSE:
         logger.info("MDAO outputs built sucessfully")
         return output
 
-    def _update_inputs(self, inputs):
+    def _update_inputs(self, inputs: dict):
+        """updates input variables
+
+        Args:
+            inputs (dict): mapping of input variables to values
+        """
         attr_keys = {}
         for _input in inputs:
             k, attr = _input.rsplit("_", 1)
@@ -86,21 +115,15 @@ class PSSE:
             self.psse_obj.sim.update_object(dtype=asset_type, bus=int(asset_bus_id), element_id=asset_id, values=attrs)
         logger.info("MDAO inputs updated sucessfully")
 
-    def models_to_dict(self, models):
-        mdl = {}
-        for bus, load_id in models:
-            if bus not in mdl:
-                mdl[bus] = []
-            mdl[bus].append(load_id)
-        return mdl
-
     def solve_step(self):
-        "Solves for the current time set and incremetn in time"
+        """Solves for the current time set and incremetn in time"""
+
         self.psse_obj.inc_time = False
         self.current_result = self.psse_obj.step(self.time_counter)
 
     def export_result(self):
-        "Updates results in the result container"
+        """Updates results in the result container"""
+
         if not self.psse_obj.export_settings.export_results_using_channels:
             self.psse_obj.results.export_results()
         else:
@@ -108,18 +131,18 @@ class PSSE:
         logger.info("Result sucessfully exported")
 
     def close_case(self):
-        "Closes the loaded model in PyPSSE"
+        """Closes the loaded model in PyPSSE"""
+
         self.psse_obj.psse.pssehalt_2()
         del self.psse_obj
         logger.info("PSSE case closed.")
 
-    def update_ouputs(self, outputs, results):
-        for output in outputs:
-            result = np.array(results[output])
-            outputs[output] = result
-        logger.info("MDAO outputs updates.")
+    def read_problem_data(self, problem_file: Path):
+        """reads the mdao config file
 
-    def read_problem_data(self, problem_file):
+        Args:
+            problem_file (Path): path to mdao problem defination toml file
+        """
         data = toml.load(problem_file)
         self.probelm = MdaoProblem(**data)
         logger.info("MDAO probelm parameters read. Building inputs and outputs.")
@@ -132,8 +155,14 @@ class PSSE:
 class PypsseMdaoModel(om.ExplicitComponent, PSSE):
     "Expicit OpenMDAO component"
 
-    def __init__(self, settings_file_path, problem_file):
-        "Initializes the optimization problem"
+    def __init__(self, settings_file_path: Path, problem_file: Path):
+        """initializes the optimization problem
+
+        Args:
+            settings_file_path (Path): pypsse simulation settings file
+            problem_file (Path): mdao problem defination toml file
+        """
+
         self.read_problem_data(problem_file)
         self.case = self.load_model(settings_file_path)
         super().__init__()
@@ -146,21 +175,32 @@ class PypsseMdaoModel(om.ExplicitComponent, PSSE):
             self.add_output(var, val=val)
 
     def setup(self):
-        "Sets up the optimization problem"
+        """Sets up the optimization problem"""
 
     def setup_partials(self):
-        "Sets up the problem partial derivatives"
+        """Sets up the problem partial derivatives"""
         self.declare_partials("*", "*", method="fd")
 
-    def compute(self, inputs, outputs):
-        "Sets up the compute method"
+    def compute(self, inputs: object, outputs: object):
+        """Sets up the compute method for openmdao
+
+        Args:
+            inputs (object): openmdao input objects
+            outputs (object): openmdao output objects
+        """
+
         self._psse_inputs = inputs
         self._psse_outputs = outputs
         self._update_inputs(inputs)
         self.solve_step()
         self._build_outputs(outputs)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """overrides defaulr 'print' behavior
+
+        Returns:
+            str: problem defination summary
+        """
         input_str = ""
         for _input, val in self._psse_inputs.items():
             input_str += f" {_input} - {val}\n"

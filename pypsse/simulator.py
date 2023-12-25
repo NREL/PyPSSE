@@ -4,25 +4,33 @@
 @time:2/4/2020
 """
 
+import json
 import os
-import shutil
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
 import toml
 from loguru import logger
+from networkx import Graph
 
 import pypsse.contingencies as c
 import pypsse.simulation_controller as sc
-from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS
+from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS, SIMULATION_SETTINGS_FILENAME
+from pypsse.contingencies import BusFaultObject, BusTripObject, LineFaultObject, LineTripObject, MachineTripObject
 from pypsse.enumerations import SimulationStatus
 from pypsse.helics_interface import HelicsInterface
-from pypsse.models import ExportFileOptions, SimulationModes, SimulationSettings
+from pypsse.models import (
+    BusSubsystems,
+    ExportAssetTypes,
+    ExportFileOptions,
+    SimulationModes,
+    SimulationSettings,
+)
 from pypsse.parsers import gic_parser as gp
 from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
@@ -36,21 +44,30 @@ class Simulator:
 
     _status: SimulationStatus = SimulationStatus.NOT_INITIALIZED
 
-    def __init__(self, settings: SimulationSettings, psse_path: Union[str, Path] = ""):
-        """ "Load a valid PyPSSE project and sets up simulation"
+    def __init__(
+        self,
+        settings: SimulationSettings,
+        export_settings: Union[ExportFileOptions, None],
+        psse_path: Union[str, Path] = "",
+    ):
+        """Load a valid PyPSSE project and sets up simulation
 
         Args:
-            settings_toml_path (SimulationSettings): simulation settings
-            psse_path (Union[str, Path], optional): Path to python environment within the PSS/e install directory (overrides value in simulation settings)
+            settings (SimulationSettings): simulation settings
+            export_settings (Union[ExportFileOptions, None]): export settings
+            psse_path (Union[str, Path], optional): Path to python environment within the PSS/e install directory
         """
 
         self._status = SimulationStatus.STARTING_INSTANCE
         self.settings = settings
-        export_settings_path = self.settings.simulation.project_path / EXPORTS_SETTINGS_FILENAME
-        assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
-        export_settings = self.read_settings(export_settings_path)
-        self.export_settings = ExportFileOptions.model_validate(export_settings)
 
+        if export_settings is None:
+            export_settings_path = Path(self.settings.simulation.project_path) / EXPORTS_SETTINGS_FILENAME
+            assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
+            export_settings = toml.load(export_settings_path)
+            export_settings = ExportFileOptions(**export_settings)
+
+        self.export_settings = export_settings
         log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
         logger.debug("Starting PSSE instance")
 
@@ -86,14 +103,33 @@ class Simulator:
         self.init()
         self._status = SimulationStatus.INITIALIZATION_COMPLETE
 
-    def dump_settings(self, dest_dir):
-        setting_toml_file = os.path.join(os.path.dirname(__file__), "defaults", "pyPSSE_settings.toml")
-        export_toml_file = os.path.join(os.path.dirname(__file__), "defaults", "export_settings.toml")
-        shutil.copy(setting_toml_file, dest_dir)
-        shutil.copy(export_toml_file, dest_dir)
+    def dump_settings(
+        self,
+        dest_dir: Path,
+        simulation_file: str = SIMULATION_SETTINGS_FILENAME,
+        export_file: str = EXPORTS_SETTINGS_FILENAME,
+    ):
+        """Dumps simulation settings to a provided path
+
+        Args:
+            dest_dir (Path): Directory where settins are dumped
+            simulation_file (str, optional): simulation filename. Defaults to SIMULATION_SETTINGS_FILENAME.
+            export_file (str, optional): export setting filename. Defaults to EXPORTS_SETTINGS_FILENAME.
+        """
+
+        settings_json = self.settings.model_dump_json()
+        json.dump(settings_json, open(dest_dir / simulation_file, "w"))
+
+        export_settings_json = self.settings.model_dump_json()
+        json.dump(export_settings_json, open(dest_dir / export_file, "w"))
 
     def start_simulation(self):
-        "Starts a loaded simulation"
+        """Starts a loaded simulation
+
+        Raises:
+            Exception: Please pass a RAW or SAV file in the settings dictionary
+        """
+
         self.hi = None
         self.simStartTime = time.time()
 
@@ -156,31 +192,45 @@ class Simulator:
         self.inc_time = True
 
     def init(self):
-        "Initializes the model"
+        """Initializes the model"""
 
         self.sim.init(self.bus_subsystems)
 
         if self.settings.simulation.use_profile_manager:
-            self.pm = ProfileManager(None, self.sim, self.settings)
+            self.pm = ProfileManager(self.sim, self.settings)
             self.pm.setup_profiles()
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             self.hi.enter_execution_mode()
 
-    def parse_gic_file(self):
-        "Parses the GIC file (if included in the project)"
+    def parse_gic_file(self) -> Graph:
+        """Parses the GIC file (if included in the project)
+
+        Returns:
+            Graph: Networkx graph representation for the model
+        """
 
         gicdata = gp.GICParser(self.settings)
         return gicdata.psse_graph
 
-    def define_bus_subsystems(self):
-        "Defines a bussystem in the loaded PSSE model"
+    def define_bus_subsystems(self) -> (dict, list):
+        """Defines a bussystem in the loaded PSSE model
+
+        Raises:
+            LookupError: Failed to create bus subsystem chosen buses.
+            ValueError: Number of subsystems can not be more that 12. See PSSE documentation
+            RuntimeError: Failed to add buses to bus subsystem
+
+        Returns:
+            dict: mapping of bus subsystems to buses
+            list: List of bus subsystems
+        """
 
         bus_subsystems_dict = {}
         bus_subsystems = self.get_bus_indices()
         # valid bus subsystem ID. Valid bus subsystem IDs range from 0 to 11 (PSSE documentation)
         if len(bus_subsystems) > MAX_PSSE_BUSSYSTEMS:
             msg = "Number of subsystems can not be more that 12. See PSSE documentation"
-            raise Exception(msg)
+            raise ValueError(msg)
 
         all_subsysten_buses = []
         for i, buses in enumerate(bus_subsystems):
@@ -191,22 +241,26 @@ class Simulator:
             ierr = self.psse.bsysinit(i)
             if ierr:
                 msg = "Failed to create bus subsystem chosen buses."
-                raise Exception(msg)
+                raise LookupError(msg)
             else:
                 logger.debug(f'Bus subsystem "{i}" created')
 
             ierr = self.psse.bsys(sid=i, numbus=len(buses), buses=buses)
             if ierr:
                 msg = "Failed to add buses to bus subsystem."
-                raise Exception(msg)
+                raise RuntimeError(msg)
             else:
                 bus_subsystems_dict[i] = buses
                 logger.debug(f'Buses {buses} added to subsystem "{i}"')
         all_subsysten_buses = [str(x) for x in all_subsysten_buses]
         return bus_subsystems_dict, all_subsysten_buses
 
-    def get_bus_indices(self):
-        "Retuens bus indices for bus subsystems"
+    def get_bus_indices(self) -> BusSubsystems:
+        """Returns bus indices for bus subsystems
+
+        Returns:
+            BusSubsystems: Bus subsystem model
+        """
 
         if self.settings.bus_subsystems.from_file:
             bus_file = self.settings.bus_subsystems.bus_file
@@ -221,19 +275,9 @@ class Simulator:
             bus_data = self.settings.bus_subsystems.bus_subsystem_list
         return bus_data
 
-    def read_settings(self, settings_toml_path):
-        "Read the user defined settings"
-
-        settings_text = ""
-        f = open(settings_toml_path)
-        text = settings_text.join(f.readlines())
-        toml_data = toml.loads(text)
-        toml_data = {str(k): (str(v) if isinstance(v, str) else v) for k, v in toml_data.items()}
-        f.close()
-        return toml_data
-
     def run(self):
-        "Launches the simulation"
+        """Launches the simulation"""
+
         self._status = SimulationStatus.RUNNING_SIMULATION
         if self.sim.initialization_complete:
             if self.settings.plots and self.settings.plots.enable_dynamic_plots:
@@ -265,20 +309,32 @@ class Simulator:
             logger.error("Run init() command to initialize models before running the simulation")
         self._status = "Simulation complete"
 
-    def get_bus_ids(self):
-        "Returns bus IDs"
+    def get_bus_ids(self) -> list:
+        """Returns bus IDs
+
+        Returns:
+            list: Array of bus numbers
+        """
 
         ierr, iarray = self.psse.abusint(-1, 1, "NUMBER")
         assert ierr == 0, f"Error code: {ierr}"
         return iarray
 
-    def step(self, t):
-        "Steps through a single simulation time step. Is called iteratively to increment the simualtion"
+    def step(self, t: float) -> dict:
+        """Steps through a single simulation time step. Is called iteratively to increment the simualtion
+
+        Args:
+            t (float): time step for the simulation
+
+        Returns:
+            dict: results from the current timestep
+        """
+
         self.update_contingencies(t)
         if self.settings.simulation.use_profile_manager:
             self.pm.update()
         ctime = time.time() - self.simStartTime
-        logger.debug(f"Simulation time: {t} seconds; Run time: {ctime}; pyPSSE time: {self.sim.get_time()}")
+        logger.debug(f"Simulation time: {t} seconds\nRun time: {ctime}\npsse time: {self.sim.get_time()}")
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.create_subscriptions:
                 self.update_subscriptions()
@@ -297,7 +353,16 @@ class Simulator:
         curr_results = self.update_result_container(t)
         return curr_results
 
-    def update_result_container(self, t):
+    def update_result_container(self, t: float) -> dict:
+        """Updates the result container with results from the current time step
+
+        Args:
+            t (float): simulation time in seconds
+
+        Returns:
+            dict: simulation reults from the current time step
+        """
+
         if self.export_settings.defined_subsystems_only:
             curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
         else:
@@ -309,22 +374,39 @@ class Simulator:
         return curr_results
 
     def update_subscriptions(self):
-        "Updates subscriptions (co-simulation mode only)"
+        """Updates subscriptions (co-simulation mode only)"""
 
         self.hi.subscribe()
 
-    def update_federate_time(self, t):
-        "Makes a time request to teh HELICS broker (co-simulation mode only)"
+    def update_federate_time(self, t: float) -> (float, float):
+        """Makes a time request to teh HELICS broker (co-simulation mode only)
+
+        Args:
+            t (float): simulation time in seconds
+
+        Returns:
+            float: requested time in seconds
+            float: current simualtion time in seconds
+        """
 
         inc_time, curr_time = self.hi.request_time(t)
         return inc_time, curr_time
 
     def publish_data(self):
-        "Updates publications (co-simulation mode only)"
+        """Updates publications (co-simulation mode only)"""
+
         self.hi.publish()
 
-    def get_results(self, params):
-        "Returns queried simulation results"
+    def get_results(self, params: Union[ExportAssetTypes, dict]) -> dict:
+        """Returns queried simulation results
+
+        Args:
+            params (Union[ExportAssetTypes, dict]): _description_
+
+        Returns:
+            dict: simulation results
+        """
+
         self._status = SimulationStatus.STARTING_RESULT_EXPORT
         self.exp_vars = self.results.update_export_variables(params)
         curr_results = (
@@ -335,82 +417,33 @@ class Simulator:
         self._status = SimulationModes.RESULT_EXPORT_COMPLETE
         return curr_results
 
-    def status(self):
+    def status(self) -> SimulationStatus:
+        """returns current simulation status
+
+        Returns:
+            SimulationStatus: state of the simulator
+        """
         return self._status.value
 
-    def restructure_results(self, results, class_name):
-        "Restructure results for the improved user experience"
+    def build_contingencies(
+        self,
+    ) -> List[Union[BusTripObject, BusFaultObject, LineTripObject, LineFaultObject, MachineTripObject]]:
+        """Builds user defined contengingies
 
-        # c_names = []
-        p_names = []
-        data = []
-        bud_id = []
-        uuid = []
-        ckt_id = []
-        to_bus = []
-        to_bus2 = []
-        for class_ppty, v_dict in results.items():
-            if len(class_ppty.split("_")) == 3:  # noqa: PLR2004
-                c_name = class_ppty.split("_")[0] + "_" + class_ppty.split("_")[1]
-                p_name = class_ppty.split("_")[2]
-            else:
-                c_name = class_ppty.split("_")[0]
-                p_name = class_ppty.split("_")[1]
-            if c_name == class_name:
-                # c_names.append(c_name)
-                p_names.append(p_name)
-                keys = list(v_dict.keys())
-                bud_id = []
-                ckt_id = []
-                uuid = []
-                to_bus = []
-                to_bus2 = []
-
-                for k_raw in keys:
-                    k = str(k_raw)
-                    if "_" in k:
-                        if len(k.split("_")) == 2:  # noqa: PLR2004
-                            bud_id.append(k.split("_")[1])
-                            uuid.append(k.split("_")[0])
-                        if len(k.split("_")) == 3:  # noqa: PLR2004
-                            bud_id.append(k.split("_")[0])
-                            ckt_id.append(k.split("_")[2])
-                            to_bus.append(k.split("_")[1])
-                        if len(k.split("_")) == 4:  # noqa: PLR2004
-                            bud_id.append(k.split("_")[0])
-                            ckt_id.append(k.split("_")[3])
-                            to_bus.append(k.split("_")[1])
-                            to_bus2.append(k.split("_")[2])
-                    else:
-                        bud_id.append(k)
-                data.append(list(v_dict.values()))
-        return p_names, bud_id, uuid, to_bus, to_bus2, ckt_id, data
-
-    def get_bus_data(self, t, bus_subsystem_id):
-        "Return bus data"
-
-        bus_data_formated = []
-        ierr, rarray = self.psse.abusint(bus_subsystem_id, 1, "NUMBER")
-        assert ierr == 0, f"Error code: {ierr}"
-        bus_numbers = rarray[0]
-        ierr, bus_data = self.psse.abusreal(bus_subsystem_id, 1, ["PU", "ANGLED", "MISMATCH"])
-        assert ierr == 0, f"Error code: {ierr}"
-        if ierr:
-            logger.warning(f"Unable to read voltage data at time {t} (seconds)")
-        bus_data = np.array(bus_data)
-
-        for i, j in enumerate(bus_numbers):
-            bus_data_formated.append([j, bus_data[0, i], bus_data[1, i], bus_data[2, i]])
-        return bus_data_formated
-
-    def build_contingencies(self):
-        "Builds user defined contengingies"
+        Returns:
+            List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]: List of contingencies
+        """
 
         contingencies = c.build_contingencies(self.psse, self.settings)
         return contingencies
 
-    def update_contingencies(self, t):
-        "Updates contingencies during the simualtion run"
+    def update_contingencies(self, t: float):
+        """Updates contingencies during the simualtion run
+
+        Args:
+            t (float): simulation time in seconds
+        """
+
         for contingency in self.contingencies:
             contingency.update(t)
 
