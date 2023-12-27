@@ -1,9 +1,8 @@
 # Standard libraries
 # from common import dtype_MAPPING
+import os
 from datetime import datetime
 from pathlib import Path
-
-import os
 
 import h5py
 import numpy as np
@@ -16,14 +15,14 @@ from pypsse.common import DEFAULT_RESULTS_FILENAME
 class HDF5Writer:
     """Class that handles writing simulation results to hdf5 files."""
 
-    def __init__(self, log_dir:Path, column_length:int):
+    def __init__(self, log_dir: Path, column_length: int):
         """Constructor for hdf5 writer
 
         Args:
             log_dir (Path): output path (dirctory)
             column_length (int): number of data columns
-        """  
-        
+        """
+
         self.log_dir = log_dir
         self.store = h5py.File(os.path.join(log_dir, DEFAULT_RESULTS_FILENAME), "w")
         self.store_groups = {}
@@ -56,14 +55,14 @@ class HDF5Writer:
         )
         # Create arrow writer for each object type
 
-    def write(self, currenttime:datetime, powerflow_output:dict, convergence:int):
+    def write(self, currenttime: datetime, powerflow_output: dict, convergence: int):
         """Writes the status of assets at a particular timestep to a hdf5 file.
 
         Args:
             currenttime (datetime): simulator time step
             powerflow_output (dict): simulation results
             convergence (int): simulation convergence status
-        """        
+        """
         # Iterate through each object type
         for obj_type in powerflow_output:
             data = pd.DataFrame(powerflow_output[obj_type], index=[self.step])

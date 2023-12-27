@@ -3,6 +3,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from http import HTTPStatus
 from multiprocessing import Event, Process, Queue, cpu_count
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, WebSocket
@@ -53,7 +54,11 @@ class Handler:
         self.router.add_api_route("/log/uuid/{uuid}", self.get_download_logs, methods=["GET"])
 
     async def handle_psse_websocket(self, websocket: WebSocket):
-        """Function to handle PSSE websocket."""
+        """Function to handle PSSE websocket."
+
+        Args:
+            websocket (WebSocket): web socket object
+        """
 
         to_psse_queue, from_psse_queue = Queue(), Queue()
         psse_uuid = str(uuid4())
@@ -87,8 +92,15 @@ class Handler:
                 await websocket.close()
                 break
 
-    async def post_psse(self, request: ApiPssePostRequest):
-        """Create UUID and intialize and push to queue"""
+    async def post_psse(self, request: ApiPssePostRequest) -> ApiPsseReply:
+        """Create UUID and intialize and push to queue
+
+        Args:
+            request (ApiPssePostRequest): request for the server
+
+        Returns:
+            ApiPsseReply: returns response from the server
+        """
 
         psse_uuid = str(uuid4())
         self.uuid_to_project_mapping[psse_uuid] = request.project_name
@@ -124,7 +136,15 @@ class Handler:
         except Exception as e:
             self._base_error(HTTPStatus.INTERNAL_SERVER_ERROR, str(e), psse_uuid)
 
-    async def put_psse(self, request: ApiPssePutRequest):
+    async def put_psse(self, request: ApiPssePutRequest) -> ApiPsseReply:
+        """Method for simulator put requst
+
+        Args:
+            request (ApiPssePutRequest): request object for the server
+
+        Returns:
+            ApiPsseReply: response from the server
+        """
         logger.info(f"Running command :{request.model_dump_json()}")
         self._error_invalid_uuid(request.uuid)
         if not hasattr(request, "command") or not hasattr(request, "parameters"):
@@ -139,7 +159,15 @@ class Handler:
 
         return ApiPsseReply(status="", message=f"{results}", uuid=request.uuid)
 
-    async def delete_psse(self, uuid: UUID4):
+    async def delete_psse(self, uuid: UUID4) -> ApiPsseReply:
+        """Delete an instance of simulation
+
+        Args:
+            uuid (UUID4): simulation instance uuid
+
+        Returns:
+            ApiPsseReply: response from the server
+        """
         """Delete an instance of simulation"""
         self._error_invalid_uuid(uuid)
         try:
@@ -154,13 +182,26 @@ class Handler:
             logger.error(msg)
             self._base_error(HTTPStatus.INTERNAL_SERVER_ERROR, "Error closing in PyPSSE instance", uuid)
 
-    async def get_instance_uuids(self):
-        """Get all running simulation uuids"""
+    async def get_instance_uuids(self) -> ApiPsseReplyInstances:
+        """get all running simulation uuids
+
+        Returns:
+            ApiPsseReplyInstances: server response
+        """
+
         uuids = [str(k) for k in self.psse_instances.keys()]
         return ApiPsseReplyInstances(status=HTTPStatus.OK, message=f"{len(uuids)} uuids found", simulators=uuids)
 
-    async def get_instance_status(self, uuid: UUID4):
-        """Get status of the current provided simuation instance"""
+    async def get_instance_status(self, uuid: UUID4) -> ApiPsseReplyInstances:
+        """get status of the current provided simuation instance
+
+        Args:
+            uuid (UUID4): simulation instance UUID
+
+        Returns:
+            ApiPsseReplyInstances: server response
+        """
+
         self._error_invalid_uuid(uuid)
         return ApiPsseReplyInstances(
             status=HTTPStatus.OK,
@@ -168,8 +209,16 @@ class Handler:
             uuid=str(uuid),
         )
 
-    async def get_download_results(self, uuid: UUID4):
-        """Download results from a simulation instance"""
+    async def get_download_results(self, uuid: UUID4) -> FileResponse:
+        """download results from a simulation instance
+
+        Args:
+            uuid (UUID4): simulation instance UUID
+
+        Returns:
+            FileResponse: hdf5 simulation results
+        """
+
         self._error_invalid_uuid(uuid)
 
         project_name = self.uuid_to_project_mapping[str(uuid)]
@@ -179,8 +228,16 @@ class Handler:
 
         return FileResponse(path=results_file, filename=DEFAULT_RESULTS_FILENAME, media_type="hdf5")
 
-    async def get_download_logs(self, uuid: UUID4):
-        """Download logs from a simulation instance"""
+    async def get_download_logs(self, uuid: UUID4) -> FileResponse:
+        """download logs from a simulation instance
+
+        Args:
+            uuid (UUID4): simlation instance UUID
+
+        Returns:
+            FileResponse: returns simulation log files
+        """
+
         if str(uuid) not in self.psse_instances.keys():
             param = "UUID={psse_uuid} not found in the PSSE instances"
             logger.error(f"{param}")
@@ -193,7 +250,15 @@ class Handler:
 
         return FileResponse(path=results_file, filename=DEFAULT_LOG_FILE, media_type="hdf5")
 
-    def _post_put_background_task(self, psse_uuid):
+    def _post_put_background_task(self, psse_uuid: UUID4) -> Any:
+        """background task to retrieve results from simulation queue
+
+        Args:
+            psse_uuid (UUID4): simulation instance UUID
+
+        Returns:
+            Any: data types returned from the server
+        """
         q = self.psse_instances[psse_uuid]["from_psse_queue"]
         ans = q.get()
         return ans
@@ -201,7 +266,16 @@ class Handler:
     def _post_put_callback(self, return_value):
         logger.info(f"{return_value.result()}")
 
-    def _get_uuid(self, data):
+    def _get_uuid(self, data: Any) -> UUID4:
+        """returns simulation UUID
+
+        Args:
+            data (Any): pypsse objects
+
+        Returns:
+            UUID4: simulation UUID returned
+        """
+
         if not hasattr(data, "uuid"):
             return None
 
@@ -211,7 +285,15 @@ class Handler:
 
         return psse_uuid
 
-    def _delete_background_task(self, psse_uuid: UUID4):
+    def _delete_background_task(self, psse_uuid: UUID4) -> dict:
+        """_summary_
+
+        Args:
+            psse_uuid (UUID4): simuation instance UUID
+
+        Returns:
+            dict: method response
+        """
         while self.psse_instances[psse_uuid]["process"].is_alive():
             continue
 
@@ -227,6 +309,16 @@ class Handler:
             self._base_error(HTTPStatus.NOT_FOUND, "UUID does not exist", uuid)
 
     def _base_error(self, status_code: HTTPStatus, message: str, uuid: UUID4):
+        """_summary_
+
+        Args:
+            status_code (HTTPStatus): simulation status
+            message (str): message from simulator
+            uuid (UUID4): simulation instance UUID
+
+        Raises:
+            HTTPException: _description_
+        """
         raise HTTPException(
             status_code=status_code,
             detail=ApiPsseException(

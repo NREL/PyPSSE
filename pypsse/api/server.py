@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class Server:
     def __init__(self):
+        """Creates FAST API app to be served"""
         logger.info("Start server")
         self.handler = Handler()
         logger.info("Building web application")
@@ -31,8 +32,13 @@ class Server:
 
         logger.info("Building API endpoints")
 
-    async def get_main_page(self):
-        """Method to handle service info route."""
+    async def get_main_page(self) -> HTMLResponse:
+        """returns an html main page
+
+        Returns:
+            HTMLResponse: html page for base server url
+        """
+
         html = """
         <h1>PyPSSE Server</h1>
 
@@ -60,12 +66,19 @@ class Server:
 
     @asynccontextmanager
     async def lifespan(self, *_, **__):
-        """Add logic for application startup and shutdown."""
+        """lifespan manager for the app. handeles logic for application startup and shutdown."""
+
         yield
         logger.info("cleanup_background_tasks")
         self.handler.shutdown_event.set()
 
-    async def get_list_projects(self):
+    async def get_list_projects(self) -> list:
+        """methods finds and returns pypsse projects
+
+        Returns:
+            list: returns a list of projects available on the server
+        """
+
         folders = []
         for x in BASE_PROJECT_PATH.iterdir():
             if x.is_dir():
@@ -73,7 +86,18 @@ class Server:
         return {"folders": folders}
 
     async def post_upload_zipped_project(self, file: UploadFile):
-        """Upload a new zipped project to the server"""
+        """upload a new zipped project to the server
+
+        Args:
+            file (UploadFile): _description_
+
+        Raises:
+            HTTPException: raised if invalid file exception
+            HTTPException: raised if unexpected error happens server side
+
+        Returns:
+            ApiPsseReply: request returned
+        """
 
         try:
             data = file.file.read()
@@ -100,7 +124,13 @@ class Server:
         return ApiPsseReply(status=HTTPStatus.OK, message=f"project upload to {project_path}")
 
 
-def run_server(host, port):
+def run_server(host: str, port: int):
+    """Start the pypsse server
+
+    Args:
+        host (str): server ip adadress (set to switch between internal or external ip)
+        port (int): server port
+    """
     time_format = "%(asctime)s -  %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=time_format)
     # endpoints_file='app/endpoints.yaml'
