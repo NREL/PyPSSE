@@ -30,7 +30,7 @@ def sim_controller(
 
     Returns:
         Union[Dynamic, ProductionCostModel, Snap, Static]: simulator controller instance
-    """    
+    """
 
     sim_modes = {"Dynamic": Dynamic, "Steady-state": Static, "Snap": Snap, "ProductionCostModel": ProductionCostModel}
 

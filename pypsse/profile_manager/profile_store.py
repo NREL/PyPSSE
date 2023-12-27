@@ -1,7 +1,6 @@
+import datetime
 from pathlib import Path
 from typing import Union
-import datetime
-
 
 import h5py
 import numpy as np
@@ -12,28 +11,29 @@ from loguru import logger
 from pypsse.common import DEFAULT_PROFILE_MAPPING_FILENAME, DEFAULT_PROFILE_STORE_FILENAME, PROFILES_FOLDER
 from pypsse.exceptions import InvalidParameterError
 from pypsse.models import SimulationSettings
-from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
-from pypsse.profile_manager.profile import Profile
-
+from pypsse.modes.dynamic import Dynamic
 from pypsse.modes.pcm import ProductionCostModel
 from pypsse.modes.snap import Snap
 from pypsse.modes.static import Static
-from pypsse.modes.dynamic import Dynamic
+from pypsse.profile_manager.common import PROFILE_VALIDATION, ProfileTypes
+from pypsse.profile_manager.profile import Profile
 
 
 class ProfileManager:
     """Implentation for the profile manager for PyPSSE.
     Enables attacheing profilse to all PSSE objects and associated properties"""
 
-    def __init__(self, solver:Union[ProductionCostModel, Snap, Static, Dynamic], settings: SimulationSettings, mode:str="r+"):
+    def __init__(
+        self, solver: Union[ProductionCostModel, Snap, Static, Dynamic], settings: SimulationSettings, mode: str = "r+"
+    ):
         """Creates an instance of the profile manager
 
         Args:
             solver (Union[ProductionCostModel, Snap, Static, Dynamic]): instance of simulation controller
             settings (SimulationSettings): simulation settings
             mode (str, optional): file update mode. Defaults to "r+".
-        """        
-        
+        """
+
         self.solver = solver
         self.settings = settings
 
@@ -48,7 +48,7 @@ class ProfileManager:
             for profile_group in ProfileTypes.names():
                 self.store.create_group(profile_group)
 
-    def load_data(self, file_path:Path)->dict:
+    def load_data(self, file_path: Path) -> dict:
         """Load in external profile data
 
         Args:
@@ -56,7 +56,7 @@ class ProfileManager:
 
         Returns:
             dict: profile mapping dictionary
-        """        
+        """
 
         toml_dict = toml.load(file_path)
         return toml_dict
@@ -66,8 +66,8 @@ class ProfileManager:
 
         Raises:
             Exception: raised if mapped object not found in profile DB
-        """        
-        
+        """
+
         mapping_path = self.settings.simulation.project_path / PROFILES_FOLDER / DEFAULT_PROFILE_MAPPING_FILENAME
         if mapping_path.exists():
             self.profile_mapping = self.load_data(mapping_path)
@@ -88,21 +88,30 @@ class ProfileManager:
             msg = f"Profile_mapping.toml file does not exist in path {mapping_path}"
             raise Exception(msg)
 
-    def create_dataset(self, dname:str, p_type:ProfileTypes, data:pd.DataFrame, start_timedate:datetime.datetime, resolution:float, _, info:str):
+    def create_dataset(
+        self,
+        dname: str,
+        p_type: ProfileTypes,
+        data: pd.DataFrame,
+        start_timedate: datetime.datetime,
+        resolution: float,
+        _,
+        info: str,
+    ):
         """Create new profile datasets
 
         Args:
             dname (str): dateset name
             p_type (ProfileTypes): profile type
-            data (pd.DataFrame): data 
+            data (pd.DataFrame): data
             start_timedate (datetime.datetime): profile start time
             resolution (float): profile resolution
             _ (_type_): _description_
-            info (:str): profile description 
+            info (:str): profile description
 
         Raises:
             Exception: raised if dataset already exists
-        """        
+        """
 
         grp = self.store[p_type]
         if dname not in grp:
@@ -116,7 +125,7 @@ class ProfileManager:
             msg = f'Data set "{dname}" already exists in group "{p_type}".'
             raise Exception(msg)
 
-    def df_to_sarray(self, df:pd.DataFrame) -> [str, str]:
+    def df_to_sarray(self, df: pd.DataFrame) -> [str, str]:
         """Enables data converson
 
         Args:
@@ -127,7 +136,7 @@ class ProfileManager:
 
         Returns:
             [str, str]: returns column name and datatype
-        """             
+        """
 
         def make_col_type(col_type, col):
             try:
@@ -159,7 +168,16 @@ class ProfileManager:
 
         return z, dtype
 
-    def add_profiles_from_csv(self, csv_file:Path, name:str, p_type:ProfileTypes, start_time:datetime.date, resolution_sec:float=900, units:str="", info:str=""):
+    def add_profiles_from_csv(
+        self,
+        csv_file: Path,
+        name: str,
+        p_type: ProfileTypes,
+        start_time: datetime.date,
+        resolution_sec: float = 900,
+        units: str = "",
+        info: str = "",
+    ):
         """enables profiles from existing csv files
 
         Args:
@@ -174,8 +192,8 @@ class ProfileManager:
         Raises:
             ValueError: rasied if invalid profile name passed
             ValueError: rasied if invalid profile type passed
-        """        
-        
+        """
+
         if p_type not in PROFILE_VALIDATION:
             msg = f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}"
             raise ValueError(msg)
@@ -186,7 +204,16 @@ class ProfileManager:
                 raise ValueError(msg)
         self.add_profiles(name, p_type, data, start_time, resolution_sec=resolution_sec, units=units, info=info)
 
-    def add_profiles(self, name:str, data:object, p_type:ProfileTypes, start_time:datetime.date, resolution_sec:float=900, units:str="", info:str=""):
+    def add_profiles(
+        self,
+        name: str,
+        data: object,
+        p_type: ProfileTypes,
+        start_time: datetime.date,
+        resolution_sec: float = 900,
+        units: str = "",
+        info: str = "",
+    ):
         """adds a profile to the profile manager
 
         Args:
@@ -201,8 +228,8 @@ class ProfileManager:
         Raises:
             InvalidParameterError: raised if start_time not a datetime object
             InvalidParameterError: raised if invalid profile type passed
-        """        
-       
+        """
+
         if type(start_time) is not datetime.datetime:
             msg = "start_time should be a python datetime object"
             raise InvalidParameterError(msg)
@@ -211,7 +238,16 @@ class ProfileManager:
             raise InvalidParameterError(msg)
         self.create_dataset(name, p_type, data, start_time, resolution_sec, units=units, info=info)
 
-    def create_metadata(self, d_set:str, start_time:datetime.date, resolution:float, data:object, units:str, info:str, p_type:ProfileTypes):
+    def create_metadata(
+        self,
+        d_set: str,
+        start_time: datetime.date,
+        resolution: float,
+        data: object,
+        units: str,
+        info: str,
+        p_type: ProfileTypes,
+    ):
         """adds a metadata to a new profile
 
         Args:
@@ -222,8 +258,8 @@ class ProfileManager:
             units (str): profile units
             info (str): profile info
             p_type (ProfileTypes): profile type
-        """        
-      
+        """
+
         metadata = {
             "sTime": str(start_time),
             "eTime": str(start_time + datetime.timedelta(seconds=resolution * len(data))),
@@ -243,12 +279,12 @@ class ProfileManager:
                 value_mod = value
             d_set.attrs[key] = value_mod
 
-    def update(self)->dict:
+    def update(self) -> dict:
         """returns data for the current timestep for all mapped profiles
 
         Returns:
             dict: values for profiles at the current time step
-        """        
+        """
 
         results = {}
         for profile_name, profile_obj in self.profiles.items():

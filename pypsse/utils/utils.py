@@ -5,7 +5,7 @@ import toml
 from pypsse.models import SimulationSettings
 
 
-def load_settings(file_path: Path, example_path=None)->SimulationSettings:
+def load_settings(file_path: Path, example_path=None) -> SimulationSettings:
     """utility function to load the simulation file
 
     Args:
@@ -14,7 +14,7 @@ def load_settings(file_path: Path, example_path=None)->SimulationSettings:
 
     Returns:
         SimulationSettings: simulation settings
-    """    
+    """
     settings = toml.load(file_path)
     if example_path:
         settings["simulation"]["project_path"] = example_path
