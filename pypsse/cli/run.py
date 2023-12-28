@@ -30,13 +30,5 @@ def run(project_path, simulations_file=None):
     msg = "Simulation file not found. Use -s to choose a valid settings file"
     "if its name differs from the default file name."
     assert file_path.exists(), msg
-    settings = toml.load(file_path)
-    settings = SimulationSettings(**settings)
-
-    export_settings_path = Path(project_path) / EXPORTS_SETTINGS_FILENAME
-    assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
-    export_settings = toml.load(export_settings_path)
-    export_settings = ExportFileOptions(**export_settings)
-
-    x = Simulator(settings, export_settings)
+    x = Simulator.from_setting_files(file_path)
     x.run()

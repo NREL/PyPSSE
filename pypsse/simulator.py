@@ -103,6 +103,24 @@ class Simulator:
         self.init()
         self._status = SimulationStatus.INITIALIZATION_COMPLETE
 
+    @classmethod
+    def from_setting_files(cls, simulation_settiings_file:Path, export_Settings_file:Path = None):
+        """build 'Simulator' from toml settings files
+
+        Args:
+            simulation_settiings_file (Path): simulation settings
+            export_Settings_file (Path): export settings
+        """        
+        simulation_settiings = toml.load(simulation_settiings_file)
+        if export_Settings_file:
+            export_Settings = toml.load(export_Settings_file)
+        else:
+            export_Settings = toml.load(simulation_settiings_file.parent / EXPORTS_SETTINGS_FILENAME)
+            
+        simulation_settiings = SimulationSettings(**simulation_settiings)
+        export_Settings = ExportFileOptions(**export_Settings)
+        return cls(simulation_settiings, export_Settings)
+
     def dump_settings(
         self,
         dest_dir: Path,
