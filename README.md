@@ -12,7 +12,7 @@ A python wrapper around psspy (python API for PSSE simulator) to perform
 - Co-optimization / co-design using OpenMDAO
 - PyPSSE server implementation
 
-### :email: Contact Information
+### Contact Information
 - [Aadil Latif](mailto:aadil.latif@nrel.gov)
 - [Kapil Duwadi](mailto:kapil.duwadi@nrel.gov)
 
