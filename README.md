@@ -9,8 +9,8 @@
 > time series powerflow and dynamic simulation for power system fault
 
 ### :email: Contact Information
-* :snowman: [Aadil Latif](mailto:aadil.latif@nrel.gov)
-* :snowman: [Kapil Duwadi](mailto:kapil.duwadi@nrel.gov)
+- [Aadil Latif](mailto:aadil.latif@nrel.gov)
+- [Kapil Duwadi](mailto:kapil.duwadi@nrel.gov)
 
 ###
 
