@@ -1,4 +1,9 @@
-﻿## :blush: Welcome to the PyPSSE Repository
+[![PyPI - Version](https://img.shields.io/pypi/v/powersystem-data-models.svg)](https://pypi.org/project/NREL-pypsse)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/powersystem-data-models.svg)](https://pypi.org/project/NREL-pypsse)
+
+
+ 
+ ## Welcome to the PyPSSE Repository
 
 > A python wrapper around psspy (python API for PSSE simulator) to perform
 > time series powerflow and dynamic simulation for power system fault
