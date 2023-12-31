@@ -5,8 +5,12 @@
  
  ## Welcome to the PyPSSE Repository
 
-> A python wrapper around psspy (python API for PSSE simulator) to perform
-> time series powerflow and dynamic simulation for power system fault
+A python wrapper around psspy (python API for PSSE simulator) to perform
+> Time series power flow and dynamic simulation for power system fault
+> Time series profile management
+> Co-simulation using HELICS
+> Co-optimization / co-design using OpenMDAO
+> PyPSSE server implementation
 
 ### :email: Contact Information
 - [Aadil Latif](mailto:aadil.latif@nrel.gov)
@@ -14,4 +18,4 @@
 
 ###
 
-For usage guidance, pleae see [PyPSSE documentation](https://NREL.github.io/PyPSSE/)
+For usage guidance, please see [PyPSSE documentation](https://NREL.github.io/PyPSSE/)
