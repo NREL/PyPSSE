@@ -7,7 +7,15 @@ from typing import List, Union
 from loguru import logger
 
 # from pyPSSE import
-from pypsse.models import BusFault, BusTrip, LineFault, LineTrip, MachineTrip, SimulationSettings
+from pypsse.models import (
+    BusFault,
+    Contingencies,
+    BusTrip,
+    LineFault,
+    LineTrip,
+    MachineTrip,
+    SimulationSettings,
+)
 
 
 def add_contingency(contingency, cont_dict, dt, system_contingencies):
@@ -16,7 +24,9 @@ def add_contingency(contingency, cont_dict, dt, system_contingencies):
     if ontingency_type in contingencies:
         system_contingencies.append(contingencies[ontingency_type](**cont_dict))
     else:
-        msg = "Invalid contingency type. Valid values are: {}".format(",".join(contingencies.keys()))
+        msg = "Invalid contingency type. Valid values are: {}".format(
+            ",".join(contingencies.keys())
+        )
         raise Exception(msg)
     return system_contingencies, dt
 
@@ -45,13 +55,25 @@ class BaseFault:
         """
         self.t = t
         if hasattr(self.settings, "duration"):
-            if self.settings.time + self.settings.duration > t >= self.settings.time and not self.enabled:
+            if (
+                self.settings.time + self.settings.duration
+                > t
+                >= self.settings.time
+                and not self.enabled
+            ):
                 self.enabled = True
                 self.enable_fault()
-            if t >= self.settings.time + self.settings.duration and self.enabled:
+            if (
+                t >= self.settings.time + self.settings.duration
+                and self.enabled
+            ):
                 self.enabled = False
                 self.disable_fault()
-        elif not hasattr(self.settings, "duration") and t >= self.settings.time and not self.tripped:
+        elif (
+            not hasattr(self.settings, "duration")
+            and t >= self.settings.time
+            and not self.tripped
+        ):
             self.enable_fault()
             self.tripped = True
 
@@ -59,17 +81,25 @@ class BaseFault:
         """enables a fault event"""
         err = getattr(self.psse, self.fault_method)(**self.fault_settings)
         if err:
-            logger.warning(f"Unable to enable {self.fault_method} at element {self.element}")
+            logger.warning(
+                f"Unable to enable {self.fault_method} at element {self.element}"
+            )
         else:
-            logger.debug(f"{self.fault_method} applied to {self.element} at time {self.t} seconds")
+            logger.debug(
+                f"{self.fault_method} applied to {self.element} at time {self.t} seconds"
+            )
 
     def disable_fault(self):
         """disables a fault event"""
         err = self.psse.dist_clear_fault()
         if err:
-            logger.warning(f"Unable to clear {self.fault_method} at element {self.element}")
+            logger.warning(
+                f"Unable to clear {self.fault_method} at element {self.element}"
+            )
         else:
-            logger.debug(f"{self.fault_method} cleared at element {self.element} at time {self.t} seconds")
+            logger.debug(
+                f"{self.fault_method} cleared at element {self.element} at time {self.t} seconds"
+            )
 
     def is_enabled(self):
         """Returns enabled status
@@ -114,7 +144,9 @@ class LineFaultObject(BaseFault):
     fault_method = "dist_branch_fault"
     fault_settings = {}
 
-    def __init__(self, psse: object, settings: LineFault, contingency_type: str):
+    def __init__(
+        self, psse: object, settings: LineFault, contingency_type: str
+    ):
         """line fault model
 
         Args:
@@ -174,7 +206,9 @@ class MachineTripObject(BaseFault):
     fault_method = "dist_machine_trip"
     fault_settings = {}
 
-    def __init__(self, psse: object, settings: MachineTrip, contingency_type: str):
+    def __init__(
+        self, psse: object, settings: MachineTrip, contingency_type: str
+    ):
         """Machine trip contingency
 
         Args:
@@ -198,8 +232,16 @@ contingencies = {
 
 
 def build_contingencies(
-    psse: object, settings: SimulationSettings
-) -> List[Union[BusFaultObject, BusTripObject, LineFaultObject, LineTripObject, MachineTripObject]]:
+    psse: object, contingencies_: Union[Contingencies, SimulationSettings]
+) -> List[
+    Union[
+        BusFaultObject,
+        BusTripObject,
+        LineFaultObject,
+        LineTripObject,
+        MachineTripObject,
+    ]
+]:
     """Builds all contingencies defined in the settings file
 
     Args:
@@ -211,14 +253,22 @@ def build_contingencies(
     """
 
     system_contingencies = []
-    if settings.contingencies:
-        for contingency in settings.contingencies:
+    if contingencies_.contingencies:
+        for contingency in contingencies_.contingencies:
             contingency_type = contingency.__class__.__name__
             if contingency_type in contingencies:
-                system_contingencies.append(contingencies[contingency_type](psse, contingency, contingency_type))
+                system_contingencies.append(
+                    contingencies[contingency_type](
+                        psse, contingency, contingency_type
+                    )
+                )
                 logger.debug(f'Contingency of type "{contingency_type}" added')
             else:
-                logger.warning("Invalid contingency type. Valid values are: {}".format(",".join(contingencies.keys())))
+                logger.warning(
+                    "Invalid contingency type. Valid values are: {}".format(
+                        ",".join(contingencies)
+                    )
+                )
     else:
         logger.debug("No contingencies to build")
     return system_contingencies
