@@ -43,7 +43,6 @@ class SimSettings(BaseModel):
     psse_solver_timestep: timedelta = timedelta(seconds=0.00333333333)
     start_time: datetime = "01/01/2020 00:00:00"
     use_profile_manager: bool
-    psse_path: Path = "C:/Program Files/PTI/PSSE35/35.4/PSSPY39232"
     project_path: Path = "C:/Users/alatif/Desktop/NAERM/models/pyPSSEModel"
     case_study: Optional[Path] = None
     raw_file: Optional[Path] = None

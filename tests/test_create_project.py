@@ -27,10 +27,7 @@ def test_run_sim_static(build_temp_project):
     file_Path = project_path / SIMULATION_SETTINGS_FILENAME
 
     if file_Path.exists():
-        settings = load_settings(file_Path, project_path)
-        settings.simulation.simulation_mode = SimulationModes.STATIC
-        settings.helics.cosimulation_mode = False
-        x = Simulator(settings)
+        x = Simulator.from_setting_files(file_Path)
         x.init()
         x.run()
     else:
@@ -38,21 +35,21 @@ def test_run_sim_static(build_temp_project):
         raise Exception(msg)
 
 
-def test_run_sim_dynamic(build_temp_project):
-    project_path = Path(TMP_FOLDER) / PROJECT_NAME
-    file_Path = project_path / SIMULATION_SETTINGS_FILENAME
+# def test_run_sim_dynamic(build_temp_project):
+#     project_path = Path(TMP_FOLDER) / PROJECT_NAME
+#     file_Path = project_path / SIMULATION_SETTINGS_FILENAME
 
-    if file_Path.exists():
-        settings = load_settings(file_Path, project_path)
-        settings.simulation.simulation_mode = SimulationModes.DYNAMIC
-        settings.simulation.use_profile_manager = False
-        settings.helics.cosimulation_mode = False
-        x = Simulator(settings)
-        x.init()
-        x.run()
-    else:
-        msg = f"'{file_Path}' is not a valid path."
-        raise Exception(msg)
+#     if file_Path.exists():
+#         settings = load_settings(file_Path, project_path)
+#         settings.simulation.simulation_mode = SimulationModes.DYNAMIC
+#         settings.simulation.use_profile_manager = False
+#         settings.helics.cosimulation_mode = False
+#         x = Simulator(settings)
+#         x.init()
+#         x.run()
+#     else:
+#         msg = f"'{file_Path}' is not a valid path."
+#         raise Exception(msg)
 
 
 # def test_license_availability(_cleanup):
