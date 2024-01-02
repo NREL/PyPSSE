@@ -47,5 +47,5 @@ def build_temp_project():
     )
 
     yield
-    if os.path.exists(TMP_FOLDER):
-        shutil.rmtree(TMP_FOLDER)
+    # if os.path.exists(TMP_FOLDER):
+    #     shutil.rmtree(TMP_FOLDER)

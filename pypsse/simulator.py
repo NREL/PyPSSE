@@ -36,8 +36,25 @@ from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
 
+psse_installation_path = os.environ["PYTHONPATH"] 
+
+n_bus = 200000
+if "psse34" in psse_installation_path.lower():
+    logger.debug("Instantiating psse version 34")
+    import psse34  # noqa: F401
+elif "psse35" in psse_installation_path.lower():
+    logger.debug("Instantiating psse version 35")
+    import psse35  # noqa: F401
+else:
+    logger.debug("Instantiating psse version 36")
+    import psse36  # noqa: F401
+
+import dyntools
+import psspy
 USING_NAERM = 0
 
+ierr = psspy.psseinit(n_bus)
+assert ierr == 0, f"Error code: {ierr}"
 
 class Simulator:
     "Base class for the simulator"
@@ -47,8 +64,7 @@ class Simulator:
     def __init__(
         self,
         settings: SimulationSettings,
-        export_settings: Union[ExportFileOptions, None],
-        psse_path: Union[str, Path] = "",
+        export_settings: Union[ExportFileOptions, None] = None,
     ):
         """Load a valid PyPSSE project and sets up simulation
 
@@ -71,33 +87,10 @@ class Simulator:
         log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
         logger.debug("Starting PSSE instance")
 
-        if psse_path != "" and Path(psse_path).exists():
-            self.settings.simulation.psse_path = Path(psse_path)
-            sys.path.append(psse_path)
-            os.environ["PATH"] += ";" + psse_path
-        else:
-            sys.path.append(str(self.settings.simulation.psse_path))
-            os.environ["PATH"] += ";" + str(self.settings.simulation.psse_path)
-
-        n_bus = 200000
-        if "psse34" in str(self.settings.simulation.psse_path).lower():
-            logger.debug("Instantiating psse version 34")
-            import psse34  # noqa: F401
-        elif "psse35" in str(self.settings.simulation.psse_path).lower():
-            logger.debug("Instantiating psse version 35")
-            import psse35  # noqa: F401
-        else:
-            logger.debug("Instantiating psse version 36")
-            import psse36  # noqa: F401
-        import dyntools
-        import psspy
-
         self.dyntools = dyntools
         self.psse = psspy
         # logger.debug('Initializing PSS/E. connecting to license server')
-        ierr = self.psse.psseinit(n_bus)
-        assert ierr == 0, f"Error code: {ierr}"
-        self.psse.psseinit(n_bus)
+        
 
         self.start_simulation()
         self.init()
@@ -465,6 +458,15 @@ class Simulator:
         for contingency in self.contingencies:
             contingency.update(t)
 
+    def force_psse_halt(self):
+        """forces cleaup of pypss imort
+        """        
+        ierr = self.psse.pssehalt_2()
+        assert ierr == 0, f"failed to halt PSSE. Error code - {ierr}"
+        
+
     def __del__(self):
-        if hasattr(self, "PSSE"):
-            self.psse.pssehalt_2()
+        if hasattr(self, "psse"):
+            print("HALTED")
+            ierr = self.psse.pssehalt_2()
+            assert ierr == 0, f"failed to halt PSSE. Error code - {ierr}"

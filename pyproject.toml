@@ -36,7 +36,8 @@ dependencies = [
     "terminaltables",
     "toml",
     "xlrd",
-    "loguru"
+    "loguru",
+    "powersystem-data-models"
 ]
 
 [project.scripts]
