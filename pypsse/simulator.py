@@ -36,6 +36,8 @@ from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
 
+from pypsse.models import Contingencies
+
 psse_installation_path = os.environ["PYTHONPATH"] 
 
 n_bus = 200000
@@ -425,7 +427,7 @@ class Simulator:
             if self.export_settings.defined_subsystems_only
             else self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
         )
-        self._status = SimulationModes.RESULT_EXPORT_COMPLETE
+        self._status = SimulationStatus.RESULT_EXPORT_COMPLETE
         return curr_results
 
     def status(self) -> SimulationStatus:
@@ -447,6 +449,15 @@ class Simulator:
 
         contingencies = c.build_contingencies(self.psse, self.settings)
         return contingencies
+    
+    def inject_contingencies_external(self, contigencies: Contingencies):
+        """Inject external contingencies.
+
+        Args:
+            contigencies (Contingencies): Contigencies Object
+        """        
+        contingencies = c.build_contingencies(self.psse, contigencies)
+        self.contingencies.extend(contingencies)
 
     def update_contingencies(self, t: float):
         """Updates contingencies during the simualtion run
@@ -467,6 +478,5 @@ class Simulator:
 
     def __del__(self):
         if hasattr(self, "psse"):
-            print("HALTED")
             ierr = self.psse.pssehalt_2()
             assert ierr == 0, f"failed to halt PSSE. Error code - {ierr}"

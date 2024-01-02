@@ -27,7 +27,6 @@ from pypsse.enumerations import SubscriptionFileRequiredColumns
 from pypsse.models import ExportFileOptions, ProjectDefination, SimulationSettings
 from pypsse.profile_manager.profile_store import ProfileManager
 
-
 class Project:
     "This class defines the structure of a PyPSSE project"
 

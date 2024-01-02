@@ -36,6 +36,7 @@ from pypsse.enumerations import (
 )
 
 
+
 class SimSettings(BaseModel):
     "Simulation setting  model defination"
     simulation_time: timedelta = timedelta(seconds=3.0)
@@ -71,11 +72,22 @@ class SimSettings(BaseModel):
 
     @model_validator(mode="after")
     def validate_case_study(self):
-        file_types = ["case_study", "raw_file", "snp_file", "dyr_file", "rwm_file", "gic_file"]
+        file_types = [
+            "case_study",
+            "raw_file",
+            "snp_file",
+            "dyr_file",
+            "rwm_file",
+            "gic_file",
+        ]
         base_project_path = self.project_path
         for file in file_types:
             file_path = getattr(self, file)
-            if file_path and str(file_path) != ".":
+            if (
+                file_path
+                and str(file_path) != "."
+                and not Path(file_path).exists()
+            ):
                 file_path = base_project_path / CASESTUDY_FOLDER / file_path
                 setattr(self, file, file_path)
                 assert file_path.exists(), f"{file_path} does not exist"
@@ -85,12 +97,18 @@ class SimSettings(BaseModel):
     def validate_subscription_file(self):
         base_project_path = self.project_path
         if self.subscriptions_file and str(self.subscriptions_file) != ".":
-            self.subscriptions_file = base_project_path / self.subscriptions_file
-            assert self.subscriptions_file.exists(), f"{self.subscriptions_file} does not exist"
+            self.subscriptions_file = (
+                base_project_path / self.subscriptions_file
+            )
+            assert (
+                self.subscriptions_file.exists()
+            ), f"{self.subscriptions_file} does not exist"
             data = pd.read_csv(self.subscriptions_file)
             csv_cols = set(data.columns)
             sub_cols = {e.value for e in SubscriptionFileRequiredColumns}
-            assert sub_cols.issubset(csv_cols), f"{sub_cols} are required columns for a valid subscription file"
+            assert sub_cols.issubset(
+                csv_cols
+            ), f"{sub_cols} are required columns for a valid subscription file"
         return self
 
     @model_validator(mode="after")
@@ -101,14 +119,19 @@ class SimSettings(BaseModel):
             for file in self.user_models:
                 model_file = base_project_path / CASESTUDY_FOLDER / file
                 assert model_file.exists(), f"{model_file} does not esist"
-                assert model_file.suffix == ".dll", "Invalid file extension. Use dll files"
+                assert (
+                    model_file.suffix == ".dll"
+                ), "Invalid file extension. Use dll files"
                 paths.append(model_file)
             self.user_models = paths
         return self
 
     @model_validator(mode="after")
     def validate_simulation_mode(self):
-        if self.simulation_mode in [SimulationModes.DYNAMIC, SimulationModes.SNAP]:
+        if self.simulation_mode in [
+            SimulationModes.DYNAMIC,
+            SimulationModes.SNAP,
+        ]:
             assert (
                 not self.use_profile_manager
             ), "Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"
@@ -157,7 +180,7 @@ class HelicsSettings(BaseModel):
 class LogSettings(BaseModel):
     "Logger setting model defination"
     disable_psse_logging: bool = True
-    logging_level: LoggingLevels
+    logging_level: LoggingLevels = LoggingLevels.DEBUG
     log_to_external_file: bool = True
     display_on_screen: bool = True
     clear_old_log_file: bool = True
@@ -205,8 +228,8 @@ class LoadBreakdown(BaseModel):
 class LoadSettings(BaseModel):
     "Load model defination"
     convert: bool = True
-    active_load: LoadBreakdown
-    reactive_load: LoadBreakdown
+    active_load: LoadBreakdown = LoadBreakdown()
+    reactive_load: LoadBreakdown = LoadBreakdown()
 
 
 class GeneratorSettings(BaseModel):
@@ -221,7 +244,7 @@ class BusFault(BaseModel):
     duration: float = 0.3
     bus_trip: bool = False
     trip_delay: float = 0.05
-    fault_impedance: List[int] = [
+    fault_impedance: List[float] = [
         1.0,
         1.0,
     ]
@@ -240,7 +263,7 @@ class LineFault(BaseModel):
     duration: float = 0.3
     bus_trip: bool = False
     trip_delay: float = 0.05
-    fault_impedance: List[int] = [
+    fault_impedance: List[float] = [
         1.0,
         1.0,
     ]
@@ -263,31 +286,47 @@ class SimulationSettings(BaseModel):
     "PyPSSE project settings"
 
     simulation: SimSettings
-    export: ExportSettings
+    export: ExportSettings = ExportSettings()
     helics: Optional[HelicsSettings] = None
-    log: LogSettings
+    log: LogSettings = LogSettings()
     plots: Optional[PlotSettings] = None
     gic_export_settings: Optional[GICExportSettings] = None
-    bus_subsystems: BusSubsystems
-    loads: LoadSettings
-    generators: GeneratorSettings
-    contingencies: Optional[List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]] = None
+    bus_subsystems: BusSubsystems = BusSubsystems()
+    loads: LoadSettings = LoadSettings()
+    generators: GeneratorSettings = GeneratorSettings()
+    contingencies: Optional[
+        List[Union[BusFault, LineFault, LineTrip, BusTrip, MachineTrip]]
+    ] = None
 
     @model_validator(mode="after")
     def validate_export_paths(self):
         base_project_path = self.simulation.project_path
         if self.export.outx_file:
-            self.export.outx_file = base_project_path / EXPORTS_FOLDER / self.export.outx_file
+            self.export.outx_file = (
+                base_project_path / EXPORTS_FOLDER / self.export.outx_file
+            )
         if self.export.out_file:
-            self.export.out_file = base_project_path / EXPORTS_FOLDER / self.export.out_file
+            self.export.out_file = (
+                base_project_path / EXPORTS_FOLDER / self.export.out_file
+            )
         if self.export.excel_file:
-            self.export.excel_file = base_project_path / EXPORTS_FOLDER / self.export.excel_file
+            self.export.excel_file = (
+                base_project_path / EXPORTS_FOLDER / self.export.excel_file
+            )
         if self.export.log_file:
-            self.export.log_file = base_project_path / LOGS_FOLDER / self.export.log_file
+            self.export.log_file = (
+                base_project_path / LOGS_FOLDER / self.export.log_file
+            )
         if self.export.networkx_graph_file:
-            self.export.networkx_graph_file = base_project_path / EXPORTS_FOLDER / self.export.networkx_graph_file
+            self.export.networkx_graph_file = (
+                base_project_path
+                / EXPORTS_FOLDER
+                / self.export.networkx_graph_file
+            )
         if self.export.coordinate_file:
-            self.export.coordinate_file = base_project_path / EXPORTS_FOLDER / self.export.coordinate_file
+            self.export.coordinate_file = (
+                base_project_path / EXPORTS_FOLDER / self.export.coordinate_file
+            )
         return self
 
 
@@ -321,7 +360,10 @@ class MachineChannel(BaseModel):
     asset_properties: List[str] = ["PELEC", "QELEC", "SPEED"]
 
 
-channel_types = Annotated[Union[BusChannel, LoadChannel, MachineChannel], Field(discriminator="asset_type")]
+channel_types = Annotated[
+    Union[BusChannel, LoadChannel, MachineChannel],
+    Field(discriminator="asset_type"),
+]
 
 
 class ExportAssetTypes(BaseModel):
@@ -436,3 +478,7 @@ class ApiPssePostRequest(BaseModel):
 class ApiWebSocketRequest(BaseModel):
     command: ApiCommands
     parameters: Optional[Dict] = None
+
+
+class Contingencies(BaseModel):
+    contingencies: List[Union[BusFault, BusTrip, LineFault, LineTrip, MachineTrip]]
