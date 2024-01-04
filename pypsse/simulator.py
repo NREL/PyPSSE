@@ -20,8 +20,19 @@ from networkx import Graph
 
 import pypsse.contingencies as c
 import pypsse.simulation_controller as sc
-from pypsse.common import EXPORTS_SETTINGS_FILENAME, LOGS_FOLDER, MAX_PSSE_BUSSYSTEMS, SIMULATION_SETTINGS_FILENAME
-from pypsse.contingencies import BusFaultObject, BusTripObject, LineFaultObject, LineTripObject, MachineTripObject
+from pypsse.common import (
+    EXPORTS_SETTINGS_FILENAME,
+    LOGS_FOLDER,
+    MAX_PSSE_BUSSYSTEMS,
+    SIMULATION_SETTINGS_FILENAME,
+)
+from pypsse.contingencies import (
+    BusFaultObject,
+    BusTripObject,
+    LineFaultObject,
+    LineTripObject,
+    MachineTripObject,
+)
 from pypsse.enumerations import SimulationStatus
 from pypsse.helics_interface import HelicsInterface
 from pypsse.models import (
@@ -35,28 +46,13 @@ from pypsse.parsers import gic_parser as gp
 from pypsse.parsers import reader as rd
 from pypsse.profile_manager.profile_store import ProfileManager
 from pypsse.result_container import Container
-
 from pypsse.models import Contingencies
+from pypsse.enumerations import PSSE_VERSIONS
 
-psse_installation_path = os.environ["PYTHONPATH"] 
-
-n_bus = 200000
-if "psse34" in psse_installation_path.lower():
-    logger.debug("Instantiating psse version 34")
-    import psse34  # noqa: F401
-elif "psse35" in psse_installation_path.lower():
-    logger.debug("Instantiating psse version 35")
-    import psse35  # noqa: F401
-else:
-    logger.debug("Instantiating psse version 36")
-    import psse36  # noqa: F401
-
-import dyntools
-import psspy
 USING_NAERM = 0
 
-ierr = psspy.psseinit(n_bus)
-assert ierr == 0, f"Error code: {ierr}"
+N_BUS = 200000
+
 
 class Simulator:
     "Base class for the simulator"
@@ -67,6 +63,7 @@ class Simulator:
         self,
         settings: SimulationSettings,
         export_settings: Union[ExportFileOptions, None] = None,
+        psse_version: str = PSSE_VERSIONS.PSSE35.value,
     ):
         """Load a valid PyPSSE project and sets up simulation
 
@@ -79,39 +76,58 @@ class Simulator:
         self._status = SimulationStatus.STARTING_INSTANCE
         self.settings = settings
 
+        logger.debug(f"Instantiating psse version {psse_version}")
+        __import__(psse_version, fromlist=[""])  # noqa: F401
+
+        import dyntools
+        import psspy
+
+        ierr = psspy.psseinit(N_BUS)
+        assert ierr == 0, f"Error code: {ierr}"
+
         if export_settings is None:
-            export_settings_path = Path(self.settings.simulation.project_path) / EXPORTS_SETTINGS_FILENAME
-            assert export_settings_path.exists(), f"{export_settings_path} does nor exist"
+            export_settings_path = (
+                Path(self.settings.simulation.project_path)
+                / EXPORTS_SETTINGS_FILENAME
+            )
+            assert (
+                export_settings_path.exists()
+            ), f"{export_settings_path} does nor exist"
             export_settings = toml.load(export_settings_path)
             export_settings = ExportFileOptions(**export_settings)
 
         self.export_settings = export_settings
-        log_path = os.path.join(self.settings.simulation.project_path, LOGS_FOLDER)
+        log_path = os.path.join(
+            self.settings.simulation.project_path, LOGS_FOLDER
+        )
         logger.debug("Starting PSSE instance")
 
         self.dyntools = dyntools
         self.psse = psspy
         # logger.debug('Initializing PSS/E. connecting to license server')
-        
 
         self.start_simulation()
         self.init()
         self._status = SimulationStatus.INITIALIZATION_COMPLETE
 
     @classmethod
-    def from_setting_files(cls, simulation_settiings_file:Path, export_Settings_file:Path = None):
+    def from_setting_files(
+        cls, simulation_settiings_file: Path, export_Settings_file: Path = None
+    ):
         """build 'Simulator' from toml settings files
 
         Args:
             simulation_settiings_file (Path): simulation settings
             export_Settings_file (Path): export settings
-        """        
+        """
         simulation_settiings = toml.load(simulation_settiings_file)
         if export_Settings_file:
             export_Settings = toml.load(export_Settings_file)
         else:
-            export_Settings = toml.load(simulation_settiings_file.parent / EXPORTS_SETTINGS_FILENAME)
-            
+            export_Settings = toml.load(
+                simulation_settiings_file.parent / EXPORTS_SETTINGS_FILENAME
+            )
+
         simulation_settiings = SimulationSettings(**simulation_settiings)
         export_Settings = ExportFileOptions(**export_Settings)
         return cls(simulation_settiings, export_Settings)
@@ -154,7 +170,9 @@ class Simulator:
             msg = "Please pass a RAW or SAV file in the settings dictionary"
             raise Exception(msg)
 
-        logger.info(f"Trying to read a file >>{self.settings.simulation.case_study}")
+        logger.info(
+            f"Trying to read a file >>{self.settings.simulation.case_study}"
+        )
         self.raw_data = rd.Reader(self.psse)
         (
             self.bus_subsystems,
@@ -190,7 +208,9 @@ class Simulator:
                 self.export_settings,
                 self.bus_subsystems,
             )
-            self.publications = self.hi.register_publications(self.bus_subsystems)
+            self.publications = self.hi.register_publications(
+                self.bus_subsystems
+            )
             if self.settings.helics.create_subscriptions:
                 self.subscriptions = self.hi.register_subscriptions()
 
@@ -294,19 +314,25 @@ class Simulator:
         self._status = SimulationStatus.RUNNING_SIMULATION
         if self.sim.initialization_complete:
             if self.settings.plots and self.settings.plots.enable_dynamic_plots:
-                bokeh_server_proc = subprocess.Popen(["bokeh", "serve"], stdout=subprocess.PIPE)  # noqa: S603,S607
+                bokeh_server_proc = subprocess.Popen(
+                    ["bokeh", "serve"], stdout=subprocess.PIPE
+                )  # noqa: S603,S607
             else:
                 bokeh_server_proc = None
 
             logger.debug(
                 f"Running dynamic simulation for time {self.settings.simulation.simulation_time.total_seconds()} sec"
             )
-            total_simulation_time = self.settings.simulation.simulation_time.total_seconds()
+            total_simulation_time = (
+                self.settings.simulation.simulation_time.total_seconds()
+            )
             t = 0
             while True:
                 self.step(t)
                 if self.inc_time:
-                    t += self.settings.simulation.simulation_step_resolution.total_seconds()
+                    t += (
+                        self.settings.simulation.simulation_step_resolution.total_seconds()
+                    )
                 if t >= total_simulation_time:
                     break
 
@@ -319,7 +345,9 @@ class Simulator:
             if bokeh_server_proc is not None:
                 bokeh_server_proc.terminate()
         else:
-            logger.error("Run init() command to initialize models before running the simulation")
+            logger.error(
+                "Run init() command to initialize models before running the simulation"
+            )
         self._status = "Simulation complete"
 
     def get_bus_ids(self) -> list:
@@ -347,7 +375,9 @@ class Simulator:
         if self.settings.simulation.use_profile_manager:
             self.pm.update()
         ctime = time.time() - self.simStartTime
-        logger.debug(f"Simulation time: {t} seconds\nRun time: {ctime}\npsse time: {self.sim.get_time()}")
+        logger.debug(
+            f"Simulation time: {t} seconds\nRun time: {ctime}\npsse time: {self.sim.get_time()}"
+        )
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.create_subscriptions:
                 self.update_subscriptions()
@@ -377,13 +407,22 @@ class Simulator:
         """
 
         if self.export_settings.defined_subsystems_only:
-            curr_results = self.sim.read_subsystems(self.exp_vars, self.all_subsysten_buses)
+            curr_results = self.sim.read_subsystems(
+                self.exp_vars, self.all_subsysten_buses
+            )
         else:
-            curr_results = self.sim.read_subsystems(self.exp_vars, self.raw_data.buses)
+            curr_results = self.sim.read_subsystems(
+                self.exp_vars, self.raw_data.buses
+            )
 
         if not USING_NAERM:
             if not self.export_settings.export_results_using_channels:
-                self.results.update(curr_results, t, self.sim.get_time(), self.sim.has_converged())
+                self.results.update(
+                    curr_results,
+                    t,
+                    self.sim.get_time(),
+                    self.sim.has_converged(),
+                )
         return curr_results
 
     def update_subscriptions(self):
@@ -440,7 +479,15 @@ class Simulator:
 
     def build_contingencies(
         self,
-    ) -> List[Union[BusTripObject, BusFaultObject, LineTripObject, LineFaultObject, MachineTripObject]]:
+    ) -> List[
+        Union[
+            BusTripObject,
+            BusFaultObject,
+            LineTripObject,
+            LineFaultObject,
+            MachineTripObject,
+        ]
+    ]:
         """Builds user defined contengingies
 
         Returns:
@@ -449,13 +496,13 @@ class Simulator:
 
         contingencies = c.build_contingencies(self.psse, self.settings)
         return contingencies
-    
+
     def inject_contingencies_external(self, contigencies: Contingencies):
         """Inject external contingencies.
 
         Args:
             contigencies (Contingencies): Contigencies Object
-        """        
+        """
         contingencies = c.build_contingencies(self.psse, contigencies)
         self.contingencies.extend(contingencies)
 
@@ -470,11 +517,9 @@ class Simulator:
             contingency.update(t)
 
     def force_psse_halt(self):
-        """forces cleaup of pypss imort
-        """        
+        """forces cleaup of pypss imort"""
         ierr = self.psse.pssehalt_2()
         assert ierr == 0, f"failed to halt PSSE. Error code - {ierr}"
-        
 
     def __del__(self):
         if hasattr(self, "psse"):

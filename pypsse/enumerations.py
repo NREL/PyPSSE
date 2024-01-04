@@ -442,3 +442,8 @@ class SimulationStatus(str, Enum):
     SIMULATION_COMPLETE = "Simulation complete"
     STARTING_RESULT_EXPORT = "Starting exports"
     RESULT_EXPORT_COMPLETE = "Export coplete"
+
+class PSSE_VERSIONS(str, Enum):
+    PSSE34 = "psse34"
+    PSSE35 = "psse35"
+    PSSE36 = "psse36"
