@@ -47,7 +47,7 @@ class SimulatorUtils:
             self.time = self.psse_obj.settings.simulation.start_time
         except Exception as e:
             return str(e)
-        return
+        return self.psse_obj._status
 
     def close_case(self):
         """method can be used to close a currently open project"""
