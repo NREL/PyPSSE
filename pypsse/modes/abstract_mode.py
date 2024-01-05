@@ -829,7 +829,7 @@ class AbstractMode:
                                             else:
                                                 ierr, val = getattr(self.psse, func_name)(int(b), int(b1), str(ickt), v)
 
-                                                if irr == 0:
+                                                if ierr == 0:
                                                     results = self.add_result(
                                                         results, q, val, f"{b!s}_{b1!s}_{ickt_string}"
                                                     )
