@@ -68,16 +68,17 @@ class Container:
         else:
             class_assets = self.export_settings
 
+        inv_map = {v: k for k, v in MAPPED_CLASS_NAMES.items()}
+
         for class_name in export__list:
-            if class_name in params:
-                mapped_name = MAPPED_CLASS_NAMES[class_name]
-                variables = getattr(class_assets, class_name)
+            if inv_map[class_name] in params:
+                variables = getattr(class_assets, inv_map[class_name])
                 if variables:
                     for variable in variables:
-                        self.results[f"{mapped_name}_{variable.value}"] = None
-                        if mapped_name not in self.export_vars:
-                            self.export_vars[mapped_name] = []
-                        self.export_vars[mapped_name].append(variable.value)
+                        self.results[f"{class_name}_{variable.value}"] = None
+                        if class_name not in self.export_vars:
+                            self.export_vars[class_name] = []
+                        self.export_vars[class_name].append(variable.value)
 
         return self.export_vars
 

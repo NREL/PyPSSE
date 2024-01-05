@@ -24,7 +24,9 @@ class HDF5Writer:
         """
 
         self.log_dir = log_dir
-        self.store = h5py.File(os.path.join(log_dir, DEFAULT_RESULTS_FILENAME), "w")
+        self.store = h5py.File(
+            os.path.join(log_dir, DEFAULT_RESULTS_FILENAME), "w"
+        )
         self.store_groups = {}
         self.store_datasets = {}
         self.row = {}
@@ -55,7 +57,9 @@ class HDF5Writer:
         )
         # Create arrow writer for each object type
 
-    def write(self, currenttime: datetime, powerflow_output: dict, convergence: int):
+    def write(
+        self, currenttime: datetime, powerflow_output: dict, convergence: int
+    ):
         """Writes the status of assets at a particular timestep to a hdf5 file.
 
         Args:
@@ -77,7 +81,9 @@ class HDF5Writer:
                     if dtype == object:
                         dtype = "S30"
 
-                    self.store_datasets[obj_type][col_name] = self.store_groups[obj_type].create_dataset(
+                    self.store_datasets[obj_type][col_name] = self.store_groups[
+                        obj_type
+                    ].create_dataset(
                         str(col_name),
                         shape=(self.column_length,),
                         maxshape=(None,),
@@ -94,7 +100,9 @@ class HDF5Writer:
                 if self.dfs[obj_type] is None:
                     self.dfs[obj_type] = data
                 else:
-                    self.dfs[obj_type] = self.dfs[obj_type].append(data, ignore_index=True)
+                    self.dfs[obj_type] = self.dfs[obj_type].append(
+                        data, ignore_index=True
+                    )
 
             if self.step % self.chunkRows == self.chunkRows - 1:
                 si = int(self.step / self.chunkRows) * self.chunkRows
@@ -103,7 +111,9 @@ class HDF5Writer:
                     r = self.store_datasets[obj_type][col_name].shape[0]
                     if ei >= r:
                         self.store_datasets[obj_type][col_name].resize((ei,))
-                    self.store_datasets[obj_type][col_name][si:ei] = self.dfs[obj_type][col_name]
+                    self.store_datasets[obj_type][col_name][si:ei] = self.dfs[
+                        obj_type
+                    ][col_name]
                 self.dfs[obj_type] = None
             if self.step >= len(self.Timestamp):
                 self.Timestamp.resize((len(self.Timestamp) + 1,))
@@ -114,18 +124,22 @@ class HDF5Writer:
             self.store.flush()
         self.step += 1
 
-    def __del__(self):
+    def close_store(self):
         try:
-            k = next(self.dfs.keys())
-            length = len(self.dfs[k])
+            k = list(self.dfs.keys())[0]
             if self.dfs[k] is not None:
-                for obj_type in self.dfs.keys():
-                    for col_name in self.dfs[k].columns:
-                        self.store_datasets[obj_type][col_name][self.column_length - length :] = self.dfs[obj_type][
-                            col_name
-                        ]
+                length = len(self.dfs[k])
+                if length > 0:
+                    for obj_type in self.dfs.keys():
+                        for col_name in self.dfs[k].columns:
+                            self.store_datasets[obj_type][col_name][
+                                self.column_length - length :
+                            ] = self.dfs[obj_type][col_name]
 
             self.store.flush()
             self.store.close()
         except Exception as e:
             logger.info(str(e))
+
+    def __del__(self):
+        self.close_store()
