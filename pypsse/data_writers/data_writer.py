@@ -27,3 +27,6 @@ class DataWriter:
     def write(self, currenttime, powerflow_output, convergence):
         "Enables incremental write to the data writer object"
         self.writer.write(currenttime, powerflow_output, convergence)
+
+    def close_store(self):
+        pass
