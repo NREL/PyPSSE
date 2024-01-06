@@ -522,6 +522,7 @@ class Simulator:
         assert ierr == 0, f"failed to halt PSSE. Error code - {ierr}"
 
     def __del__(self):
-        if hasattr(self, "psse"):
-            ierr = self.psse.pssehalt_2()
-            assert ierr == 0, f"failed to halt PSSE. Error code - {ierr}"
+        try:
+            self.force_psse_halt()
+        except:
+            pass

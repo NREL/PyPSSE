@@ -155,8 +155,8 @@ class PublicationDefination(BaseModel):
     bus_subsystems: List[int] = [
         0,
     ]
-    asset_type: ModelTypes = "buses"
-    asset_properties: List[ModelProperties] = ["FREQ", "PU"]
+    asset_type: ModelTypes = ModelTypes.BUSES
+    asset_properties: List[ModelProperties] = [ModelProperties.FREQ, ModelProperties.PU]
 
 
 class HelicsSettings(BaseModel):
