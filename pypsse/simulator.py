@@ -526,4 +526,3 @@ class Simulator:
             self.force_psse_halt()
         except:
             pass
-
