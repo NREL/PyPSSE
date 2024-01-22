@@ -14,7 +14,7 @@ try:
 except ImportError:
     server_dependencies_installed = False
     logger.warning(
-        "Server dependencies not installed. Use 'pip install pssepy[server]' to install additonal dependencies"
+        "Server dependencies not installed. Use 'pip install NREL-pypsse[server]' to install additonal dependencies"
     )
 
 
