@@ -148,6 +148,8 @@ class PSSE:
         logger.info("MDAO probelm parameters read. Building inputs and outputs.")
 
     def __del__(self):
+        # if hasattr(self, "psse_obj"):
+        #     del self.psse_obj
         self.export_result()
         self.close_case()
 

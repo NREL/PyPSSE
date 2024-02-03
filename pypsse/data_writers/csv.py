@@ -13,14 +13,14 @@ class CSVWriter:
     files.
     """
 
-    def __init__(self, log_dir: Path, column_length: int):
+    def __init__(self, log_dir: Path, column_length: int, filename_prefix:str=""):
         """Constructor for csv writer
 
         Args:
             log_dir (Path): output path (dirctory)
             column_length (int): number of data columns
         """
-
+        self.filename_prefix=filename_prefix
         self.column_length = column_length
         self.log_dir = log_dir
         self.timestamps = []
@@ -50,7 +50,7 @@ class CSVWriter:
                     self.dfs[obj_type].append(data)
 
             if self.step % self.chunkRows == self.chunkRows - 1:
-                fpath = os.path.join(self.log_dir, f"{obj_type}.csv")
+                fpath = os.path.join(self.log_dir, f"{self.filename_prefix}_{obj_type}.csv")
                 self.dfs[obj_type] = pd.DataFrame(self.dfs[obj_type], index=self.timestamps)
                 self.dfs[obj_type].to_csv(fpath, mode="a")
 

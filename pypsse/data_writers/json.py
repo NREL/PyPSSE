@@ -13,13 +13,14 @@ class JSONWriter:
     files.
     """
 
-    def __init__(self, log_dir: Path, column_length: int):
+    def __init__(self, log_dir: Path, column_length: int, filename_prefix:str=""):
         """Constructor for json writer
 
         Args:
             log_dir (Path): output path (dirctory)
             column_length (int): number of data columns
         """
+        self.filename_prefix=filename_prefix
         self.column_length = column_length
         self.log_dir = log_dir
         self.chunk_rows = 1
@@ -28,7 +29,7 @@ class JSONWriter:
         self.step = 0
         # Create arrow writer for each object type
 
-    def write(self, currenttime: datetime, powerflow_output: dict):
+    def write(self, currenttime: datetime, powerflow_output: dict, _:bool=None):
         """Writes the status of assets at a particular timestep to a json file.
 
         Args:
@@ -38,7 +39,8 @@ class JSONWriter:
         # Iterate through each object type
 
         for obj_type in powerflow_output:
-            fpath = os.path.join(self.log_dir, f"{obj_type}.json")
+
+            fpath = os.path.join(self.log_dir, f"{self.filename_prefix}_{obj_type}.json")
             if self.step == 0:
                 f = open(fpath, "w")
                 f.close()

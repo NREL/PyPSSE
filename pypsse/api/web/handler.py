@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from concurrent.futures import ThreadPoolExecutor
 from http import HTTPStatus
 from multiprocessing import Event, Process, Queue, cpu_count
@@ -16,7 +15,7 @@ from pypsse.api.common import BASE_PROJECT_PATH
 from pypsse.common import DEFAULT_LOG_FILE, DEFAULT_RESULTS_FILENAME, EXPORTS_FOLDER, LOGS_FOLDER
 from pypsse.models import ApiPsseException, ApiPssePostRequest, ApiPssePutRequest, ApiPsseReply, ApiPsseReplyInstances
 
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 shutdown_event = Event()
 
@@ -81,6 +80,7 @@ class Handler:
         await websocket.send_json(result)
 
         while True:
+            logger.info("entering while loop")
             data = await websocket.receive_text()
             logger.info("websocket message data: %s", str(result)[1:1000])
             to_psse_queue.put(data)

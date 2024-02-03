@@ -45,7 +45,7 @@ class ProfileManager:
         else:
             logger.info("Creating new h5 store")
             self.store = h5py.File(file_path, "w")
-            for profile_group in ProfileTypes.names():
+            for profile_group in [p.value for p in ProfileTypes]:
                 self.store.create_group(profile_group)
 
     def load_data(self, file_path: Path) -> dict:
@@ -93,9 +93,9 @@ class ProfileManager:
         dname: str,
         p_type: ProfileTypes,
         data: pd.DataFrame,
-        start_timedate: datetime.datetime,
+        start_time: datetime.datetime,
         resolution: float,
-        _,
+        units:str,
         info: str,
     ):
         """Create new profile datasets
@@ -104,7 +104,7 @@ class ProfileManager:
             dname (str): dateset name
             p_type (ProfileTypes): profile type
             data (pd.DataFrame): data
-            start_timedate (datetime.datetime): profile start time
+            start_time (datetime.datetime): profile start time
             resolution (float): profile resolution
             _ (_type_): _description_
             info (:str): profile description
@@ -194,15 +194,19 @@ class ProfileManager:
             ValueError: rasied if invalid profile type passed
         """
 
-        if p_type not in PROFILE_VALIDATION:
+        if p_type not in ProfileTypes:
             msg = f"Valid profile types are: {list(PROFILE_VALIDATION.keys())}"
             raise ValueError(msg)
+        logger.debug("Reading profile")
         data = pd.read_csv(csv_file)
+
         for c in data.columns:
             if c not in PROFILE_VALIDATION[p_type]:
                 msg = f"{c} is not valid, Valid subtypes for '{p_type}' are: {PROFILE_VALIDATION[p_type]}"
                 raise ValueError(msg)
-        self.add_profiles(name, p_type, data, start_time, resolution_sec=resolution_sec, units=units, info=info)
+        
+        logger.debug("Attempting to add a profile")
+        self.add_profiles(name, data, p_type, start_time, resolution_sec=resolution_sec, units=units, info=info)
 
     def add_profiles(
         self,
@@ -233,7 +237,8 @@ class ProfileManager:
         if type(start_time) is not datetime.datetime:
             msg = "start_time should be a python datetime object"
             raise InvalidParameterError(msg)
-        if p_type not in ProfileTypes.names():
+        
+        if p_type not in ProfileTypes:
             msg = f"Valid values for p_type are {ProfileTypes.names()}"
             raise InvalidParameterError(msg)
         self.create_dataset(name, p_type, data, start_time, resolution_sec, units=units, info=info)
@@ -290,6 +295,7 @@ class ProfileManager:
         for profile_name, profile_obj in self.profiles.items():
             result = profile_obj.update()
             results[profile_name] = result
+            
         return results
 
     def __del__(self):

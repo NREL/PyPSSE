@@ -20,9 +20,9 @@ class DataWriter:
         "none": DummyWriter,
     }
 
-    def __init__(self, log_dir, formatnm, column_length):
+    def __init__(self, log_dir, formatnm, column_length, filename_prefix):
         "Sets up a data writer as per user input"
-        self.writer = self.modes[formatnm](log_dir, column_length)
+        self.writer = self.modes[formatnm](log_dir, column_length, filename_prefix)
 
     def write(self, currenttime, powerflow_output, convergence):
         "Enables incremental write to the data writer object"

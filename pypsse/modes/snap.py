@@ -1,7 +1,7 @@
 import numpy as np
 from loguru import logger
 
-from pypsse.models import ExportSettings, SimulationSettings
+from pypsse.models import SimulationSettings, ExportFileOptions
 from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, converter, dyn_only_options
 from pypsse.utils.dynamic_utils import DynamicUtils
@@ -15,7 +15,7 @@ class Snap(AbstractMode, DynamicUtils):
         psse,
         dyntools,
         settings: SimulationSettings,
-        export_settings: ExportSettings,
+        export_settings: ExportFileOptions,
         subsystem_buses,
         raw_data,
     ):
@@ -46,12 +46,15 @@ class Snap(AbstractMode, DynamicUtils):
         self.disable_generation_for_coupled_buses()
         # self.save_model()
         ############# ------------------------------------- ###############
-
-        ierr = self.psse.strt_2([0, 1], str(self.settings.export.outx_file))
+        outx_file  = str(self.settings.export.outx_file).split("\\")
+        outx_file[-1] = self.export_settings.filename_prefix + "_" + outx_file[-1]
+        outx_file = "\\".join(outx_file)
+        
+        ierr = self.psse.strt_2([0, 1],  outx_file)
 
         if ierr == 1:
             self.psse.cong(0)
-            ierr = self.psse.strt_2([0, 1], str(self.settings.export.outx_file))
+            ierr = self.psse.strt_2([0, 1],  outx_file)
 
         elif ierr > 1:
             msg = "Error starting simulation"

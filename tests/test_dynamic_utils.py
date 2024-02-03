@@ -1,29 +1,12 @@
-import os
-import tempfile
-from pathlib import Path
-
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
 from pypsse.enumerations import SimulationModes
 from pypsse.simulator import Simulator
 from pypsse.utils.utils import load_settings
 
-PROJECT_CREATION_SETTINGS = {
-    "simulation_file": None,
-    "export_settings_file": None,
-    "psse_project_folder": "./tests/data/psse_project",
-    "profile_store": "./tests/data/profiles/Profiles.hdf5",
-    "profile_mapping": "./tests/data/profiles/Profile_mapping.toml",
-    "overwrite": True,
-    "autofill": True,
-}
+from utils import build_temp_project, remove_temp_project
 
-TEMPPATH = tempfile.gettempdir()
-TMP_FOLDER = os.path.join(TEMPPATH, "temp")
-PROJECT_NAME = "psse_project"
-
-def load_dynamic_model():
-    global counter
-    project_path = Path(TMP_FOLDER) / PROJECT_NAME
+def run_sim_dynamic():
+    project_path = build_temp_project()
     file_Path = project_path / SIMULATION_SETTINGS_FILENAME
 
     if file_Path.exists():
@@ -31,42 +14,39 @@ def load_dynamic_model():
         settings.simulation.simulation_mode = SimulationModes.DYNAMIC
         settings.simulation.use_profile_manager = False
         settings.helics.cosimulation_mode = False
-        
         x = Simulator(settings)
-        x.init()
         yield x
-        x.force_psse_halt()
+        x.init()
+        x.run()
+        del x
+        remove_temp_project(project_path)
     else:
         msg = f"'{file_Path}' is not a valid path."
         raise Exception(msg)
 
+def test_run_sim_dynamic_save_model():
+    simulators = run_sim_dynamic()
+    simulator = next(simulators)
+    files = simulator.sim.save_model()
+    for file in files:
+        assert file.exists(), f"{file}"
 
-def test_run_sim_dynamic_save_model(build_temp_project):
-   
-    x = load_dynamic_model()
-    for simulator in x:
-        files = simulator.sim.save_model()
-        for file in files:
-            assert file.exists(), f"{file!s}"
-
-
-def test_disable_generation(build_temp_project):
-    x = load_dynamic_model()
-    for simulator in x:
-        ...
+def test_disable_generation():
+    simulators = run_sim_dynamic()
+    simulator = next(simulators)
     
 
 
-# def test_disbale_load_model(build_temp_project):
-#     x = load_dynamic_model()
-#     x = next(x)
+def test_disbale_load_model():
+    simulators = run_sim_dynamic()
+    simulator = next(simulators)
 
 
-# def test_channel_setup(build_temp_project):
-#     x = load_dynamic_model()
-#     x = next(x)
+def test_channel_setup():
+    simulators = run_sim_dynamic()
+    simulator = next(simulators)
 
 
-# def test_load_break(build_temp_project):
-#     x = load_dynamic_model()
-#     x = next(x)
+def test_load_break():
+    simulators = run_sim_dynamic()
+    simulator = next(simulators)

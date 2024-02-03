@@ -387,6 +387,7 @@ class ExportFileOptions(ExportAssetTypes):
     "Export settings for a PyPSSE project"
 
     export_results_using_channels: bool = False
+    filename_prefix :str = ""
     defined_subsystems_only: bool = True
     file_format: ExportModes = "h5"
     channels: Optional[List[str]] = None

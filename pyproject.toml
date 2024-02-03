@@ -52,10 +52,11 @@ path = "pypsse/__init__.py"
 [tool.hatch.envs.test]
 dependencies = [
   "coverage[toml]",
-  "pytest",
-  "pytest-cov",
+  "pytest-xdist"
   "pytest-mock",
-  "httpx"
+  "pytest-cov",
+  "pytest",
+  "httpx",
 ]
 
 [tool.hatch.build.targets.sdist]
