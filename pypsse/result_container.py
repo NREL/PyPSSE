@@ -7,7 +7,7 @@ from loguru import logger
 from pypsse.common import EXPORTS_FOLDER, MAPPED_CLASS_NAMES
 from pypsse.data_writers.data_writer import DataWriter
 from pypsse.enumerations import BulkWriteModes, StreamedWriteModes
-from pypsse.models import ExportAssetTypes, ModelTypes, SimulationSettings
+from pypsse.models import ExportAssetTypes, ModelTypes, SimulationSettings, ExportFileOptions
 
 
 class Container:
@@ -16,7 +16,7 @@ class Container:
     BULK_WRITE_MODES = [m.value for m in BulkWriteModes]
     STREAMED_WRITE_MODES = [m.value for m in StreamedWriteModes]
 
-    def __init__(self, settings: SimulationSettings, export_settings: ExportAssetTypes):
+    def __init__(self, settings: SimulationSettings, export_settings: ExportFileOptions):
         """Sets up the result container object
 
         Args:
@@ -45,7 +45,7 @@ class Container:
             / self.settings.simulation.simulation_step_resolution.total_seconds()
         )
         if self.export_settings.file_format not in self.BULK_WRITE_MODES:
-            self.dataWriter = DataWriter(self.export_path, export_settings.file_format.value, time_steps)
+            self.dataWriter = DataWriter(self.export_path, export_settings.file_format.value, time_steps,  self.export_settings.filename_prefix)
 
     def update_export_variables(self, params: Union[ExportAssetTypes, dict]) -> dict:
         """Updates the container with current system state.
@@ -122,7 +122,7 @@ class Container:
                 export_path = (
                     self.settings.simulation.project_path
                     / EXPORTS_FOLDER
-                    / f'{df_name}.{self.export_settings["Write format"]}'
+                    / f'{df_name}.{self.export_settings.file_format}'
                 )
                 if self.export_settings.file_format == BulkWriteModes.CSV:
                     if isinstance(df, pd.DataFrame):

@@ -400,6 +400,7 @@ Channels = {
 class ExportModes(str, Enum):
     "Valid export modes"
 
+    JSON = "json"
     CSV = "csv"
     H5 = "h5"
 

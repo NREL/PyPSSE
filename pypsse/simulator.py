@@ -81,10 +81,11 @@ class Simulator:
 
         import dyntools
         import psspy
-
+        logger.debug(f"Imported psspy suscessfully")
+        
         ierr = psspy.psseinit(N_BUS)
         assert ierr == 0, f"Error code: {ierr}"
-
+        logger.debug(f"PSSE initialized sucessfully suscessfully")
         if export_settings is None:
             export_settings_path = (
                 Path(self.settings.simulation.project_path)

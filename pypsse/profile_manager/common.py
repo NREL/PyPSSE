@@ -1,8 +1,14 @@
-from enum import IntEnum
+from enum import Enum
+
+class ProfileTypes(str, Enum):
+    LOAD = 'Load'
+    INDUCTION_MACHINE = 'Induction_machine'
+    MACHINE = 'Machine'
+    PLANT = "Plant"
 
 PROFILE_VALIDATION = {
-    "Load": ["PL", "QL", "IP", "IQ", "YP", "YQ", "PG", "QG"],
-    "Induction_machine": [
+    ProfileTypes.LOAD: ["PL", "QL", "IP", "IQ", "YP", "YQ", "PG", "QG"],
+    ProfileTypes.INDUCTION_MACHINE: [
         "MBASE",
         "RATEKVPSET",
         "H",
@@ -26,7 +32,7 @@ PROFILE_VALIDATION = {
         "IA2",
         "XAMULT",
     ],
-    "Machine": [
+    ProfileTypes.MACHINE: [
         "PG",
         "QG",
         "QT",
@@ -45,26 +51,10 @@ PROFILE_VALIDATION = {
         "F4",
         "WPF",
     ],
-    "Plant": ["VS", "RMPCT"],
+    ProfileTypes.PLANT: ["VS", "RMPCT"],
 }
 
 DEFAULT_PROFILE_NAME = "Default"
 DEFAULT_START_TIME = "2020-01-01 00:00:00.00"
 DEFAULT_PROFILE_TYPE = "Load"
 DEFAULT_PROFILE_RESOLUTION = 1.0
-
-
-class ProfileTypes(IntEnum):
-    Load = 0
-    Induction_machine = 1
-    Machine = 2
-    Plant = 3
-
-    @staticmethod
-    def names():
-        return [c.name for c in ProfileTypes]
-        # list(map(lambda c: c.name, ProfileTypes))
-
-    @staticmethod
-    def values():
-        return [c.value for c in ProfileTypes]

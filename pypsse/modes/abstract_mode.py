@@ -5,7 +5,7 @@ from loguru import logger
 
 from pypsse.common import CASESTUDY_FOLDER, VALUE_UPDATE_BOUND
 from pypsse.enumerations import ModelTypes, WritableModelTypes
-from pypsse.models import ExportSettings, SimulationModes, SimulationSettings
+from pypsse.models import ExportSettings, SimulationModes, SimulationSettings, ExportFileOptions
 from pypsse.modes.constants import converter
 
 
@@ -15,7 +15,7 @@ class AbstractMode:
         psse,
         dyntools,
         settings: SimulationSettings,
-        export_settings: ExportSettings,
+        export_settings: ExportFileOptions,
         subsystem_buses,
         raw_data,
     ):
@@ -296,11 +296,21 @@ class AbstractMode:
     def export(self):
         try:
             logger.info("Starting export process. Can take a few minutes for large files")
-            achnf = self.dyntools.CHNF(str(self.settings.export.outx_file))
+            
+            outx_file  = str(self.settings.export.outx_file).split("\\")
+            outx_file[-1] = self.export_settings.filename_prefix + "_" + outx_file[-1]
+            outx_file = "\\".join(outx_file)
+            
+            achnf = self.dyntools.CHNF(outx_file)
+            
+            excel_file  = str(self.settings.export.excel_file).split("\\")
+            excel_file[-1] = self.export_settings.filename_prefix + "_" + excel_file[-1]
+            excel_file = "\\".join(excel_file)
+            
             achnf.xlsout(
                 channels="",
                 show=False,
-                xlsfile=str(self.settings.export.excel_file),
+                xlsfile=excel_file,
                 outfile="",
                 sheet="Sheet1",
                 overwritesheet=True,

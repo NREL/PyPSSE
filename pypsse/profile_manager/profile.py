@@ -66,6 +66,7 @@ class Profile:
                     value_f = value * mult
                 value_f = self.fill_missing_values(value_f)
                 self.solver.update_object(self.dtype, bus, object_id, value_f)
+                logger.debug(f"Object updated: {object_id}.{bus}.{self.dtype}={value_f}")
         return value
 
     def fill_missing_values(self, value):

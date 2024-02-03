@@ -1,9 +1,8 @@
-import numpy as np
 from loguru import logger
 
-from pypsse.models import ExportSettings, SimulationSettings
-from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.modes.constants import DYNAMIC_ONLY_PPTY, converter, dyn_only_options
+from pypsse.models import ExportFileOptions, SimulationSettings
+from pypsse.modes.abstract_mode import AbstractMode
 from pypsse.utils.dynamic_utils import DynamicUtils
 
 
@@ -15,7 +14,7 @@ class Dynamic(AbstractMode, DynamicUtils):
         psse,
         dyntools,
         settings: SimulationSettings,
-        export_settings: ExportSettings,
+        export_settings: ExportFileOptions,
         subsystem_buses,
         raw_data,
     ):
@@ -23,8 +22,7 @@ class Dynamic(AbstractMode, DynamicUtils):
         self.time = settings.simulation.start_time
         self._StartTime = settings.simulation.start_time
         self.incTime = settings.simulation.simulation_step_resolution
-
-        self.init({})
+        self.init(subsystem_buses)
 
     def init(self, bus_subsystems):
         "Initializes the simulation"
@@ -89,12 +87,15 @@ class Dynamic(AbstractMode, DynamicUtils):
         # Load flow settings
         self.psse.fdns([0, 0, 0, 1, 1, 0, 99, 0])
         # initialize
+        outx_file  = str(self.settings.export.outx_file).split("\\")
+        outx_file[-1] = self.export_settings.filename_prefix + "_" + outx_file[-1]
+        outx_file = "\\".join(outx_file)
         ierr = self.psse.strt_2(
             [
                 1,
                 self.settings.generators.missing_machine_model,
             ],
-            str(self.settings.export.outx_file),
+            outx_file,
         )
         if ierr:
             self.initialization_complete = False
@@ -104,7 +105,7 @@ class Dynamic(AbstractMode, DynamicUtils):
             self.initialization_complete = True
             logger.debug("Dynamic simulation initialization sucess!")
         # get load info for the sub system
-        self.load_info = self.get_load_indices(bus_subsystems)
+        # self.load_info = self.get_load_indices(bus_subsystems)
 
         logger.debug("pyPSSE initialization complete!")
 
@@ -119,26 +120,28 @@ class Dynamic(AbstractMode, DynamicUtils):
         self.xTime = 0
         return self.psse.run(0, t, 1, 1, 1)
 
-    def get_load_indices(self, bus_subsystems):
-        "Returns load indices"
+    # @kapil do you need this?
+    
+    # def get_load_indices(self, bus_subsystems):
+    #     "Returns load indices"
 
-        all_bus_ids = {}
-        for bus_subsystem_id in bus_subsystems.keys():
-            load_info = {}
-            ierr, load_data = self.psse.aloadchar(bus_subsystem_id, 1, ["ID", "NAME", "EXNAME"])
+    #     all_bus_ids = {}
+    #     for bus_subsystem_id in bus_subsystems.keys():
+    #         load_info = {}
+    #         ierr, load_data = self.psse.aloadchar(bus_subsystem_id, 1, ["ID", "NAME", "EXNAME"])
 
-            load_data = np.array(load_data)
-            ierr, bus_data = self.psse.aloadint(bus_subsystem_id, 1, ["NUMBER"])
+    #         load_data = np.array(load_data)
+    #         ierr, bus_data = self.psse.aloadint(bus_subsystem_id, 1, ["NUMBER"])
 
-            bus_data = bus_data[0]
-            for i, bus_id in enumerate(bus_data):
-                load_info[bus_id] = {
-                    "Load ID": load_data[0, i],
-                    "Bus name": load_data[1, i],
-                    "Bus name (ext)": load_data[2, i],
-                }
-            all_bus_ids[bus_subsystem_id] = load_info
-        return all_bus_ids
+    #         bus_data = bus_data[0]
+    #         for i, bus_id in enumerate(bus_data):
+    #             load_info[bus_id] = {
+    #                 "Load ID": load_data[0, i],
+    #                 "Bus name": load_data[1, i],
+    #                 "Bus name (ext)": load_data[2, i],
+    #             }
+    #         all_bus_ids[bus_subsystem_id] = load_info
+    #     return all_bus_ids
 
     def resolve_step(self, t):
         "Resolves the current time step"

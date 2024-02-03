@@ -29,7 +29,7 @@ class Server:
         self.app.add_api_route("/", self.get_main_page, methods=["GET"])
         self.app.add_api_route("/upload", self.post_upload_zipped_project, methods=["POST"])
         self.app.add_api_route("/projects", self.get_list_projects, methods=["GET"])
-
+        
         logger.info("Building API endpoints")
 
     async def get_main_page(self) -> HTMLResponse:
@@ -133,6 +133,5 @@ def run_server(host: str, port: int):
     """
     time_format = "%(asctime)s -  %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=time_format)
-    # endpoints_file='app/endpoints.yaml'
     instance = Server()
     uvicorn.run(instance.app, host=host, port=port)

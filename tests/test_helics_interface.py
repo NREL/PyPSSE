@@ -1,9 +1,28 @@
+from multiprocessing import Process
+from uuid import uuid4
 import time
 
 import helics as h
 
+from pypsse.simulator import Simulator
+from pypsse.utils.utils import load_project_settings
 
-def run_dummy_federate():
+from examples import static_example
+
+def test_helics_interface():
+    p = Process(target=start_dummy_federate)
+    p.start()
+
+    example_path = static_example.__path__.__dict__["_path"][0]
+    sim_settings, exp_settings = load_project_settings(example_path)
+    sim_settings.helics.cosimulation_mode = True
+    exp_settings.filename_prefix = str(uuid4())
+    sim = Simulator(sim_settings, exp_settings)
+    sim.run()
+    del sim
+
+def start_dummy_federate():
+
     initstring = "-f 2 --name=mainbroker"
     fedinitstring = "--broker=mainbroker --federates=1"
     deltat = 0.01
