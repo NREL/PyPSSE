@@ -71,7 +71,8 @@ class PSSE:
         outputs = json.loads(self.probelm.outputs.model_dump_json())
         buses = outputs["buses"]
         quantities = outputs["quantities"]
-
+        print(buses)
+        print(quantities)
         results = self.psse_obj.sim.read_subsystems(subsystem_buses=buses, quantities=quantities)
         if output is None:
             output = {}

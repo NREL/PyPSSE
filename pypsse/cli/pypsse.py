@@ -5,6 +5,7 @@ from loguru import logger
 
 from pypsse.cli.create_profiles import create_profiles
 from pypsse.cli.create_project import create_project
+from pypsse.cli.explore import explore
 from pypsse.cli.run import run
 
 server_dependencies_installed = True
@@ -26,5 +27,6 @@ def cli():
 cli.add_command(create_project)
 cli.add_command(run)
 cli.add_command(create_profiles)
+cli.add_command(explore)
 if server_dependencies_installed:
     cli.add_command(serve)
