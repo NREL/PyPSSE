@@ -145,6 +145,7 @@ This page provides details on the enumerated classes part of the PyPSSE library.
 
 |Key|Value|
 | :--- | :--- |
+|pypsse.enumerations.ExportModes.JSON|json|
 |pypsse.enumerations.ExportModes.CSV|csv|
 |pypsse.enumerations.ExportModes.H5|h5|
  
@@ -328,6 +329,16 @@ This page provides details on the enumerated classes part of the PyPSSE library.
 |pypsse.enumerations.ModelTypes.ZONES|Zones|
 |pypsse.enumerations.ModelTypes.DC_LINES|DCtransmissionlines|
 |pypsse.enumerations.ModelTypes.STATIONS|Stations|
+ 
+## PSSE_VERSIONS
+ 
+  
+
+|Key|Value|
+| :--- | :--- |
+|pypsse.enumerations.PSSE_VERSIONS.PSSE34|psse34|
+|pypsse.enumerations.PSSE_VERSIONS.PSSE35|psse35|
+|pypsse.enumerations.PSSE_VERSIONS.PSSE36|psse36|
  
 ## ProjectFolders
  

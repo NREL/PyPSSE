@@ -10,6 +10,10 @@
     :command: run
 
 ::: mkdocs-click
+    :module: pypsse.cli.explore
+    :command: explore
+
+::: mkdocs-click
     :module: pypsse.cli.pypsse
     :command: create_profiles
 
