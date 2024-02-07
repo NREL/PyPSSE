@@ -19,7 +19,6 @@ from loguru import logger
 
 shutdown_event = Event()
 
-
 class Handler:
 
     """Handlers for web server."""

@@ -70,9 +70,13 @@ class DynamicUtils:
                 bus = row["bus"]
                 load = row["element_id"]
                 ierr = self.psse.ldmod_status(0, int(bus), str(load), 1, 0)
-                assert ierr == 0, f"error={ierr}"
-                logger.error(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
-
+                if ierr == 0:
+                    logger.info(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
+                elif ierr == 5:
+                    logger.error(f"No dynamic model found for load {load} connected to bus {bus}")
+                else:
+                    raise Exception(f"error={ierr}") 
+                
     def break_loads(self, loads: list = None, components_to_replace: List[str] = []):
         """Implements the load split logic
 

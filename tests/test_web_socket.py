@@ -9,9 +9,9 @@ from pypsse.enumerations import ApiCommands
 from pypsse.models import ApiAssetQuery, ApiWebSocketRequest
 
 
-server = Server()
+# server = Server()
 
-client = TestClient(server.app)
+# client = TestClient(server.app)
 
 
 # def test_web_sockt_interface():
