@@ -577,12 +577,10 @@
   -a, --autofill                  Attempt to auto fill settings. (Verify
                                   manually settings file is correct)
                                   [default: True]
-  -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml
-                                  file (used to map profile to PSSE
-                                  elements)
-  -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file
-                                  (Contains profiles for time series
-                                  simulations)
+  -m, --profile-mapping TEXT      Path to a valid Profile_mapping.toml file
+                                  (used to map profile to PSSE elements)
+  -s, --profile-store TEXT        Path to a valid Profiles.hdf5 file (Contains
+                                  profiles for time series simulations)
   -e, --export-settings-file TEXT
                                   Export settings toml file path
   -f, --simulation-file TEXT      Simulation settings toml file path
@@ -596,10 +594,34 @@
 <div class="highlight"><pre><span></span><code>run [OPTIONS] PROJECT_PATH
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="highlight"><pre><span></span><code>  -s, --simulations-file TEXT  scenario toml file to run (over rides
-                               default)  [default:
-                               simulation_settings.toml]
+<div class="highlight"><pre><span></span><code>  -s, --simulations-file TEXT  scenario toml file to run (over rides default)
+                               [default: simulation_settings.toml]
   --help                       Show this message and exit.
+</code></pre></div>
+<h1 id="explore">explore</h1>
+<p>Runs a valid PyPSSE simulation.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>explore [OPTIONS] PROJECT_PATH
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  --gen-bounds TEXT               bounds for generation   [default: 0/10000]
+  --load-bounds TEXT              bounds for load [example 10/100]  [default:
+                                  0/10000]
+  -b, --apply-bounds              applies load and generation limit bounds if
+                                  set to true
+  --comp-load / --no-comp-load    filter by composite load models [bool]
+                                  [default: no-comp-load]
+  --generation / --no-generation  filter by generation [bool]  [default: no-
+                                  generation]
+  -g, --gen-filter                applies generator filters if set to true
+  --load / --no-load              filter by load [bool]  [default: no-load]
+  -l, --load-filter               applies load filters if set to true
+  -e, --export-file-path TEXT     path for exporting filtered results
+                                  [default: ./filtered_results.csv]
+  -s, --simulations-file TEXT     scenario toml file to run (over rides
+                                  default)  [default:
+                                  simulation_settings.toml]
+  --help                          Show this message and exit.
 </code></pre></div>
 <h1 id="create-profiles">create-profiles</h1>
 <p>Creates profiles for PyPSSE project.</p>
@@ -611,15 +633,17 @@
   -r, --profile-res FLOAT    Profile time resolution in seconds  [default:
                              1.0]
   -T, --start-time TEXT      Time index for the first time step, format =
-                             Y-m-d H:M:S.f  [default: 2020-01-01
-                             00:00:00.00]
-  -t, --profile-type TEXT    Profile type; Possible values: ['Load',
-                             'Induction_machine', 'Machine', 'Plant']
+                             Y-m-d H:M:S.f  [default: 2020-01-01 00:00:00.00]
+  -t, --profile-type TEXT    Profile type; Possible values:
+                             [&lt;ProfileTypes.LOAD: 'Load'&gt;,
+                             &lt;ProfileTypes.INDUCTION_MACHINE:
+                             'Induction_machine'&gt;, &lt;ProfileTypes.MACHINE:
+                             'Machine'&gt;, &lt;ProfileTypes.PLANT: 'Plant'&gt;]
                              [default: Load]
   -n, --profile-name TEXT    Profile name  [default: Default]
-  -p, --profile-folder TEXT  Path to folder containing csv profiles. CSV
-                             file names should follow the following
-                             format: {profile-type}_{profile-name}
+  -p, --profile-folder TEXT  Path to folder containing csv profiles. CSV file
+                             names should follow the following format:
+                             {profile-type}_{profile-name}
   -f, --csv-file-path TEXT   Path to a csv valid file
   --help                     Show this message and exit.
 </code></pre></div>

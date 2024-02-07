@@ -23,7 +23,7 @@
 <polygon fill="none" stroke="black" points="0,-40.5 0,-62.5 52,-62.5 52,-40.5 0,-40.5"/>
 <text text-anchor="start" x="2.75" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">message</text>
 <polygon fill="none" stroke="black" points="52,-40.5 52,-62.5 383,-62.5 383,-40.5 52,-40.5"/>
-<text text-anchor="start" x="210.75" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">str</text>
+<text text-anchor="start" x="171" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">Union[dict[], str]</text>
 <polygon fill="none" stroke="black" points="0,-18.5 0,-40.5 52,-40.5 52,-18.5 0,-18.5"/>
 <text text-anchor="start" x="14" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">uuid</text>
 <polygon fill="none" stroke="black" points="52,-18.5 52,-40.5 383,-40.5 383,-18.5 52,-18.5"/>

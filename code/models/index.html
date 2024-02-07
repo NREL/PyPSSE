@@ -604,6 +604,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pypsse.models.Contingencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contingencies
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pypsse.models.ExportAssetTypes" class="md-nav__link">
     <span class="md-ellipsis">
       ExportAssetTypes
@@ -985,6 +994,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pypsse.models.Contingencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contingencies
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pypsse.models.ExportAssetTypes" class="md-nav__link">
     <span class="md-ellipsis">
       ExportAssetTypes
@@ -1215,32 +1233,32 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiAssetQuery</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiAssetQuery</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">ModelTypes</span>
     <span class="n">asset_property</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
         <span class="n">Union</span><span class="p">[</span>
@@ -1303,9 +1321,9 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPsseException</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPsseException</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">UUID4</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -1345,8 +1363,8 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPssePostRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">475</span>
+<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPssePostRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"static_example"</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1385,10 +1403,10 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPssePutRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPssePutRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="n">UUID4</span>
     <span class="n">command</span><span class="p">:</span> <span class="n">ApiCommands</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ApiAssetQuery</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1429,12 +1447,12 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPsseReply</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPsseReply</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">message</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">UUID4</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1473,10 +1491,10 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPsseReplyInstances</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiPsseReplyInstances</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">simulators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UUID4</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1517,9 +1535,9 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiWebSocketRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ApiWebSocketRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">command</span><span class="p">:</span> <span class="n">ApiCommands</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -1561,14 +1579,14 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Bus channel model defination"</span>
 
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ChannelTypes</span><span class="o">.</span><span class="n">BUSES</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
@@ -1615,24 +1633,24 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusFault</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusFault</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Bus fault model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">38205</span>
     <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span>
     <span class="n">bus_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">trip_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
-    <span class="n">fault_impedance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">fault_impedance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="mf">1.0</span><span class="p">,</span>
         <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">]</span>
@@ -1675,23 +1693,23 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusSubsystems</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusSubsystems</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Bus subsystem model defination"</span>
     <span class="n">from_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">bus_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1747,13 +1765,53 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BusTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Bus trip model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">38205</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div><p><a class="glightbox" href="Contingencies.svg" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img src="Contingencies.svg"></a> 
+</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="pypsse.models.Contingencies"></a>
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>pypsse\models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
+<span class="normal">485</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Contingencies</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">contingencies</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BusFault</span><span class="p">,</span> <span class="n">BusTrip</span><span class="p">,</span> <span class="n">LineFault</span><span class="p">,</span> <span class="n">LineTrip</span><span class="p">,</span> <span class="n">MachineTrip</span><span class="p">]]</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1793,21 +1851,21 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportAssetTypes</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportAssetTypes</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Valid export models and associated options"</span>
 
     <span class="n">buses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BusProperties</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1861,17 +1919,19 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportFileOptions</span><span class="p">(</span><span class="n">ExportAssetTypes</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportFileOptions</span><span class="p">(</span><span class="n">ExportAssetTypes</span><span class="p">):</span>
     <span class="s2">"Export settings for a PyPSSE project"</span>
 
     <span class="n">export_results_using_channels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">filename_prefix</span> <span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">defined_subsystems_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">file_format</span><span class="p">:</span> <span class="n">ExportModes</span> <span class="o">=</span> <span class="s2">"h5"</span>
     <span class="n">channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1915,15 +1975,15 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExportSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Export setting model defination"</span>
 
     <span class="n">outx_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"test.outx"</span>
@@ -1971,11 +2031,11 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GICExportSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GICExportSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"GIC export setting model defination"</span>
     <span class="n">include_substation_connections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">include_transfomer_connections</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -2019,9 +2079,9 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GeneratorSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GeneratorSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Generator model defination"</span>
     <span class="n">missing_machine_model</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 </code></pre></div></td></tr></table></div>
@@ -2063,22 +2123,22 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HelicsSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HelicsSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"HELICS co-simualtion setting model defination"</span>
     <span class="n">cosimulation_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">federate_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"psse"</span>
@@ -2133,24 +2193,24 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LineFault</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LineFault</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Line fault model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span>
     <span class="n">bus_trip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">trip_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span>
-    <span class="n">fault_impedance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">fault_impedance</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="mf">1.0</span><span class="p">,</span>
         <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">]</span>
@@ -2193,10 +2253,10 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LineTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LineTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Line trip model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
@@ -2239,10 +2299,10 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadBreakdown</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadBreakdown</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Load ZIP model defination"</span>
     <span class="n">constant_current_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">constant_admittance_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -2285,14 +2345,14 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Load channel model defination"</span>
 
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ChannelTypes</span><span class="o">.</span><span class="n">LOADS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
@@ -2339,15 +2399,15 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LoadSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Load model defination"</span>
     <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">active_load</span><span class="p">:</span> <span class="n">LoadBreakdown</span>
-    <span class="n">reactive_load</span><span class="p">:</span> <span class="n">LoadBreakdown</span>
+    <span class="n">active_load</span><span class="p">:</span> <span class="n">LoadBreakdown</span> <span class="o">=</span> <span class="n">LoadBreakdown</span><span class="p">()</span>
+    <span class="n">reactive_load</span><span class="p">:</span> <span class="n">LoadBreakdown</span> <span class="o">=</span> <span class="n">LoadBreakdown</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2387,17 +2447,17 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LogSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LogSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Logger setting model defination"</span>
     <span class="n">disable_psse_logging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">logging_level</span><span class="p">:</span> <span class="n">LoggingLevels</span>
+    <span class="n">logging_level</span><span class="p">:</span> <span class="n">LoggingLevels</span> <span class="o">=</span> <span class="n">LoggingLevels</span><span class="o">.</span><span class="n">DEBUG</span>
     <span class="n">log_to_external_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">display_on_screen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">clear_old_log_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2441,14 +2501,14 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MachineChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MachineChannel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Machine channel model defination"</span>
 
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ChannelTypes</span><span class="o">.</span><span class="n">MACHINES</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
@@ -2495,11 +2555,11 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MachineTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MachineTrip</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Machine trip model defination"</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>
     <span class="n">bus_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">38205</span>
@@ -2541,11 +2601,11 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MdaoInput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MdaoInput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">asset_type</span><span class="p">:</span> <span class="n">WritableModelTypes</span>
     <span class="n">asset_bus</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -2587,9 +2647,9 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MdaoOutput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MdaoOutput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">buses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">quantities</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ModelTypes</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
 </code></pre></div></td></tr></table></div>
@@ -2629,9 +2689,9 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MdaoProblem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MdaoProblem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">outputs</span><span class="p">:</span> <span class="n">MdaoOutput</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MdaoInput</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
@@ -2673,10 +2733,10 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PlotSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PlotSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Plotting setting model defination"</span>
     <span class="n">enable_dynamic_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -2719,14 +2779,14 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ProjectDefination</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ProjectDefination</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"PyPSSE project defination"</span>
     <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">autofill</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2773,21 +2833,21 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PublicationDefination</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PublicationDefination</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Publication setting model defination"""</span>
 
     <span class="n">bus_subsystems</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="mi">0</span><span class="p">,</span>
     <span class="p">]</span>
-    <span class="n">asset_type</span><span class="p">:</span> <span class="n">ModelTypes</span> <span class="o">=</span> <span class="s2">"buses"</span>
-    <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ModelProperties</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"FREQ"</span><span class="p">,</span> <span class="s2">"PU"</span><span class="p">]</span>
+    <span class="n">asset_type</span><span class="p">:</span> <span class="n">ModelTypes</span> <span class="o">=</span> <span class="n">ModelTypes</span><span class="o">.</span><span class="n">BUSES</span>
+    <span class="n">asset_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ModelProperties</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ModelProperties</span><span class="o">.</span><span class="n">FREQ</span><span class="p">,</span> <span class="n">ModelProperties</span><span class="o">.</span><span class="n">PU</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2827,8 +2887,7 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 39</span>
-<span class="normal"> 40</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 40</span>
 <span class="normal"> 41</span>
 <span class="normal"> 42</span>
 <span class="normal"> 43</span>
@@ -2904,14 +2963,35 @@
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"Simulation setting  model defination"</span>
     <span class="n">simulation_time</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
     <span class="n">simulation_step_resolution</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
     <span class="n">psse_solver_timestep</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.00333333333</span><span class="p">)</span>
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="s2">"01/01/2020 00:00:00"</span>
     <span class="n">use_profile_manager</span><span class="p">:</span> <span class="nb">bool</span>
-    <span class="n">psse_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"C:/Program Files/PTI/PSSE35/35.4/PSSPY39232"</span>
     <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="s2">"C:/Users/alatif/Desktop/NAERM/models/pyPSSEModel"</span>
     <span class="n">case_study</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">raw_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2940,11 +3020,22 @@
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_case_study</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">file_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"case_study"</span><span class="p">,</span> <span class="s2">"raw_file"</span><span class="p">,</span> <span class="s2">"snp_file"</span><span class="p">,</span> <span class="s2">"dyr_file"</span><span class="p">,</span> <span class="s2">"rwm_file"</span><span class="p">,</span> <span class="s2">"gic_file"</span><span class="p">]</span>
+        <span class="n">file_types</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"case_study"</span><span class="p">,</span>
+            <span class="s2">"raw_file"</span><span class="p">,</span>
+            <span class="s2">"snp_file"</span><span class="p">,</span>
+            <span class="s2">"dyr_file"</span><span class="p">,</span>
+            <span class="s2">"rwm_file"</span><span class="p">,</span>
+            <span class="s2">"gic_file"</span><span class="p">,</span>
+        <span class="p">]</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_types</span><span class="p">:</span>
             <span class="n">file_path</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">file_path</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"."</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">file_path</span>
+                <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"."</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="p">):</span>
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">CASESTUDY_FOLDER</span> <span class="o">/</span> <span class="n">file_path</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
                 <span class="k">assert</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist"</span>
@@ -2954,12 +3045,18 @@
     <span class="k">def</span> <span class="nf">validate_subscription_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"."</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span>
-            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="si">}</span><span class="s2"> does not exist"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span>
+            <span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="si">}</span><span class="s2"> does not exist"</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriptions_file</span><span class="p">)</span>
             <span class="n">csv_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
             <span class="n">sub_cols</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">SubscriptionFileRequiredColumns</span><span class="p">}</span>
-            <span class="k">assert</span> <span class="n">sub_cols</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">csv_cols</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sub_cols</span><span class="si">}</span><span class="s2"> are required columns for a valid subscription file"</span>
+            <span class="k">assert</span> <span class="n">sub_cols</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span>
+                <span class="n">csv_cols</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sub_cols</span><span class="si">}</span><span class="s2"> are required columns for a valid subscription file"</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
@@ -2970,14 +3067,19 @@
             <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_models</span><span class="p">:</span>
                 <span class="n">model_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">CASESTUDY_FOLDER</span> <span class="o">/</span> <span class="n">file</span>
                 <span class="k">assert</span> <span class="n">model_file</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_file</span><span class="si">}</span><span class="s2"> does not esist"</span>
-                <span class="k">assert</span> <span class="n">model_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">".dll"</span><span class="p">,</span> <span class="s2">"Invalid file extension. Use dll files"</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">model_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">".dll"</span>
+                <span class="p">),</span> <span class="s2">"Invalid file extension. Use dll files"</span>
                 <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_file</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">user_models</span> <span class="o">=</span> <span class="n">paths</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_simulation_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SimulationModes</span><span class="o">.</span><span class="n">DYNAMIC</span><span class="p">,</span> <span class="n">SimulationModes</span><span class="o">.</span><span class="n">SNAP</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">SimulationModes</span><span class="o">.</span><span class="n">DYNAMIC</span><span class="p">,</span>
+            <span class="n">SimulationModes</span><span class="o">.</span><span class="n">SNAP</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="k">assert</span> <span class="p">(</span>
                 <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_profile_manager</span>
             <span class="p">),</span> <span class="s2">"Profile manager can not be used for dynamic simulations. Set 'Use profile manager' to False"</span>
@@ -3021,64 +3123,96 @@
 
             <details class="quote">
               <summary>Source code in <code>pypsse\models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
-<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulationSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulationSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="s2">"PyPSSE project settings"</span>
 
     <span class="n">simulation</span><span class="p">:</span> <span class="n">SimSettings</span>
-    <span class="n">export</span><span class="p">:</span> <span class="n">ExportSettings</span>
+    <span class="n">export</span><span class="p">:</span> <span class="n">ExportSettings</span> <span class="o">=</span> <span class="n">ExportSettings</span><span class="p">()</span>
     <span class="n">helics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HelicsSettings</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">log</span><span class="p">:</span> <span class="n">LogSettings</span>
+    <span class="n">log</span><span class="p">:</span> <span class="n">LogSettings</span> <span class="o">=</span> <span class="n">LogSettings</span><span class="p">()</span>
     <span class="n">plots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PlotSettings</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">gic_export_settings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GICExportSettings</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">bus_subsystems</span><span class="p">:</span> <span class="n">BusSubsystems</span>
-    <span class="n">loads</span><span class="p">:</span> <span class="n">LoadSettings</span>
-    <span class="n">generators</span><span class="p">:</span> <span class="n">GeneratorSettings</span>
-    <span class="n">contingencies</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BusFault</span><span class="p">,</span> <span class="n">LineFault</span><span class="p">,</span> <span class="n">LineTrip</span><span class="p">,</span> <span class="n">BusTrip</span><span class="p">,</span> <span class="n">MachineTrip</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">bus_subsystems</span><span class="p">:</span> <span class="n">BusSubsystems</span> <span class="o">=</span> <span class="n">BusSubsystems</span><span class="p">()</span>
+    <span class="n">loads</span><span class="p">:</span> <span class="n">LoadSettings</span> <span class="o">=</span> <span class="n">LoadSettings</span><span class="p">()</span>
+    <span class="n">generators</span><span class="p">:</span> <span class="n">GeneratorSettings</span> <span class="o">=</span> <span class="n">GeneratorSettings</span><span class="p">()</span>
+    <span class="n">contingencies</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BusFault</span><span class="p">,</span> <span class="n">LineFault</span><span class="p">,</span> <span class="n">LineTrip</span><span class="p">,</span> <span class="n">BusTrip</span><span class="p">,</span> <span class="n">MachineTrip</span><span class="p">]]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_export_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">base_project_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">project_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">outx_file</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">out_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">out_file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">out_file</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">excel_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">excel_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">excel_file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">excel_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">excel_file</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">log_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">LOGS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">log_file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">LOGS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">log_file</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">networkx_graph_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">networkx_graph_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">networkx_graph_file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">networkx_graph_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span>
+                <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span>
+                <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">networkx_graph_file</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">coordinate_file</span> <span class="o">=</span> <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">coordinate_file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">coordinate_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">base_project_path</span> <span class="o">/</span> <span class="n">EXPORTS_FOLDER</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">coordinate_file</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
             </details>

@@ -14,32 +14,32 @@
 <g id="node1" class="node">
 <title>pypsse.models.BusFault</title>
 <g id="a_node1"><a xlink:title="pypsse.models.BusFault&#10;&#10;Bus fault model defination&#10;">
-<polygon fill="none" stroke="black" points="60.25,-150.5 60.25,-172.5 206.25,-172.5 206.25,-150.5 60.25,-150.5"/>
+<polygon fill="none" stroke="black" points="55.25,-150.5 55.25,-172.5 211.25,-172.5 211.25,-150.5 55.25,-150.5"/>
 <text text-anchor="start" x="107" y="-157.2" font-family="Times New Roman,serif" font-weight="bold" font-size="14.00">BusFault</text>
-<polygon fill="none" stroke="black" points="60.25,-128.5 60.25,-150.5 156.25,-150.5 156.25,-128.5 60.25,-128.5"/>
-<text text-anchor="start" x="95.88" y="-134.2" font-family="Times New Roman,serif" font-size="14.00">time</text>
-<polygon fill="none" stroke="black" points="156.25,-128.5 156.25,-150.5 206.25,-150.5 206.25,-128.5 156.25,-128.5"/>
+<polygon fill="none" stroke="black" points="55.25,-128.5 55.25,-150.5 151.25,-150.5 151.25,-128.5 55.25,-128.5"/>
+<text text-anchor="start" x="90.88" y="-134.2" font-family="Times New Roman,serif" font-size="14.00">time</text>
+<polygon fill="none" stroke="black" points="151.25,-128.5 151.25,-150.5 211.25,-150.5 211.25,-128.5 151.25,-128.5"/>
 <text text-anchor="start" x="168.88" y="-134.2" font-family="Times New Roman,serif" font-size="14.00">float</text>
-<polygon fill="none" stroke="black" points="60.25,-106.5 60.25,-128.5 156.25,-128.5 156.25,-106.5 60.25,-106.5"/>
-<text text-anchor="start" x="90.25" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">bus_id</text>
-<polygon fill="none" stroke="black" points="156.25,-106.5 156.25,-128.5 206.25,-128.5 206.25,-106.5 156.25,-106.5"/>
+<polygon fill="none" stroke="black" points="55.25,-106.5 55.25,-128.5 151.25,-128.5 151.25,-106.5 55.25,-106.5"/>
+<text text-anchor="start" x="85.25" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">bus_id</text>
+<polygon fill="none" stroke="black" points="151.25,-106.5 151.25,-128.5 211.25,-128.5 211.25,-106.5 151.25,-106.5"/>
 <text text-anchor="start" x="174.12" y="-112.2" font-family="Times New Roman,serif" font-size="14.00">int</text>
-<polygon fill="none" stroke="black" points="60.25,-84.5 60.25,-106.5 156.25,-106.5 156.25,-84.5 60.25,-84.5"/>
-<text text-anchor="start" x="85.75" y="-90.2" font-family="Times New Roman,serif" font-size="14.00">duration</text>
-<polygon fill="none" stroke="black" points="156.25,-84.5 156.25,-106.5 206.25,-106.5 206.25,-84.5 156.25,-84.5"/>
+<polygon fill="none" stroke="black" points="55.25,-84.5 55.25,-106.5 151.25,-106.5 151.25,-84.5 55.25,-84.5"/>
+<text text-anchor="start" x="80.75" y="-90.2" font-family="Times New Roman,serif" font-size="14.00">duration</text>
+<polygon fill="none" stroke="black" points="151.25,-84.5 151.25,-106.5 211.25,-106.5 211.25,-84.5 151.25,-84.5"/>
 <text text-anchor="start" x="168.88" y="-90.2" font-family="Times New Roman,serif" font-size="14.00">float</text>
-<polygon fill="none" stroke="black" points="60.25,-62.5 60.25,-84.5 156.25,-84.5 156.25,-62.5 60.25,-62.5"/>
-<text text-anchor="start" x="86.12" y="-68.2" font-family="Times New Roman,serif" font-size="14.00">bus_trip</text>
-<polygon fill="none" stroke="black" points="156.25,-62.5 156.25,-84.5 206.25,-84.5 206.25,-62.5 156.25,-62.5"/>
+<polygon fill="none" stroke="black" points="55.25,-62.5 55.25,-84.5 151.25,-84.5 151.25,-62.5 55.25,-62.5"/>
+<text text-anchor="start" x="81.12" y="-68.2" font-family="Times New Roman,serif" font-size="14.00">bus_trip</text>
+<polygon fill="none" stroke="black" points="151.25,-62.5 151.25,-84.5 211.25,-84.5 211.25,-62.5 151.25,-62.5"/>
 <text text-anchor="start" x="169.25" y="-68.2" font-family="Times New Roman,serif" font-size="14.00">bool</text>
-<polygon fill="none" stroke="black" points="60.25,-40.5 60.25,-62.5 156.25,-62.5 156.25,-40.5 60.25,-40.5"/>
-<text text-anchor="start" x="80.88" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">trip_delay</text>
-<polygon fill="none" stroke="black" points="156.25,-40.5 156.25,-62.5 206.25,-62.5 206.25,-40.5 156.25,-40.5"/>
+<polygon fill="none" stroke="black" points="55.25,-40.5 55.25,-62.5 151.25,-62.5 151.25,-40.5 55.25,-40.5"/>
+<text text-anchor="start" x="75.88" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">trip_delay</text>
+<polygon fill="none" stroke="black" points="151.25,-40.5 151.25,-62.5 211.25,-62.5 211.25,-40.5 151.25,-40.5"/>
 <text text-anchor="start" x="168.88" y="-46.2" font-family="Times New Roman,serif" font-size="14.00">float</text>
-<polygon fill="none" stroke="black" points="60.25,-18.5 60.25,-40.5 156.25,-40.5 156.25,-18.5 60.25,-18.5"/>
-<text text-anchor="start" x="62.88" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">fault_impedance</text>
-<polygon fill="none" stroke="black" points="156.25,-18.5 156.25,-40.5 206.25,-40.5 206.25,-18.5 156.25,-18.5"/>
-<text text-anchor="start" x="159.12" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">List[int]</text>
+<polygon fill="none" stroke="black" points="55.25,-18.5 55.25,-40.5 151.25,-40.5 151.25,-18.5 55.25,-18.5"/>
+<text text-anchor="start" x="57.88" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">fault_impedance</text>
+<polygon fill="none" stroke="black" points="151.25,-18.5 151.25,-40.5 211.25,-40.5 211.25,-18.5 151.25,-18.5"/>
+<text text-anchor="start" x="153.88" y="-24.2" font-family="Times New Roman,serif" font-size="14.00">List[float]</text>
 </a>
 </g>
 </g>
