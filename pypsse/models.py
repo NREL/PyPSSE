@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Union, Any
 
 import pandas as pd
 from pydantic import UUID4, BaseModel, Field, model_validator
@@ -423,7 +423,7 @@ class MdaoProblem(BaseModel):
 
 class ApiPsseReply(BaseModel):
     status: str
-    message: Union[Dict, str]
+    message: Optional[Any] = None
     uuid: Union[UUID4, None] = None
 
 

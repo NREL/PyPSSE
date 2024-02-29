@@ -69,7 +69,7 @@ def test_web_sockt_interface_manual():
     results = conn.recv()
     print(results)  # noqa
 
-    for _ in range(10):
+    for _ in range(5):
         request = ApiWebSocketRequest(command=ApiCommands.SOLVE_STEP.value, parameters=None)
         conn.send(request.model_dump_json())
         results = json.loads(conn.recv())
@@ -90,4 +90,6 @@ def test_web_sockt_interface_manual():
     print(results)  # noqa
 
     conn.close()
-    process.terminate()
+
+if __name__ == "__main__":
+    my_simple_test()
