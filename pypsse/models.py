@@ -389,7 +389,7 @@ class ExportFileOptions(ExportAssetTypes):
     export_results_using_channels: bool = False
     filename_prefix :str = ""
     defined_subsystems_only: bool = True
-    file_format: ExportModes = "h5"
+    file_format: ExportModes = ExportModes.H5
     channels: Optional[List[str]] = None
     channel_setup: Optional[List[channel_types]] = None
 
