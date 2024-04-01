@@ -129,11 +129,11 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
     generator_dict = {}
     bus_gen = {}
     for bus, gen_id in x.raw_data.generators:
-        if bus not in load_dict:
+        if bus not in generator_dict:
             generator_dict[bus] = []
             bus_gen[bus] = 0
         key = f"{gen_id} _{bus}" if len(gen_id) == 1 else f"{gen_id}_{bus}" 
-        generator_dict[bus].append(gen_id)
+        generator_dict[bus].append(gen_id) 
         bus_gen[bus] += results["Machines_MVA"][key]
 
     results = {
