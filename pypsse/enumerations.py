@@ -66,14 +66,14 @@ class ModelProperties(str, Enum):
     ANGLED = "ANGLED"
 
 
-class LoggingLevels(IntEnum):
+class LoggingLevels(str, Enum):
     "logging level setting options"
-    NOTSET = 0
-    DEBUG = 10
-    INFO = 20
-    WARN = 30
-    ERROR = 40
-    CRITICAL = 50
+    NOTSET = "INFO"
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
 
 
 class SubscriptionFileRequiredColumns(str, Enum):
