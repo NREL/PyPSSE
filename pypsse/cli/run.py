@@ -37,7 +37,8 @@ def run(project_path, simulations_file=None):
     
     logger.level(simulation_settiings.log.logging_level.value)
     if simulation_settiings.log.log_to_external_file:
-        logger.add("pypsse.log")
+        log_path = Path(project_path) / "Logs" / "pypsse.log"
+        logger.add(log_path)
     
     x = Simulator.from_setting_files(file_path)
 

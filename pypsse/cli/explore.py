@@ -101,15 +101,20 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
     x = Simulator(simulation_settings)
     buses = set(x.raw_data.buses)
     quantities =  {
-        'Loads': ['MVA', 'FmA', 'FmB', 'FmC', 'FmD', 'Fel', 'PFel'], 
+        'Loads': ['MVA', "IL", "YL", 'FmA', 'FmB', 'FmC', 'FmD', 'Fel', 'PFel'], 
         'Induction_generators': ['MVA'], 
         'Machines': ['MVA', 'PERCENT'], 
         }
     results = x.sim.read_subsystems(quantities,  buses)
+
+    # print(results.keys())
+    print(results["LOAD_P"])
+    # quit()
+
     had_comp_models = False
     if "Loads_FmA" in results:
         had_comp_models = True
-        
+    
     load_dict = {}
     bus_load_real = {}
     bus_load_imag = {}
@@ -119,17 +124,28 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
             load_dict[bus] = []
             bus_load_real[bus] = 0
             bus_load_imag[bus] = 0
-            is_comp_load = []
         
+        load_bus_id = f'{bus}_{ld_id}'
         if had_comp_models:
             is_comp = True if f'{bus}_{ld_id}' in results["Loads_FmA"] else False
         else:
             is_comp = False
-        is_comp_load.append(is_comp)    
+            
+        is_comp_load[bus] = is_comp
         load_dict[bus].append(ld_id)
         key = f"{ld_id} _{bus}" if len(ld_id) == 1 else f"{ld_id}_{bus}" 
-        bus_load_real[bus] += results["Loads_MVA"][key].real
-        bus_load_imag[bus] += results["Loads_MVA"][key].imag
+        key2 =  f"{bus}_{ld_id}".replace(" ", "") 
+        load_p  = max(
+            results["Loads_MVA"][key].real + results["Loads_IL"][key].real + results["Loads_YL"][key].real, 
+            results["LOAD_P"][key2] *100 if key2 in results["LOAD_P"] else 0
+            )
+        load_q  = max(
+            results["Loads_MVA"][key].imag + results["Loads_IL"][key].imag + results["Loads_YL"][key].imag, 
+            results["LOAD_Q"][key2] *100 if key2 in results["LOAD_Q"] else 0
+            )
+        
+        bus_load_real[bus] += load_p
+        bus_load_imag[bus] += load_q
         
     generator_dict = {}
     bus_gen = {}
@@ -161,31 +177,36 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
     
     
     results = pd.DataFrame(results)
-    if filter:
-        if load_filter and load:
+    
+    results["total P load [MW]"] = results["total P load [MW]"] 
+    results["total Q load [MVar]"] = results["total Q load [MVar]"]
+    
+    if load_filter:
+        if load:
             results=results[results["has load"] == True]
-        elif load_filter and not load:
+        elif not load:
             results=results[results["has load"] == False]
         
-        if gen_filter and generation:
-            results=results[results["has generation"] == True]
-        elif gen_filter and not generation:
-            results=results[results["has generation"] == False]    
-        
-        if load_filter and comp_load:
+        if comp_load:
             results=results[results["is load comp"] == True]
-        elif load_filter and not comp_load:
+        elif not comp_load:
             results=results[results["is load comp"] == False]
         
-        load_lower, load_upper = [float(x) for x in load_bounds.split("/")] 
-        gen_lower, gen_upper = [float(x) for x in gen_bounds.split("/")] 
-        if apply_bounds:
-            results=results[(results["total P load [MW]"] >= load_lower) & (results["total P load [MW]"] <= load_upper)]
-            results=results[(results["total generation [MVA]"] >= gen_lower) & (results["total generation [MVA]"] <= gen_upper)]
+    if gen_filter:
+        if generation:
+            results=results[results["has generation"] == True]
+        elif not generation:
+            results=results[results["has generation"] == False]    
     
+    load_lower, load_upper = [float(x) for x in load_bounds.split("/")] 
+    gen_lower, gen_upper = [float(x) for x in gen_bounds.split("/")] 
+    if apply_bounds:
+        results=results[(results["total P load [MW]"] >= load_lower) & (results["total P load [MW]"] <= load_upper)]
+        results=results[(results["total generation [MVA]"] >= gen_lower) & (results["total generation [MVA]"] <= gen_upper)]
+
     print(results)    
     results.to_csv(export_file_path)
-    logger.info(f"Results exported to {export_file_path}")
+    logger.info(f"Results exported to {export_file_path.absolute()}")
     
 
         
