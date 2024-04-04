@@ -4,8 +4,11 @@ CLI to run a PyDSS project
 
 from pathlib import Path
 
+from loguru import logger
 import click
+import toml
 
+from pypsse.models import SimulationSettings
 from pypsse.common import SIMULATION_SETTINGS_FILENAME
 from pypsse.simulator import Simulator
 
@@ -28,5 +31,14 @@ def run(project_path, simulations_file=None):
     msg = "Simulation file not found. Use -s to choose a valid settings file"
     "if its name differs from the default file name."
     assert file_path.exists(), msg
+    
+    simulation_settiings = toml.load(file_path)
+    simulation_settiings = SimulationSettings(**simulation_settiings)
+    
+    logger.level(simulation_settiings.log.logging_level.value)
+    if simulation_settiings.log.log_to_external_file:
+        logger.add("pypsse.log")
+    
     x = Simulator.from_setting_files(file_path)
+
     x.run()

@@ -37,7 +37,6 @@ dependencies = [
     "toml",
     "xlrd",
     "loguru",
-    # "powersystem-data-models"
 ]
 
 [project.scripts]

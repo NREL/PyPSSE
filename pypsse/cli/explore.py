@@ -3,6 +3,7 @@ from pathlib import Path
 from loguru import logger
 import pandas as pd
 import click
+import toml
 
 from pypsse.common import EXPORTS_SETTINGS_FILENAME, SIMULATION_SETTINGS_FILENAME
 from pypsse.models import ExportFileOptions, SimulationSettings
@@ -93,7 +94,11 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
     msg = "Simulation file not found. Use -s to choose a valid settings file"
     "if its name differs from the default file name."
     assert file_path.exists(), msg
-    x = Simulator.from_setting_files(file_path)
+    
+    simulation_settings = toml.load(file_path)
+    simulation_settings = SimulationSettings(**simulation_settings)
+    simulation_settings.helics.cosimulation_mode = False
+    x = Simulator(simulation_settings)
     buses = set(x.raw_data.buses)
     quantities =  {
         'Loads': ['MVA', 'FmA', 'FmB', 'FmC', 'FmD', 'Fel', 'PFel'], 
@@ -129,7 +134,7 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
     generator_dict = {}
     bus_gen = {}
     for bus, gen_id in x.raw_data.generators:
-        if bus not in load_dict:
+        if bus not in generator_dict:
             generator_dict[bus] = []
             bus_gen[bus] = 0
         key = f"{gen_id} _{bus}" if len(gen_id) == 1 else f"{gen_id}_{bus}" 
@@ -177,8 +182,10 @@ def explore(project_path, simulations_file, export_file_path, load_filter, load,
         if apply_bounds:
             results=results[(results["total P load [MW]"] >= load_lower) & (results["total P load [MW]"] <= load_upper)]
             results=results[(results["total generation [MVA]"] >= gen_lower) & (results["total generation [MVA]"] <= gen_upper)]
-            
+    
+    print(results)    
     results.to_csv(export_file_path)
+    logger.info(f"Results exported to {export_file_path}")
     
 
         
