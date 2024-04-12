@@ -82,10 +82,10 @@ class HDF5Writer:
                     if dtype == object:
                         dtype = "S30"
 
-                    self.store_datasets[obj_type][col_name] = self.store_groups[
+                    self.store_datasets[obj_type][self.column_name(col_name)] = self.store_groups[
                         obj_type
                     ].create_dataset(
-                        str(col_name),
+                        self.column_name(col_name),
                         shape=(self.column_length,),
                         maxshape=(None,),
                         chunks=True,
@@ -109,10 +109,10 @@ class HDF5Writer:
                 si = int(self.step / self.chunkRows) * self.chunkRows
                 ei = si + self.chunkRows
                 for col_name in powerflow_output[obj_type].keys():
-                    r = self.store_datasets[obj_type][col_name].shape[0]
+                    r = self.store_datasets[obj_type][self.column_name(col_name)].shape[0]
                     if ei >= r:
-                        self.store_datasets[obj_type][col_name].resize((ei,))
-                    self.store_datasets[obj_type][col_name][si:ei] = self.dfs[
+                        self.store_datasets[obj_type][self.column_name(col_name)].resize((ei,))
+                    self.store_datasets[obj_type][self.column_name(col_name)][si:ei] = self.dfs[
                         obj_type
                     ][col_name]
                 self.dfs[obj_type] = None
@@ -125,6 +125,9 @@ class HDF5Writer:
             self.store.flush()
         self.step += 1
 
+    def column_name(self, column_name:str)-> str:
+        return str(column_name).replace(" ", "")
+
     def close_store(self):
         try:
             k = list(self.dfs.keys())[0]
@@ -133,7 +136,7 @@ class HDF5Writer:
                 if length > 0:
                     for obj_type in self.dfs.keys():
                         for col_name in self.dfs[k].columns:
-                            self.store_datasets[obj_type][col_name][
+                            self.store_datasets[obj_type][self.column_name(col_name)][
                                 self.column_length - length :
                             ] = self.dfs[obj_type][col_name]
 
