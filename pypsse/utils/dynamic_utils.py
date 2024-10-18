@@ -58,24 +58,27 @@ class DynamicUtils:
                     ]
                     self.psse.machine_chng_2(bus_id, machine, intgar, realar)
                     logger.info(f"Machine disabled: {bus_id}_{machine}")
+            # os.system("PAUSE")
 
     def disable_load_models_for_coupled_buses(self):
         """Disables loads of coupled buses (co-simulation mode only)"""
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data["element_type"] == "Load"]
-
-            self.psse_dict = {}
-            for _, row in sub_data.iterrows():
-                bus = row["bus"]
-                load = row["element_id"]
-                ierr = self.psse.ldmod_status(0, int(bus), str(load), 1, 0)
-                if ierr == 0:
-                    logger.info(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
-                elif ierr == 5:
-                    logger.error(f"No dynamic model found for load {load} connected to bus {bus}")
-                else:
-                    raise Exception(f"error={ierr}") 
+            logger.info(f"break the load")
+            self.break_loads(None, ['FmD'])
+            # self.psse_dict = {}
+            # for _, row in sub_data.iterrows():
+            #     bus = row["bus"]
+            #     load = row["element_id"]
+            #     ierr = self.psse.ldmod_status(0, int(bus), str(load), 1, 0)
+            #     if ierr == 0:
+            #         logger.info(f"Dynamic model for load {load} connected to bus {bus} has been disabled")
+            #     elif ierr == 5:
+            #         logger.error(f"No dynamic model found for load {load} connected to bus {bus}")
+            #     else:
+            #         raise Exception(f"error={ierr}") 
+                # os.system("PAUSE")
                 
     def break_loads(self, loads: list = None, components_to_replace: List[str] = []):
         """Implements the load split logic
@@ -84,14 +87,23 @@ class DynamicUtils:
             loads (list, optional): list of coupled loads. Defaults to None.
             components_to_replace (List[str], optional): components to be simulated on distribution side. Defaults to [].
         """
-
+        logger.info("##################### break_loads #########################")
+        os.system("PAUSE")
         components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
+        logger.info(f"components_to_stay: {components_to_stay}")
+        logger.info(f"components_to_replace: {components_to_replace}")
+        os.system("PAUSE")
         if loads is None:
             loads = self._get_coupled_loads()
+        os.system("PAUSE")
         loads = self._get_load_static_data(loads)
+        os.system("PAUSE")
         loads = self._get_load_dynamic_data(loads)
+        os.system("PAUSE")
         loads = self._replicate_coupled_load(loads, components_to_replace)
+        os.system("PAUSE")
         self._update_dynamic_parameters(loads, components_to_stay, components_to_replace)
+        os.system("PAUSE")
 
     def _update_dynamic_parameters(self, loads: dict, components_to_stay: list, components_to_replace: list):
         """Updates dynamic parameters of composite old / replicated load models
@@ -101,7 +113,7 @@ class DynamicUtils:
             components_to_stay (list): components to be simulated on transmission side
             components_to_replace (list): components to be simulated on distribution side
         """
-
+        logger.info(f"_update_dynamic_parameters")
         new_percentages = {}
         for load in loads:
             count = 0
@@ -120,7 +132,7 @@ class DynamicUtils:
                 # self.psse.change_ldmod_con(load['bus'], 'XX' ,r"""CMLDBLU2""" ,idx ,v)
             values = list(settings.values())
             self.psse.add_load_model(load["bus"], "XX", 0, 1, r"""CMLDBLU2""", 2, [0, 0], ["", ""], 133, values)
-            logger.info(f"Dynamic model parameters for load {load['id']} at bus 'XX' changed.")
+            logger.info(f"Dynamic model parameters for load {load['id']} at bus 'XX' changed. New settings are {values}.")
 
     def _get_load_dynamic_properties(self, load):
         "Returns dynamic parameters of composite load models"
@@ -144,7 +156,7 @@ class DynamicUtils:
         Returns:
             dict: updated load dictionary
         """
-
+        logger.info(f"2222222222222222222222222")
         for load in loads:
             dynamic_percentage = load["FmA"] + load["FmB"] + load["FmC"] + load["FmD"] + load["Fel"]
             static_percentage = 1.0 - dynamic_percentage
@@ -159,7 +171,7 @@ class DynamicUtils:
                 load["bus"],
                 "XX",
                 realar=[total_transmission_load.real, total_transmission_load.imag, 0.0, 0.0, 0.0, 0.0],
-                lodtyp="replica",
+                # lodtyp="replica",
             )
             # ierr, cmpval = self.psse.loddt2(load["bus"], "XX" ,"MVA" , "ACT")
             # modify old load
@@ -167,7 +179,7 @@ class DynamicUtils:
                 load["bus"],
                 str(load["id"]),
                 realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
-                lodtyp="original",
+                # lodtyp="original",
             )
             # ierr, cmpval = self.psse.loddt2(load["bus"], load["id"] ,"MVA" , "ACT")
             logger.info(f"Original load {load['id']} @ bus {load['bus']}: {total_load}")
@@ -175,21 +187,24 @@ class DynamicUtils:
             logger.info(f"Load {load['id']} @ bus {load['bus']} updated : {total_distribution_load}")
             load["distribution"] = total_distribution_load
             load["transmission"] = total_transmission_load
+        logger.info(f"{loads}")
         return loads
 
     def _get_coupled_loads(self) -> list:
-        """Returns a list of all coupled loads ina give simualtion
+        """Returns a list of all coupled loads in a give simualtion
 
         Returns:
             list: list of coupled loads
         """
-
-        sub_data = pd.read_csv(
-            os.path.join(
-                self.settings["Simulation"]["Project Path"], "Settings", self.settings["HELICS"]["Subscriptions file"]
-            )
-        )
+        
+        # sub_data = pd.read_csv(
+        #     os.path.join(
+        #         self.settings["Simulation"]["Project Path"], "Settings", self.settings["HELICS"]["Subscriptions file"]
+        #     ) # C:\Users\FXIE\Documents\GitHub\NEARM_TnD\dynamic_cosim_test_cases-model\WECC\Transmission\pypsse_model\Subscriptions.csv
+        # )
+        sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
         load = []
+        logger.info(f"_get_coupled_loads")
         for _, row in sub_data.iterrows():
             if row["element_type"] == "Load":
                 load.append(
@@ -199,6 +214,7 @@ class DynamicUtils:
                         "bus": row["bus"],
                     }
                 )
+        logger.info(f"load is {load}")
         return load
 
     def _get_load_static_data(self, loads: list) -> dict:
@@ -210,12 +226,13 @@ class DynamicUtils:
         Returns:
             dict: mapping load to static values
         """
-
+        logger.info(f"_get_load_static_data")
         values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
             for v in values:
                 ierr, cmpval = self.psse.loddt2(load["bus"], str(load["id"]), v, "ACT")
                 load[v] = cmpval
+        logger.info(f"{loads}")
         return loads
 
     def _get_load_dynamic_data(self, loads: list) -> dict:
@@ -227,7 +244,7 @@ class DynamicUtils:
         Returns:
             dict: mapping load to dynamic values
         """
-
+        logger.info(f"_get_load_dynamic_data")
         values = dyn_only_options["Loads"]["lmodind"]
         for load in loads:
             for v, con_ind in values.items():
@@ -243,6 +260,7 @@ class DynamicUtils:
                         ierr, value = self.psse.dsrval("CON", act_con_index)
                         assert ierr == 0, f"error={ierr}"
                         load[v] = value
+        logger.info(f"{loads}")
         return loads
 
     def setup_machine_channels(self, machines: dict, properties: list):
@@ -261,7 +279,7 @@ class DynamicUtils:
                 if qty in MACHINE_CHANNELS:
                     self.channel_map[nqty][f"{b}_{mch}"] = [self.chnl_idx]
                     chnl_id = MACHINE_CHANNELS[qty]
-                    logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
+                    # logger.info(f"{qty} for machine {b}_{mch} added to channel {self.chnl_idx}")
                     self.psse.machine_array_channel([self.chnl_idx, chnl_id, int(b)], mch, "")
                     self.chnl_idx += 1
 
@@ -281,7 +299,7 @@ class DynamicUtils:
             self.channel_map["LOAD_Q"][f"{b}_{ld}"] = [self.chnl_idx + 1]
             self.psse.load_array_channel([self.chnl_idx, 1, int(b)], ld, "")
             self.psse.load_array_channel([self.chnl_idx + 1, 2, int(b)], ld, "")
-            logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
+            # logger.info(f"P and Q for load {b}_{ld} added to channel {self.chnl_idx} and {self.chnl_idx + 1}")
             self.chnl_idx += 2
 
     def setup_bus_channels(self, buses: list, properties: list):
@@ -299,12 +317,12 @@ class DynamicUtils:
                 if qty == "frequency":
                     self.channel_map[qty][b] = [self.chnl_idx]
                     self.psse.bus_frequency_channel([self.chnl_idx, int(b)], "")
-                    logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
+                    # logger.info(f"Frequency for bus {b} added to channel { self.chnl_idx}")
                     self.chnl_idx += 1
                 elif qty == "voltage_and_angle":
                     self.channel_map[qty][b] = [self.chnl_idx, self.chnl_idx + 1]
                     self.psse.voltage_and_angle_channel([self.chnl_idx, -1, -1, int(b)], "")
-                    logger.info(f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}")
+                    # logger.info(f"Voltage and angle for bus {b} added to channel {self.chnl_idx} and {self.chnl_idx+1}")
                     self.chnl_idx += 2
 
     def poll_channels(self) -> dict:

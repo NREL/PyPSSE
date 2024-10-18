@@ -1,5 +1,6 @@
 import ast
-
+import os
+import time
 import helics as h
 import pandas as pd
 from loguru import logger
@@ -253,18 +254,26 @@ class HelicsInterface:
             bool: flag for iteration requrirement (rerun same time step)
             float: current helics time in seconds
         """
-
+        
         r_seconds = self.sim.get_total_seconds()  # - self._dss_solver.GetStepResolutionSeconds()
+        logger.info(f"Time requested: {r_seconds}")
+        # logger.info(f"self.settings.simulation.simulation_step_resolution.total_seconds(): {self.settings.simulation.simulation_step_resolution.total_seconds()}")
+        # os.system('PAUSE')
         if self.sim.get_time() not in self.all_sub_results:
             self.all_sub_results[self.sim.get_time()] = {}
             self.all_pub_results[self.sim.get_time()] = {}
 
         if not self.settings.helics.iterative_mode:
+            # logger.info(f"not self.settings.helics.iterative_mode")
+            # os.system("PAUSE")
             while self.c_seconds < r_seconds:
                 self.c_seconds = h.helicsFederateRequestTime(self.psse_federate, r_seconds)
             logger.info(f"Time requested: {r_seconds} - time granted: {self.c_seconds} ")
+            # os.system('PAUSE')
             return True, self.c_seconds
         else:
+            # logger.info(f"self.settings.helics.iterative_mode")
+            # os.system("PAUSE")
             itr = 0
 
             while True:
@@ -375,11 +384,18 @@ class HelicsInterface:
         for sub_tag, sub_data in self.subscriptions.items():
             if isinstance(sub_data["property"], str):
                 sub_data["value"] = h.helicsInputGetDouble(sub_data["subscription"])
+                # print(f"##################################################")
+                # print(f"##################################################")
+                # print(f"sub_data is {sub_data}")
                 self.psse_dict[sub_data["bus"]][sub_data["element_type"]][sub_data["element_id"]][
                     sub_data["property"]
                 ] = (sub_data["value"], sub_data["scaler"])
             elif isinstance(sub_data["property"], list):
                 sub_data["value"] = h.helicsInputGetVector(sub_data["subscription"])
+                # print(f"##################################################")
+                # print(f"##################################################")
+                # print(f"##################################################")
+                # print(f"sub_data is {sub_data}")
                 if isinstance(sub_data["value"], list) and len(sub_data["value"]) == len(sub_data["property"]):
                     for i, p in enumerate(sub_data["property"]):
                         self.psse_dict[sub_data["bus"]][sub_data["element_type"]][sub_data["element_id"]][p] = (
@@ -395,28 +411,46 @@ class HelicsInterface:
                     sub_data["dStates"].insert(0, sub_data["dStates"].pop())
         all_values = {}
         for b, b_info in self.psse_dict.items():
+            # print(f"##################################################")
+            # print(f"b is {b}")
+            # print(f"b_info is {b_info}")
             for t, t_info in b_info.items():
                 for i, v_dict in t_info.items():
                     values = {}
                     j = 0
+                    # print(f"##################################################")
+                    # print(f"i is {i}")
+                    # print(f"v_dict is {v_dict}")
                     for p, v_raw in v_dict.items():
                         if isinstance(v_raw, tuple):
+                            # print(f"##################################################")
+                            # print(f"v_raw is {v_raw}")
                             v, scale = v_raw
                             all_values[f"{t}.{b}.{i}.{p}"] = v
                             if isinstance(p, str):
                                 ppty = f"realar{PROFILE_VALIDATION[t].index(p) + 1}"
                                 values[ppty] = v * scale
+                                # if isinstance(scale, (float, int)):
+                                #     values[ppty] = v * scale
+                                # else:
+                                #     values[ppty] = v
+                                
                             elif isinstance(p, list):
                                 for _, ppt in enumerate(p):
                                     ppty = f"realar{PROFILE_VALIDATION[t].index(ppt) + 1}"
                                     values[ppty] = v * scale
+                                    # if isinstance(scale, (float, int)):
+                                    #     values[ppty] = v * scale
+                                    # else:
+                                    #     values[ppty] = v
                         j += 1
-
                     is_empty = [0 if not vx else 1 for vx in values.values()]
+                    logger.debug(f"current HELICE time: {self.c_seconds}")
                     if (
                         sum(is_empty) != 0
                         and sum(values.values()) < VALUE_UPDATE_BOUND
                         and sum(values.values()) > -VALUE_UPDATE_BOUND
+                        and self.c_seconds > 0.02
                     ):
                         self.sim.update_object(t, b, i, values)
                         logger.debug(f"{t}.{b}.{i} = {values}")

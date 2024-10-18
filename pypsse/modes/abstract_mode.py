@@ -2,6 +2,7 @@
 
 import numpy as np
 from loguru import logger
+import os
 
 from pypsse.common import CASESTUDY_FOLDER, VALUE_UPDATE_BOUND
 from pypsse.enumerations import ModelTypes, WritableModelTypes
@@ -994,6 +995,10 @@ class AbstractMode:
         if val > -VALUE_UPDATE_BOUND and val < VALUE_UPDATE_BOUND:
             if dtype == WritableModelTypes.LOAD.value:
                 ierr = self.psse.load_chng_5(ibus=int(bus), id=element_id, **values)
+                # ierr, cmpval = self.psse.loddt2(int(bus),element_id,'MVA','ACT')
+                # if ierr == 0:
+                #     logger.info(f"recheck load value: {cmpval}")
+                #     os.system("PAUSE")
             elif dtype == WritableModelTypes.GENERATOR.value:
                 ierr = self.psse.induction_machine_data(ibus=int(bus), id=element_id, **values)
             elif dtype == WritableModelTypes.MACHINE.value:

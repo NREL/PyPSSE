@@ -41,7 +41,7 @@ class Snap(AbstractMode, DynamicUtils):
         ierr = self.psse.rstr(str(self.settings.simulation.snp_file))
         #
 
-        # The following logic only runs when the helics interface is enabled
+        # # The following logic only runs when the helics interface is enabled
         self.disable_load_models_for_coupled_buses()
         self.disable_generation_for_coupled_buses()
         # self.save_model()
@@ -78,16 +78,17 @@ class Snap(AbstractMode, DynamicUtils):
         self.psse.delete_all_plot_channels()
 
         self.setup_all_channels()
-
+        # print("111111111111111111111111111111111111111111111111111111111111111111")
         logger.debug("pyPSSE initialization complete!")
         self.initialization_complete = True
+        # print("222222222222222222222222222222222222222222222222222222222222222222")
         return self.initialization_complete
 
     def step(self, t):
         "Increments the simulation"
         self.time = self.time + self.incTime
         self.xTime = 0
-        return self.psse.run(0, t, 1, 1, 1)
+        return self.psse.run(0, t + self.incTime.total_seconds(), 1, 1, 1)
 
     def resolve_step(self, t):
         "Resolves the current time step"
