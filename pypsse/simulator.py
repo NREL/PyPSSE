@@ -93,7 +93,7 @@ class Simulator:
             )
             assert (
                 export_settings_path.exists()
-            ), f"{export_settings_path} does nor exist"
+            ), f"{export_settings_path} does not exist"
             export_settings = toml.load(export_settings_path)
             export_settings = ExportFileOptions(**export_settings)
 

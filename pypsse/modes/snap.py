@@ -43,7 +43,7 @@ class Snap(AbstractMode, DynamicUtils):
 
         # The following logic only runs when the helics interface is enabled
         self.disable_load_models_for_coupled_buses()
-        self.disable_generation_for_coupled_buses()
+        #self.disable_generation_for_coupled_buses()
         # self.save_model()
         ############# ------------------------------------- ###############
         outx_file  = str(self.settings.export.outx_file).split("\\")
@@ -87,7 +87,7 @@ class Snap(AbstractMode, DynamicUtils):
         "Increments the simulation"
         self.time = self.time + self.incTime
         self.xTime = 0
-        return self.psse.run(0, t, 1, 1, 1)
+        return self.psse.run(0, t + self.incTime.total_seconds(), 1, 1, 1)
 
     def resolve_step(self, t):
         "Resolves the current time step"
