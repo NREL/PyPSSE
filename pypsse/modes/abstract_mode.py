@@ -420,7 +420,6 @@ class AbstractMode:
 
                 while ierr == 0:
                     ierr, val = self.psse.loddt2(int(b), load_id, "TOTAL", "ACT")
-
                     if isinstance(val, complex):
                         load_mw += val.real
                     ierr, load_id = self.psse.nxtlod(int(b))
@@ -670,13 +669,13 @@ class AbstractMode:
                                                 if func_name == "indnofunc":
                                                     if v in ["BUSNUM", "INDID"]:
                                                         val = {"INDID": ind_id, "BUSNUM": int(b)}[v]
-                                                        results = self.add_result(results, q, val, f"{ind_id}_{b}")
+                                                        results = self.add_result(results, q, val, f"{b}_{ind_id}")
                                                     elif v == "BUSNAME":
                                                         irr, val = self.psse.notona(int(b))
-                                                        results = self.add_result(results, q, val, f"{ind_id}_{b}")
+                                                        results = self.add_result(results, q, val, f"{b}_{ind_id}")
                                                 else:
                                                     ierr, val = getattr(self.psse, func_name)(int(b), ind_id, v)
-                                                    results = self.add_result(results, q, val, f"{ind_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{ind_id}")
                                                 ierr, ind_id = self.psse.nxtind(int(b))
 
                                     elif func_name in ["loddt2", "lodnofunc", "lodint"]:
@@ -688,19 +687,18 @@ class AbstractMode:
                                             if func_name == "lodnofunc":
                                                 if v in ["BUSNUM", "LOADID"]:
                                                     val = {"LOADID": load_id, "BUSNUM": int(b)}[v]
-                                                    results = self.add_result(results, q, val, f"{load_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{load_id}")
                                                 elif v == "BUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
 
-                                                    results = self.add_result(results, q, val, f"{load_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{load_id}")
                                             elif func_name == "loddt2":
                                                 ierr, val = getattr(self.psse, func_name)(int(b), load_id, v, "ACT")
-
-                                                results = self.add_result(results, q, val, f"{load_id}_{b}")
+                                                results = self.add_result(results, q, val, f"{b}_{load_id}")
                                             elif func_name == "lodint":
                                                 ierr, val = getattr(self.psse, func_name)(int(b), load_id, v)
 
-                                                results = self.add_result(results, q, val, f"{load_id}_{b}")
+                                                results = self.add_result(results, q, val, f"{b}_{load_id}")
 
                                             ierr, load_id = self.psse.nxtlod(int(b))
 
@@ -711,19 +709,19 @@ class AbstractMode:
                                             if func_name == "macnofunc":
                                                 if v in ["BUSNUM", "MACID"]:
                                                     val = {"BUSNUM": int(b), "MACID": mach_id}[v]
-                                                    results = self.add_result(results, q, val, f"{mach_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{mach_id}")
                                                 elif v == "BUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
-                                                    results = self.add_result(results, q, val, f"{mach_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{mach_id}")
                                                 elif v == "SUBNUMBER":
                                                     ierr, val = self.psse.busint(int(b), "STATION")
 
-                                                    results = self.add_result(results, q, val, f"{mach_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{mach_id}")
 
                                                 elif v == "AREANUMBER":
                                                     ierr, val = self.psse.busint(int(b), "AREA")
 
-                                                    results = self.add_result(results, q, val, f"{mach_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{mach_id}")
 
                                                 elif v in ["SUBLATITUDE", "SUBLONGITUDE"]:
                                                     sub_dict = {"SUBLATITUDE": "LATI", "SUBLONGITUDE": "LONG"}
@@ -736,7 +734,7 @@ class AbstractMode:
                                             else:
                                                 ierr, val = getattr(self.psse, func_name)(int(b), mach_id, v)
 
-                                                results = self.add_result(results, q, val, f"{mach_id}_{b}")
+                                                results = self.add_result(results, q, val, f"{b}_{mach_id}")
                                             ierr, mach_id = self.psse.nxtmac(int(b))
 
                                     elif func_name in ["fxsdt2", "fxsnofunc"]:
@@ -748,15 +746,15 @@ class AbstractMode:
                                             if func_name == "fxsnofunc":
                                                 if v in ["BUSNUM", "FXSHID"]:
                                                     val = {"BUSNUM": int(b), "FXSHID": fx_id}[v]
-                                                    results = self.add_result(results, q, val, f"{fx_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{fx_id}")
                                                 elif v == "BUSNAME":
                                                     ierr, val = self.psse.notona(int(b))
 
-                                                    results = self.add_result(results, q, val, f"{fx_id}_{b}")
+                                                    results = self.add_result(results, q, val, f"{b}_{fx_id}")
                                             else:
                                                 ierr, val = getattr(self.psse, func_name)(int(b), fx_id, v)
 
-                                                results = self.add_result(results, q, val, f"{fx_id}_{b}")
+                                                results = self.add_result(results, q, val, f"{b}_{fx_id}")
                                             ierr, fx_id = self.psse.nxtfxs(int(b))
 
                                     elif func_name in ["swsdt1", "swsnofunc"]:
