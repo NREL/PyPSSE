@@ -64,7 +64,9 @@ class DynamicUtils:
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
             sub_data = sub_data[sub_data["element_type"] == "Load"]
-
+            logger.debug("Implementing load brek logic for dynamic cosimulations")
+            self.break_loads_for_dynamic_cosimulations(loads=None, components_to_replace=["FmD"])
+            
             self.psse_dict = {}
             for _, row in sub_data.iterrows():
                 bus = row["bus"]
@@ -77,7 +79,7 @@ class DynamicUtils:
                 else:
                     raise Exception(f"error={ierr}") 
                 
-    def break_loads(self, loads: list = None, components_to_replace: List[str] = []):
+    def break_loads_for_dynamic_cosimulations(self, loads: list = None, components_to_replace: List[str] = []):
         """Implements the load split logic
 
         Args:
@@ -88,9 +90,13 @@ class DynamicUtils:
         components_to_stay = [x for x in self.dynamic_params if x not in components_to_replace]
         if loads is None:
             loads = self._get_coupled_loads()
+        logger.debug("Fetching static data for loads")
         loads = self._get_load_static_data(loads)
+        logger.debug("Fetching dynamic data for loads")
         loads = self._get_load_dynamic_data(loads)
+        logger.debug("Creating dummy loads for coupled buses")
         loads = self._replicate_coupled_load(loads, components_to_replace)
+        logger.debug("Updating dynamic parameters for load models")
         self._update_dynamic_parameters(loads, components_to_stay, components_to_replace)
 
     def _update_dynamic_parameters(self, loads: dict, components_to_stay: list, components_to_replace: list):
@@ -117,6 +123,7 @@ class DynamicUtils:
             for k, v in new_percentages.items():
                 idx = dyn_only_options["Loads"]["lmodind"][k]
                 settings[idx] = v
+                logger.debug(f"Dynamic model parameters for load {load['bus']}/{load['id']} at bus XX --> index{idx}, value{v}.")
                 # self.psse.change_ldmod_con(load['bus'], 'XX' ,r"""CMLDBLU2""" ,idx ,v)
             values = list(settings.values())
             self.psse.add_load_model(load["bus"], "XX", 0, 1, r"""CMLDBLU2""", 2, [0, 0], ["", ""], 133, values)
@@ -183,12 +190,8 @@ class DynamicUtils:
         Returns:
             list: list of coupled loads
         """
-
-        sub_data = pd.read_csv(
-            os.path.join(
-                self.settings["Simulation"]["Project Path"], "Settings", self.settings["HELICS"]["Subscriptions file"]
-            )
-        )
+        
+        sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
         load = []
         for _, row in sub_data.iterrows():
             if row["element_type"] == "Load":
@@ -216,6 +219,9 @@ class DynamicUtils:
             for v in values:
                 ierr, cmpval = self.psse.loddt2(load["bus"], str(load["id"]), v, "ACT")
                 load[v] = cmpval
+                
+                logger.debug(f"Static properties - Load: {v} -> {cmpval}")
+        
         return loads
 
     def _get_load_dynamic_data(self, loads: list) -> dict:
@@ -243,6 +249,8 @@ class DynamicUtils:
                         ierr, value = self.psse.dsrval("CON", act_con_index)
                         assert ierr == 0, f"error={ierr}"
                         load[v] = value
+                        logger.debug(f"Dynamic properties - Load: {v} -> index: {act_con_index}, value:{value}")
+                        
         return loads
 
     def setup_machine_channels(self, machines: dict, properties: list):

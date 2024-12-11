@@ -93,7 +93,7 @@ class Simulator:
             )
             assert (
                 export_settings_path.exists()
-            ), f"{export_settings_path} does nor exist"
+            ), f"{export_settings_path} does not exist"
             export_settings = toml.load(export_settings_path)
             export_settings = ExportFileOptions(**export_settings)
 
@@ -322,7 +322,7 @@ class Simulator:
                 bokeh_server_proc = None
 
             logger.debug(
-                f"Running dynamic simulation for time {self.settings.simulation.simulation_time.total_seconds()} sec"
+                f"Running {self.settings.simulation.simulation_mode.value} simulation for time {self.settings.simulation.simulation_time.total_seconds()} sec"
             )
             total_simulation_time = (
                 self.settings.simulation.simulation_time.total_seconds()

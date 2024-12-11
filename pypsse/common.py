@@ -18,13 +18,13 @@ DEFAULT_PROFILE_MAPPING_FILENAME = "profile_mapping.toml"
 DEFAULT_PROFILE_STORE_FILENAME = "profiles.hdf5"
 DEFAULT_RESULTS_FILENAME = "simulation_results.hdf5"
 
-
 DEFAULT_OUT_FILE = "results.out"
 DEFAULT_OUTX_FILE = "results.outx"
 DEFAULT_EXCEL_FILE = "results.xls"
 DEFAULT_LOG_FILE = "psse.log"
 DEFAULT_GRAPH_FILE = "network.gpickle"
 DEFAULT_COORDINATES_FILE = "coordinates.csv"
+DEFAULT_PROFILE_EXPORT_FILE = "profiles.csv"
 
 MAPPED_CLASS_NAMES = {
     "buses": "Buses",
