@@ -267,8 +267,6 @@ class ProfileManager:
             p_type (ProfileTypes): profile type
         """
 
-        print(start_time.strftime())
-
         metadata = {
             "sTime": str(start_time),
             "eTime": str(start_time + datetime.timedelta(seconds=resolution * len(data))),
