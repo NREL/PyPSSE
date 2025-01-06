@@ -163,9 +163,9 @@ class Simulator:
         self.hi = None
         self.simStartTime = time.time()
 
-        if self.settings.simulation.case_study.exists():
+        if self.settings.simulation.case_study and self.settings.simulation.case_study.exists():
             self.psse.case(str(self.settings.simulation.case_study))
-        elif self.settings.simulation.raw_file.exists():
+        elif self.settings.simulation.raw_file and self.settings.simulation.raw_file.exists():
             self.psse.read(0, str(self.settings.simulation.raw_file))
         else:
             msg = "Please pass a RAW or SAV file in the settings dictionary"
