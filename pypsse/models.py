@@ -483,3 +483,11 @@ class ApiWebSocketRequest(BaseModel):
 
 class Contingencies(BaseModel):
     contingencies: List[Union[BusFault, BusTrip, LineFault, LineTrip, MachineTrip]]
+
+class ProfileMap(BaseModel):
+    id: str 
+    bus: str
+    multiplier : float  = 1
+    normalize : bool = False
+    interpolate : bool = False
+
