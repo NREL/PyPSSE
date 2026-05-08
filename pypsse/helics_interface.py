@@ -274,7 +274,7 @@ class HelicsInterface:
                     "property": row["element_property"],
                     "scaler": row["scaler"],
                     "dStates": [self.init_state] * self.n_states,
-                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"], ""),
+                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"], h.helics_data_type_double),
                 }
 
             logger.info(
