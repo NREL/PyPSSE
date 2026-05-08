@@ -242,14 +242,18 @@ class HelicsInterface:
                 # then create a target with target handling of no_operation (NO_OP=0)
                 # this means, take the last value in the list of targets
                 first_subs_tag = subscription_elements[subscription_element][0]
-                sub = h.helicsFederateRegisterInput(self.psse_federate, first_subs_tag, h.helics_data_type_double, "")
+                if first_subs_tag.startswith('pydss') or first_subs_tag.starts_with('opendss'):
+                    # if you have multiple input feeders, sum them to get total power
+                    input_handling_method = h.helics_multi_input_sum_operation
+                else:
+                    # if you have multiple inputs, because it's a threat federate, then let the threat fed override
+                    # the threat federate subscription definition should always come first in the subscriptions.csv
+                    input_handling_method = 0 # enum 0 is "NO_OP"
+
+                sub = self.subscriptions[subscription_tag]["subscription"]
                 subscription_elements[subscription_element].append(subscription_tag)
-                subs_tag_i = 0
-                for subs_tag in subscription_elements[subscription_element]:
-                    if subs_tag_i > 0:
-                        h.helicsInputAddTarget(sub, subs_tag)
-                        h.helicsInputSetOption(sub, h.helics_handle_option_multi_input_handling_method,0) # enum 0 is "NO_OP"
-                    subs_tag_i += 1
+                h.helicsInputAddTarget(sub, subscription_tag)
+                h.helicsInputSetOption(sub, h.helics_handle_option_multi_input_handling_method,input_handling_method) 
                 self.subscriptions[row["sub_tag"]] = {
                     "bus": row["bus"],
                     "element_id": element_id,
@@ -270,7 +274,7 @@ class HelicsInterface:
                     "property": row["element_property"],
                     "scaler": row["scaler"],
                     "dStates": [self.init_state] * self.n_states,
-                    "subscription": h.helicsFederateRegisterSubscription(self.psse_federate, row["sub_tag"], ""),
+                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"], ""),
                 }
 
             logger.info(
