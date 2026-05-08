@@ -242,7 +242,7 @@ class HelicsInterface:
                 # then create a target with target handling of no_operation (NO_OP=0)
                 # this means, take the last value in the list of targets
                 first_subs_tag = subscription_elements[subscription_element][0]
-                if first_subs_tag.startswith('pydss') or first_subs_tag.starts_with('opendss'):
+                if first_subs_tag.startswith('pydss') or first_subs_tag.startswith('opendss'):
                     # if you have multiple input feeders, sum them to get total power
                     input_handling_method = h.helics_multi_input_sum_operation
                 else:
