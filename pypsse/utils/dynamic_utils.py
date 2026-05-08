@@ -338,7 +338,7 @@ class DynamicUtils:
                     {
                         "type": row["element_type"],
                         "id": row["element_id"],
-                        "bus": row["bus"],
+                        "bus": int(row["bus"]),
                     }
                 )
         logger.info(f"load is {load}")
