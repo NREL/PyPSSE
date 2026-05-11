@@ -250,11 +250,11 @@ class HelicsInterface:
                     # the threat federate subscription definition should always come first in the subscriptions.csv
                     input_handling_method = 0 # enum 0 is "NO_OP"
 
-                sub = self.subscriptions[subscription_tag]["subscription"]
+                sub = self.subscriptions[first_subs_tag]["subscription"]
                 subscription_elements[subscription_element].append(subscription_tag)
                 h.helicsInputAddTarget(sub, subscription_tag)
                 h.helicsInputSetOption(sub, h.helics_handle_option_multi_input_handling_method,input_handling_method) 
-                self.subscriptions[subscription_tag] = {
+                self.subscriptions[first_subs_tag] = {
                     "bus": row["bus"],
                     "element_id": element_id,
                     "element_type": row["element_type"],
