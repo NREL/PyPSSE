@@ -254,7 +254,7 @@ class HelicsInterface:
                 subscription_elements[subscription_element].append(subscription_tag)
                 h.helicsInputAddTarget(sub, subscription_tag)
                 h.helicsInputSetOption(sub, h.helics_handle_option_multi_input_handling_method,input_handling_method) 
-                self.subscriptions[row["sub_tag"]] = {
+                self.subscriptions[subscription_tag] = {
                     "bus": row["bus"],
                     "element_id": element_id,
                     "element_type": row["element_type"],
