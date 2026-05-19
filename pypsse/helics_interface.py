@@ -267,6 +267,10 @@ class HelicsInterface:
             else:
                 subscription_elements[subscription_element] = []
                 subscription_elements[subscription_element] = [subscription_tag]
+                if isinstance(row['property'], list):
+                    helics_type = h.helics_data_type_vector
+                else:
+                    helics_type = h.helics_data_type_double
                 self.subscriptions[row["sub_tag"]] = {
                     "bus": row["bus"],
                     "element_id": element_id,
@@ -274,8 +278,9 @@ class HelicsInterface:
                     "property": row["element_property"],
                     "scaler": row["scaler"],
                     "dStates": [self.init_state] * self.n_states,
-                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"],h.helics_data_type_any),
+                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"],helics_type),
                 }
+                #h.helics_data_type_any),
 
             logger.info(
                 "{} property of element {}.{} at bus {} has subscribed to {}".format(
