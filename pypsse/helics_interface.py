@@ -267,7 +267,7 @@ class HelicsInterface:
             else:
                 subscription_elements[subscription_element] = []
                 subscription_elements[subscription_element] = [subscription_tag]
-                if isinstance(row['property'], list):
+                if isinstance(row['element_property'], list):
                     helics_type = h.helics_data_type_vector
                 else:
                     helics_type = h.helics_data_type_double
