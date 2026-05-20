@@ -263,11 +263,16 @@ class HelicsInterface:
                     "dStates": [self.init_state] * self.n_states,
                     "subscription": sub,
                 }
+                logger.info(
+                    "{} property of element {}.{} at bus {} has subscribed to {}".format(
+                        row["element_property"], row["element_type"], row["element_id"], row["bus"],subscription_elements[subscription_element]
+                    )
+                )
 
             else:
                 subscription_elements[subscription_element] = []
                 subscription_elements[subscription_element] = [subscription_tag]
-                if isinstance(row['element_property'], list):
+                if isinstance(row['element_property'], list) or row['element_property'].startswith('['):
                     helics_type = h.helics_data_type_vector
                 else:
                     helics_type = h.helics_data_type_double
@@ -278,15 +283,15 @@ class HelicsInterface:
                     "property": row["element_property"],
                     "scaler": row["scaler"],
                     "dStates": [self.init_state] * self.n_states,
-                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"],helics_type),
+                    "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"],helics_type, ""),
                 }
                 #h.helics_data_type_any),
 
-            logger.info(
-                "{} property of element {}.{} at bus {} has subscribed to {}".format(
-                    row["element_property"], row["element_type"], row["element_id"], row["bus"], row["sub_tag"]
+                logger.info(
+                    "{} property of element {}.{} at bus {} has subscribed to {} in format {}".format(
+                        row["element_property"], row["element_type"], row["element_id"], row["bus"], subscription_tag, helics_type
+                    )
                 )
-            )
 
             if row["bus"] not in self.psse_dict:
                 self.psse_dict[row["bus"]] = {}
