@@ -286,6 +286,7 @@ class HelicsInterface:
                     "subscription": h.helicsFederateRegisterInput(self.psse_federate, row["sub_tag"],helics_type, ""),
                 }
                 #h.helics_data_type_any),
+                h.helicsInputAddTarget(self.subscriptions[row["sub_tag"]]["subscription"], subscription_tag)
 
                 logger.info(
                     "{} property of element {}.{} at bus {} has subscribed to {} in format {}".format(
