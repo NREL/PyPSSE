@@ -503,7 +503,7 @@ class HelicsInterface:
                             values[ppty] = v*scale
                             all_values[f"{t}.{b}.{i}.{p}"] = values[ppty]
                         j += 1
-                    is_empty = [0 if not vx else 1 for vx in values.values()]
+                    is_empty = [0 if vx==[] else 1 for vx in values.values()] # need to allow zero values
                     logger.debug(f"{t}.{b}.{i} = {values}")
                     logger.debug(f"current HELICE time: {self.c_seconds}")
                     ######################################################
@@ -534,7 +534,7 @@ class HelicsInterface:
                         logger.debug(f"{t}.{b}.{i} = {values}")
 
                     else:
-                        logger.debug("write failed: values: {values}, is_empty: {is_empty}")
+                        logger.debug(f"write failed: values: {values}, is_empty: {is_empty}")
         
         ######################################################
         ## clear the result list
