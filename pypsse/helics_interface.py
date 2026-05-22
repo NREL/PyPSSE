@@ -222,7 +222,7 @@ class HelicsInterface:
                 isinstance(row["element_property"], str)
                 and row["element_property"] not in PROFILE_VALIDATION[row["element_type"]]
             ):
-                msg = f"Subscription file error: {row['property']} is not valid. "
+                msg = f"Subscription file error: {row['element_property']} is not valid. "
                 f"Valid subtypes for '{row['element_type']}' are: {PROFILE_VALIDATION[row['element_type']]}"
                 raise Exception(msg)
 
@@ -496,6 +496,12 @@ class HelicsInterface:
                                     else:
                                         values[ppty] += v
                                 all_values[f"{t}.{b}.{i}.{p}"] = values[ppty]
+                        else:
+                            # status messages may not be a list but should still be recorded
+                            ppty = f"realar{PROFILE_VALIDATION[t].index(p) + 1}"
+                            v, scale = v_raws
+                            values[ppty] = v*scale
+                            all_values[f"{t}.{b}.{i}.{p}"] = values[ppty]
                         j += 1
                     is_empty = [0 if not vx else 1 for vx in values.values()]
                     logger.debug(f"{t}.{b}.{i} = {values}")
