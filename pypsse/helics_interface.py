@@ -534,7 +534,7 @@ class HelicsInterface:
                         logger.debug(f"{t}.{b}.{i} = {values}")
 
                     else:
-                        logger.debug("write failed")
+                        logger.debug("write failed: values: {values}, is_empty: {is_empty}")
         
         ######################################################
         ## clear the result list
