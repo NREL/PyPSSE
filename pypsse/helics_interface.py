@@ -234,8 +234,9 @@ class HelicsInterface:
                 raise Exception(msg)
 
             element_id = str(row["element_id"])
+            bus = str(row["bus"])
 
-            subscription_element = f"{element_id}.{row['element_property']}"
+            subscription_element = f"{bus}.{element_id}.{row['element_property']}"
             subscription_tag = row["sub_tag"]
             if subscription_element in subscription_elements.keys():
                 # if you have multiple subscriptions for the same element, update the existing subscription row
