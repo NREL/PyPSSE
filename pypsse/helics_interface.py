@@ -508,20 +508,21 @@ class HelicsInterface:
                     logger.debug(f"current HELICE time: {self.c_seconds}")
                     ######################################################
                     ## add this for better transit matching
-                    #if round(self.c_seconds, 3) == 0.1 and self.settings.simulation.transmission_loads_markup:
-                    #    logger.debug("the moment of fault")
-                    #    logger.debug(f"old {t}.{b}.{i} = {values}")
-                    #    logger.debug(self.load_power)
-                    #    load_data = self.load_power[b]['transmission_loads_at_fault']
-                    #    values['realar1'] = load_data[0]
-                    #    values['realar2'] = load_data[1]
-                    #    # os.system("PAUSE")
-                    #if round(self.c_seconds, 3) == 0.175 and self.settings.simulation.transmission_loads_markup:
-                    #    logger.debug("the moment of clearing fault")
-                    #    logger.debug(f"old {t}.{b}.{i} = {values}")
-                    #    load_data = self.load_power[b]['transmission_loads_clear_fault']
-                    #    values['realar1'] = load_data[0]
-                    #    values['realar2'] = load_data[1]
+                    # this section says at t=0.1 implement the fault and then at t=0.175 return to cleared values
+                    if round(self.c_seconds, 3) == 0.1 and self.settings.simulation.transmission_loads_markup:
+                        logger.debug("the moment of fault")
+                        logger.debug(f"old {t}.{b}.{i} = {values}")
+                        logger.debug(self.load_power)
+                        load_data = self.load_power[b]['transmission_loads_at_fault']
+                        values['realar1'] = load_data[0]
+                        values['realar2'] = load_data[1]
+                        # os.system("PAUSE")
+                    if round(self.c_seconds, 3) == 0.175 and self.settings.simulation.transmission_loads_markup:
+                        logger.debug("the moment of clearing fault")
+                        logger.debug(f"old {t}.{b}.{i} = {values}")
+                        load_data = self.load_power[b]['transmission_loads_clear_fault']
+                        values['realar1'] = load_data[0]
+                        values['realar2'] = load_data[1]
                     #    # os.system("PAUSE")
                     ######################################################
                     if (
