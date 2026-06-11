@@ -978,8 +978,8 @@ class AbstractMode:
                 ierr = self.psse.induction_machine_data(ibus=int(bus), id=element_id, **values)
             elif dtype == WritableModelTypes.MACHINE.value or dtype == WritableModelTypes.MACHINE_STATUS.value:
                 #ierr = self.psse.machine_data_2(i=int(bus), id=element_id, **values)
-                logger.info(f"calling psse machine_data_4: i={bus}, id={element_id}, realar={values}")
-                ierr = self.psse.machine_data_4(i=int(bus), id=element_id, **values)
+                logger.info(f"calling psse machine_data_4: ibus={bus}, id={element_id}, realar={values}")
+                ierr = self.psse.machine_data_4(ibus=int(bus), id=element_id, **values)
             elif dtype == WritableModelTypes.PLANT.value:
                 ierr = self.psse.plant_data_4(ibus=int(bus), inode=0, intgar=[self._i, self._i], **values)
             elif dtype == WritableModelTypes.LINE_STATUS.value:
