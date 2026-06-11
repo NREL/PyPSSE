@@ -275,6 +275,8 @@ class HelicsInterface:
                 subscription_elements[subscription_element] = [subscription_tag]
                 if isinstance(row['element_property'], list) or row['element_property'].startswith('['):
                     helics_type = h.helics_data_type_vector
+                elif row['value_info']=='STATUS':
+                    helics_type = h.helics_data_type_integer
                 else:
                     helics_type = h.helics_data_type_double
                 self.subscriptions[row["sub_tag"]] = {
