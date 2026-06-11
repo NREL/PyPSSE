@@ -979,7 +979,7 @@ class AbstractMode:
             elif dtype == WritableModelTypes.MACHINE.value or dtype == WritableModelTypes.MACHINE_STATUS.value:
                 #ierr = self.psse.machine_data_2(i=int(bus), id=element_id, **values)
                 logger.info(f"calling psse machine_data_4: i={bus}, id={element_id}, realar={values}")
-                ierr = self.psse.machine_data_4(i=int(bus), id=element_id, realar=values)
+                ierr = self.psse.machine_data_4(i=int(bus), id=element_id, **values)
             elif dtype == WritableModelTypes.PLANT.value:
                 ierr = self.psse.plant_data_4(ibus=int(bus), inode=0, intgar=[self._i, self._i], **values)
             elif dtype == WritableModelTypes.LINE_STATUS.value:
@@ -988,7 +988,7 @@ class AbstractMode:
                 # logger.info(f"old line status {bus}-{element_id}: {old_load}")
                 #ierr = self.psse.branch_data_3(ibus=int(frombus), jbus=int(tobus), ckt=element_id, **values)
                 logger.info(f"calling psse branch_data_3: ibus={frombus}, jbus={tobus}, ckt={element_id}, realar={values}, namear={bus}")
-                ierr = self.psse.branch_data_3(ibus=int(frombus), jbus=int(tobus), ckt=element_id, realar=values, namear=bus)
+                ierr = self.psse.branch_data_3(ibus=int(frombus), jbus=int(tobus), ckt=element_id, namear=bus, **values)
                 # old_load = self.psse.brnint(ibus=int(frombus), jbus=int(tobus), ickt=element_id, string='STATUS')
                 # logger.info(f"new line status {bus}-{element_id}: {old_load}")
             else:
