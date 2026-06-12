@@ -498,6 +498,10 @@ class HelicsInterface:
                                     else:
                                         values[ppty] += v
                                 all_values[f"{t}.{b}.{i}.{p}"] = values[ppty]
+                        elif isinstance(v_raws, int):
+                            ppty = f"intgar{PROFILE_VALIDATION[t].index(p) + 1}"
+                            values[ppty] = v_raws
+                            all_values[f"{t}.{b}.{i}.{p}"] = values[ppty]
                         else:
                             # status messages may not be a list but should still be recorded
                             ppty = f"realar{PROFILE_VALIDATION[t].index(p) + 1}"
