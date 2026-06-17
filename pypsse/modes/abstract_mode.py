@@ -979,7 +979,7 @@ class AbstractMode:
             elif dtype == WritableModelTypes.MACHINE.value or dtype == WritableModelTypes.MACHINE_STATUS.value:
                 if dtype == WritableModelTypes.MACHINE_STATUS.value:
                     logger.info(f"calling psse machine_data_4: ibus={bus}, id={element_id}, intgar={values}")
-                    ierr = self.psse.machine_data_4(ibus=int(bus), id=element_id, intgar1=int(values['intgar1']))
+                    ierr = self.psse.machine_data_4(ibus=int(bus), id=element_id, intgar1=int(val))
                 else:
                     #ierr = self.psse.machine_data_2(i=int(bus), id=element_id, **values)
                     logger.info(f"calling psse machine_data_4: ibus={bus}, id={element_id}, realar={values}")
