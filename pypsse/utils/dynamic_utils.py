@@ -15,6 +15,10 @@ class DynamicUtils:
 
     dynamic_params: ClassVar[List[str]] = ["FmA", "FmB", "FmC", "FmD", "Fel"]
 
+    def _ensure_coupled_split_cache(self):
+        if not hasattr(self, "_coupled_split_targets"):
+            self._coupled_split_targets = {}
+
     def disable_generation_for_coupled_buses(self):
         """Disables generation of coupled buses (co-simulation mode only)"""
         if ((self.settings.helics and self.settings.helics.cosimulation_mode and self.settings.simulation.disable_generation_on_coupled_buses) # cosim mode, load in distribution level
@@ -271,6 +275,8 @@ class DynamicUtils:
             dict: updated load dictionary
         """
 
+        self._ensure_coupled_split_cache()
+
         for load in loads:
             logger.info(f"load : {load}")
             dynamic_percentage = load["FmA"] + load["FmB"] + load["FmC"] + load["FmD"] + load["Fel"]
@@ -285,42 +291,116 @@ class DynamicUtils:
             total_load = load["TOTAL"]
             total_distribution_load = total_load * static_percentage
             total_transmission_load = total_load * remaining_load
-            # ceate new load
-            self.psse.load_data_5(
+            # create/update replica transmission-side load
+            ierr = self.psse.load_data_5(
                 load["bus"],
                 "XX",
                 realar=[total_transmission_load.real, total_transmission_load.imag, 0.0, 0.0, 0.0, 0.0],
                 # lodtyp="replica",
             )
+            if ierr != 0:
+                raise Exception(f"Failed to create/update replica load XX at bus {load['bus']}. error={ierr}")
+
+            # Validate that the replica is actually non-zero when expected.
+            # This avoids silent bad states where XX exists in channels but remains 0.
+            ierr_chk, xx_total = self.psse.loddt2(load["bus"], "XX", "TOTAL", "ACT")
+            if ierr_chk != 0:
+                raise Exception(f"Failed to read back replica load XX at bus {load['bus']}. error={ierr_chk}")
+            if abs(total_transmission_load) > 1e-6 and abs(xx_total) <= 1e-9:
+                raise Exception(
+                    f"Replica load XX at bus {load['bus']} is zero after update, expected {total_transmission_load}."
+                )
+
             if (self.settings.helics and self.settings.helics.cosimulation_mode and self.settings.simulation.disable_generation_on_coupled_buses 
                 and self.settings.helics.generation_model_level == 'distribution'):
                 total_bus_generation_p, total_bus_generation_q = self._get_bus_generation(load['bus'])
                 logger.info(f"Generation is modeled in distribution level so transmission load is substituted the generation")
-                self.psse.load_data_5(
+                ierr = self.psse.load_data_5(
                     load["bus"],
                     str(load["id"]),
                     realar=[total_distribution_load.real-total_bus_generation_p, total_distribution_load.imag-total_bus_generation_q, 0.0, 0.0, 0.0, 0.0],
                     # lodtyp="original",
                 )
+                if ierr != 0:
+                    raise Exception(
+                        f"Failed to update original load {load['id']} at bus {load['bus']}. error={ierr}"
+                    )
                 logger.info(f"Original load {load['id']} @ bus {load['bus']}: {total_load}")
                 logger.info(f"New load 'XX' @ bus {load['bus']} created successfully: {total_transmission_load}")
                 logger.info(f"Load {load['id']} @ bus {load['bus']} updated : ({total_distribution_load.real-total_bus_generation_p},{total_distribution_load.imag-total_bus_generation_q})")
                 load["distribution"] = complex(total_distribution_load.real-total_bus_generation_p, total_distribution_load.imag-total_bus_generation_q)
                 load["transmission"] = total_transmission_load
+                self._coupled_split_targets[int(load["bus"])] = {
+                    "id": str(load["id"]),
+                    "distribution": load["distribution"],
+                    "transmission": load["transmission"],
+                }
             else:
-                self.psse.load_data_5(
+                ierr = self.psse.load_data_5(
                     load["bus"],
                     str(load["id"]),
                     realar=[total_distribution_load.real, total_distribution_load.imag, 0.0, 0.0, 0.0, 0.0],
                     # lodtyp="original",
                 )
+                if ierr != 0:
+                    raise Exception(
+                        f"Failed to update original load {load['id']} at bus {load['bus']}. error={ierr}"
+                    )
                 logger.info(f"Original load {load['id']} @ bus {load['bus']}: {total_load}")
                 logger.info(f"New load 'XX' @ bus {load['bus']} created successfully: {total_transmission_load}")
                 logger.info(f"Load {load['id']} @ bus {load['bus']} updated : {total_distribution_load}")
                 load["distribution"] = total_distribution_load
                 load["transmission"] = total_transmission_load
-        logger.info(f"{loads}")
+                self._coupled_split_targets[int(load["bus"])] = {
+                    "id": str(load["id"]),
+                    "distribution": load["distribution"],
+                    "transmission": load["transmission"],
+                }
         return loads
+
+    def reassert_coupled_replica_loads(self, zero_tol: float = 1e-9):
+        """Reasserts replica load XX after startup if it was unexpectedly zeroed."""
+        targets = getattr(self, "_coupled_split_targets", {})
+        if not targets:
+            return
+
+        for bus, values in targets.items():
+            expected_xx = values["transmission"]
+            if abs(expected_xx) <= zero_tol:
+                continue
+
+            ierr_xx, actual_xx = self.psse.loddt2(int(bus), "XX", "TOTAL", "ACT")
+            if ierr_xx != 0:
+                logger.warning(f"Could not read replica load XX at bus {bus} during startup reassert. ierr={ierr_xx}")
+                continue
+
+            if abs(actual_xx) > zero_tol:
+                continue
+
+            ierr_set = self.psse.load_data_5(
+                int(bus),
+                "XX",
+                realar=[expected_xx.real, expected_xx.imag, 0.0, 0.0, 0.0, 0.0],
+            )
+            if ierr_set != 0:
+                logger.warning(
+                    f"Failed to reassert replica load XX at bus {bus}. "
+                    f"expected=({expected_xx.real:.6f},{expected_xx.imag:.6f}) ierr={ierr_set}"
+                )
+                continue
+
+            ierr_chk, check_xx = self.psse.loddt2(int(bus), "XX", "TOTAL", "ACT")
+            if ierr_chk == 0:
+                logger.warning(
+                    f"Reasserted replica load XX at bus {bus}: "
+                    f"before=({actual_xx.real:.6f},{actual_xx.imag:.6f}) "
+                    f"after=({check_xx.real:.6f},{check_xx.imag:.6f}) "
+                    f"expected=({expected_xx.real:.6f},{expected_xx.imag:.6f})"
+                )
+            else:
+                logger.warning(
+                    f"Reasserted replica load XX at bus {bus} but could not verify readback. ierr={ierr_chk}"
+                )
 
     def _get_coupled_loads(self) -> list:
         """Returns a list of all coupled loads in a give simualtion
@@ -331,14 +411,27 @@ class DynamicUtils:
         
         sub_data = pd.read_csv(self.settings.simulation.subscriptions_file)
         load = []
+        seen = set()
         logger.info(f"_get_coupled_loads")
         for _, row in sub_data.iterrows():
             if row["element_type"] == "Load":
+                try:
+                    bus = int(float(row["bus"]))
+                except (TypeError, ValueError):
+                    logger.warning(f"Skipping load subscription with invalid bus value: {row['bus']}")
+                    continue
+
+                load_id = str(row["element_id"]).strip()
+                key = (bus, load_id)
+                if key in seen:
+                    continue
+                seen.add(key)
+
                 load.append(
                     {
                         "type": row["element_type"],
-                        "id": row["element_id"],
-                        "bus": row["bus"],
+                        "id": load_id,
+                        "bus": bus,
                     }
                 )
         logger.info(f"load is {load}")
@@ -356,8 +449,9 @@ class DynamicUtils:
         logger.info(f"_get_load_static_data")
         values = ["MVA", "IL", "YL", "TOTAL"]
         for load in loads:
+            bus = int(load["bus"])
             for v in values:
-                ierr, cmpval = self.psse.loddt2(load["bus"], str(load["id"]), v, "ACT")
+                ierr, cmpval = self.psse.loddt2(bus, str(load["id"]), v, "ACT")
                 load[v] = cmpval
                 logger.debug(f"Static properties - Load: {v} -> {cmpval}")
         return loads
@@ -376,26 +470,53 @@ class DynamicUtils:
         loads_with_dynamic_data = []
         for load in loads:
             has_dynamic = True
-            for v, con_ind in values.items():
-                ierr = self.psse.inilod(load["bus"])
-                assert ierr == 0, f"error={ierr}"
-                ierr, ld_id = self.psse.nxtlod(load["bus"])
-                assert ierr == 0, f"error={ierr}"
-                if ld_id is not None:
-                    ierr, con_index = self.psse.lmodind(load["bus"], ld_id, "CHARAC", "CON")
-                    if ierr != 0:
-                        logger.warning(
-                            f"No CHARAC load model at bus {load['bus']} load '{ld_id}' "
-                            f"(lmodind ierr={ierr}). Skipping dynamic data for this load."
-                        )
-                        has_dynamic = False
+            load_id = str(load["id"])
+            source_load_id = load_id
+            ierr, _ = self.psse.lmodind(load["bus"], source_load_id, "CHARAC", "CON")
+            if ierr != 0:
+                ierr_ini = self.psse.inilod(load["bus"])
+                assert ierr_ini == 0, f"error={ierr_ini}"
+                ierr_nxt, candidate_id = self.psse.nxtlod(load["bus"])
+                # ierr=1 means no loads at all on this bus; this is a normal
+                # end-of-iteration condition for PSSE nxtlod.
+                if ierr_nxt not in (0, 1):
+                    raise AssertionError(f"nxtlod unexpected error={ierr_nxt}")
+                matched_id = None
+                while candidate_id is not None:
+                    ierr_c, _ = self.psse.lmodind(load["bus"], candidate_id, "CHARAC", "CON")
+                    if ierr_c == 0:
+                        matched_id = candidate_id
                         break
-                    if con_index is not None:
-                        act_con_index = con_index + con_ind
-                        ierr, value = self.psse.dsrval("CON", act_con_index)
-                        assert ierr == 0, f"error={ierr}"
-                        load[v] = value
-                        logger.debug(f"Dynamic properties - Load: {v} -> index: {act_con_index}, value:{value}")
+                    ierr_nxt, candidate_id = self.psse.nxtlod(load["bus"])
+                    # ierr=1 means end of load iteration.
+                    if ierr_nxt == 1:
+                        break
+                    if ierr_nxt != 0:
+                        raise AssertionError(f"nxtlod unexpected error={ierr_nxt}")
+                if matched_id is not None:
+                    source_load_id = str(matched_id)
+                    logger.warning(
+                        f"Dynamic model lookup fallback at bus {load['bus']}: "
+                        f"subscription load id '{load_id}' missing CHARAC model; using load id '{source_load_id}'."
+                    )
+            for v, con_ind in values.items():
+                ierr, con_index = self.psse.lmodind(load["bus"], source_load_id, "CHARAC", "CON")
+                if ierr != 0:
+                    logger.warning(
+                        f"No CHARAC load model at bus {load['bus']} load '{source_load_id}' "
+                        f"(lmodind ierr={ierr}). Skipping dynamic data for this load."
+                    )
+                    has_dynamic = False
+                    break
+                if con_index is not None:
+                    act_con_index = con_index + con_ind
+                    ierr, value = self.psse.dsrval("CON", act_con_index)
+                    assert ierr == 0, f"error={ierr}"
+                    load[v] = value
+                    logger.debug(
+                        f"Dynamic properties - Bus {load['bus']} Load {source_load_id}: "
+                        f"{v} -> index: {act_con_index}, value:{value}"
+                    )
             if has_dynamic:
                 loads_with_dynamic_data.append(load)
         return loads_with_dynamic_data

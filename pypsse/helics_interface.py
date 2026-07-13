@@ -53,6 +53,7 @@ class HelicsInterface:
         self.subsystem_info = []
         self.publications = {}
         self.subscriptions = {}
+        self._helics_sub_handles = {}
         self.load_fault = False
         #################################################################
         # add these hardcored load values for better matching
@@ -197,6 +198,7 @@ class HelicsInterface:
         """
 
         self.subscriptions = {}
+        self._helics_sub_handles = {}
         assert (
             self.settings.simulation.subscriptions_file
         ), "HELICS co-simulations requires a subscriptions_file property populated"
@@ -234,14 +236,27 @@ class HelicsInterface:
 
             element_id = str(row["element_id"])
 
-            self.subscriptions[row["sub_tag"]] = {
+            # Use a composite key so that multiple rows subscribing to the
+            # same HELICS publication (same sub_tag) each get their own entry.
+            sub_key = f"{row['sub_tag']}___{row['element_type']}_{element_id}"
+
+            # Reuse an existing HELICS subscription handle when the same
+            # publication key appears more than once (e.g. Load gen-offset
+            # and Machine dispatch both subscribe to the gen-total pub).
+            if row["sub_tag"] not in self._helics_sub_handles:
+                self._helics_sub_handles[row["sub_tag"]] = (
+                    h.helicsFederateRegisterSubscription(self.psse_federate, row["sub_tag"], "")
+                )
+            sub_handle = self._helics_sub_handles[row["sub_tag"]]
+
+            self.subscriptions[sub_key] = {
                 "bus": row["bus"],
                 "element_id": element_id,
                 "element_type": row["element_type"],
                 "property": row["element_property"],
                 "scaler": row["scaler"],
                 "dStates": [self.init_state] * self.n_states,
-                "subscription": h.helicsFederateRegisterSubscription(self.psse_federate, row["sub_tag"], ""),
+                "subscription": sub_handle,
             }
 
             logger.info(
@@ -409,7 +424,7 @@ class HelicsInterface:
             elif isinstance(sub_data["property"], list):
                 sub_data["value"] = h.helicsInputGetVector(sub_data["subscription"])
                 logger.debug(f"sub_data is {sub_data}")
-                if isinstance(sub_data["value"], list) and len(sub_data["value"]) == len(sub_data["property"]):
+                if isinstance(sub_data["value"], list) and len(sub_data["value"]) >= len(sub_data["property"]):
                     for i, p in enumerate(sub_data["property"]):
                         self.psse_dict[sub_data["bus"]][sub_data["element_type"]][sub_data["element_id"]][p].append((
                             sub_data["value"][i],
@@ -491,7 +506,7 @@ class HelicsInterface:
             if isinstance(sub_data["property"], str):
                 self.psse_dict[sub_data["bus"]][sub_data["element_type"]][sub_data["element_id"]][sub_data["property"]] = []
             elif isinstance(sub_data["property"], list):
-                if isinstance(sub_data["value"], list) and len(sub_data["value"]) == len(sub_data["property"]):
+                if isinstance(sub_data["value"], list) and len(sub_data["value"]) >= len(sub_data["property"]):
                     for i, p in enumerate(sub_data["property"]):
                         self.psse_dict[sub_data["bus"]][sub_data["element_type"]][sub_data["element_id"]][p] = []
         logger.debug(f"clear self.psse_dict is {self.psse_dict}")

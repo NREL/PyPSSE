@@ -63,6 +63,10 @@ class Snap(AbstractMode, DynamicUtils):
 
         self.load_user_defined_models()
 
+        # Some startup sequences can zero replica load XX on specific buses.
+        # Reassert only buses that were split and now read as zero.
+        self.reassert_coupled_replica_loads()
+
         if self.settings.helics and self.settings.helics.cosimulation_mode:
             if self.settings.helics.iterative_mode:
                 sim_step = self.settings.simulation.psse_solver_timestep.total_seconds() / self.iter_const
