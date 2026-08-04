@@ -74,6 +74,7 @@ class Dynamic(AbstractMode, DynamicUtils):
             logger.debug(f"Dynamic file {dyr_path} sucessfully loaded")
 
         self.disable_load_models_for_coupled_buses()
+        self.disable_generation_for_coupled_buses()
 
         if self.export_settings.export_results_using_channels:
             self.setup_channels()
